@@ -14,5 +14,5 @@ Project to integrate the [Rive](https://rive.app/) runtime into Windows UI libra
 
 # Hosting of Rive content in UWP
 - Start with SwapChain and DX11 backend built directly into C++ UWP app
-- Move impl into WinRT component
+- Move Rive impl into WinRT component, host within a C# 9 host app
 - Move to CompositionSwapchain
