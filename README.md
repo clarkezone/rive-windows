@@ -12,7 +12,9 @@ Project to integrate the [Rive](https://rive.app/) runtime into Windows UI libra
 2. Create WinRT skeleton component using CPPWinrt
 3. TODO think more about what makes sense
 
-# Hosting of Rive content in UWP
+# Direct hosting of Rive content in UWP
 - Start with SwapChain and DX11 backend built directly into C++ UWP app
 - Move Rive impl into WinRT component, host within a C# 9 host app
 - Move to CompositionSwapchain
+
+# Island-based hosting of Rive content in initial host (ideally UWP)
