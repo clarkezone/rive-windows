@@ -11,3 +11,5 @@ Project to integrate the [Rive](https://rive.app/) runtime into Windows UI libra
 1. Build all sample projects
 2. Create WinRT skeleton component using CPPWinrt
 3. TODO think more about what makes sense
+
+- Simple hosting of Rive in UWP using swapchain and DX11 backend
