@@ -35,14 +35,14 @@ Plan:
 
 
 ## CompositionSwapchain
-Outcome:  Triange rendered using CompositionSwapchain
+Outcome:  Trianlge rendered using CompositionSwapchain
 Plan:
 - Naive approach
 - Optimize non animating case to delete backbuffers
 - Optimize resize to use progressive buffer sizing
 
 ## Island Source
-Outcome: C++ island content source that can render a square into a swapchain using D2D, input, focus, transform all work
+Outcome: C++ island content source that can render a square into a swapchain using D2D, input, focus, transform all work, hosted in WinUI3 host
 Plan:
 - Build island
 - Host in all supported island host frameworks
@@ -51,9 +51,9 @@ Plan:
 - Win32
 - WinUI3
 - React Native
-- 
+- what else?
 
-## Spectrum usage of Rive for rendering 
+## Spectrum Analizer usage of Rive for rendering 
 ## Port WinRT component to .NET 10
 
 # references
