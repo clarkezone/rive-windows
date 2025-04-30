@@ -11,7 +11,7 @@ Plan:
 # Prototypes
 
 ## 1. Self contained UWP Rive
-Outcome: SwapChain and DX11 backend built directly into C++ UWP app
+Outcome: SwapChain and Rive DX11 backend built directly into C++ UWP app
 TODO including which Rive experience
 Plan:
 - Start with empty frameworkless UWP in C++
