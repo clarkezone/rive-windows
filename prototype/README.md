@@ -3,7 +3,7 @@ This page tracks the list of experiments and prototypes that will inform the pro
 
 # Experiments
 
-## Build Rive Windows DX11 backend
+## 0.1 Build Rive Windows DX11 backend
 Outcome: instructions for building DX11 backend and running samples
 Plan:
 
