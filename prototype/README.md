@@ -23,7 +23,7 @@ Plan:
 
 
 ## WinRT component housing Rive Rendering
-Outcome: Move Rive impl into C++ WinRT component, host within a C# 9 host app
+Outcome: Move Rive impl into C++ WinRT component, host within a C# 10 host app
 Plan:
 - Build empty WinRT component with C# frameworkless host
 - Triange rendered with win2d
