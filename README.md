@@ -3,8 +3,6 @@ Project to integrate the [Rive](https://rive.app/) runtime into Windows UI libra
 
 [dd](https://github.com/user-attachments/assets/60fee8c3-264c-4dc8-8093-35069216b08b)
 
-TODO: examples
-
 # High-level plan
 ## Phase 1: experimentation and prototyping
 
