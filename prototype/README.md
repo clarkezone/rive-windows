@@ -1,8 +1,5 @@
-# references
-1. Rive Windows DX11 backend: https://github.com/rive-app/rive-runtime/blob/main/renderer/src/d3d/render_context_d3d_impl.cpp
-2. Rive Windows sample: https://github.com/rive-app/rive-runtime/blob/main/renderer/path_fiddle/fiddle_context_d3d.cpp
-3. CompositionSwapchain: https://learn.microsoft.com/en-us/windows/win32/comp_swapchain/comp-swapchain
-4. Windows UI Islands: how to consume: https://github.com/microsoft/WindowsAppSDK-Samples/tree/main/Samples/Islands
+# Overview
+This page tracks the list of experiments and prototypes that will inform the project.
 
 # Experiments
 
@@ -14,18 +11,41 @@ Plan:
 # Prototypes
 
 ## Self contained UWP Rive
-Outcome: TODO including which Rive experience
+Outcome: SwapChain and DX11 backend built directly into C++ UWP app
+TODO including which Rive experience
 Plan:
-Direct hosting of Rive content in UWP
-- Start with SwapChain and DX11 backend built directly into C++ UWP app
-- Move Rive impl into C++ WinRT component, host within a C# 9 host app
-- Move to CompositionSwapchain
+- Start with empty frameworkless UWP in C++
+- Rendering
+- Input
+- Rive API integration
+- Click
+- Mousemove
+
+
+## WinRT component housing Rive Rendering
+Outcome: Move Rive impl into C++ WinRT component, host within a C# 9 host app
+Plan:
+- Build empty WinRT component with C# frameworkless host
+- Triange rendered with win2d
+- Bring Rive impl across
+- API across WinRT boundary for Rive interactivity
+- Resizing
+- Host in XAML
+
+
 
 ## CompositionSwapchain
-Outcome:
+Outcome:  Triange rendered using CompositionSwapchain
+Plan:
+- Naive approach
+- Optimize non animating case to delete backbuffers
+- Optimize resize to use progressive buffer sizing
 
 ## Island Source
-Outcome:
+Outcome: C++ island content source that can render a square into a swapchain using D2D, input, focus, transform all work
+Plan:
+- Build island
+- Host in all supported island host frameworks
 
 ## Island-based hosting in more host types
 - Win32
@@ -34,3 +54,10 @@ Outcome:
 - 
 
 ## Spectrum usage of Rive for rendering 
+## Port WinRT component to .NET 10
+
+# references
+1. Rive Windows DX11 backend: https://github.com/rive-app/rive-runtime/blob/main/renderer/src/d3d/render_context_d3d_impl.cpp
+2. Rive Windows sample: https://github.com/rive-app/rive-runtime/blob/main/renderer/path_fiddle/fiddle_context_d3d.cpp
+3. CompositionSwapchain: https://learn.microsoft.com/en-us/windows/win32/comp_swapchain/comp-swapchain
+4. Windows UI Islands: how to consume: https://github.com/microsoft/WindowsAppSDK-Samples/tree/main/Samples/Islands
