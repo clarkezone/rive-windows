@@ -10,7 +10,7 @@ Plan:
 
 # Prototypes
 
-## Self contained UWP Rive
+## 1. Self contained UWP Rive
 Outcome: SwapChain and DX11 backend built directly into C++ UWP app
 TODO including which Rive experience
 Plan:
@@ -22,7 +22,7 @@ Plan:
 - Mousemove
 
 
-## WinRT component housing Rive Rendering
+## 2. WinRT component housing Rive Rendering
 Outcome: Move Rive impl into C++ WinRT component, host within a C# 10 host app
 Plan:
 - Build empty WinRT component with C# frameworkless host
@@ -32,22 +32,20 @@ Plan:
 - Resizing
 - Host in XAML
 
-
-
-## CompositionSwapchain
+## 3. CompositionSwapchain
 Outcome:  Trianlge rendered using CompositionSwapchain
 Plan:
 - Naive approach
 - Optimize non animating case to delete backbuffers
 - Optimize resize to use progressive buffer sizing
 
-## Island Source
+## 4. Island Source
 Outcome: C++ island content source that can render a square into a swapchain using D2D, input, focus, transform all work, hosted in WinUI3 host
 Plan:
 - Build island
 - Host in all supported island host frameworks
 
-## Island-based hosting in more host types
+## 5. Island-based hosting in more host types
 - Win32
 - WinUI3
 - React Native
