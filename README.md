@@ -5,6 +5,7 @@ Project to integrate the [Rive](https://rive.app/) runtime into Windows UI libra
 
 # High-level plan
 ## Phase 1: experimentation and prototyping
+[Plan is here](prototype/README.md)
 
 ## Phase 2: Evaluation, Planning and infrastructure
 
