@@ -8,7 +8,7 @@ using Windows.Foundation;
 
 namespace FrameworklessUWP
 {
-    public class App : IFrameworkViewSource, IFrameworkView
+    public sealed class App : IFrameworkViewSource, IFrameworkView
     {
         private Compositor _compositor;
         private ContainerVisual _root;

@@ -3,7 +3,7 @@ using Windows.ApplicationModel.Core;
 
 namespace FrameworklessUWP
 {
-    public class Program
+    public sealed class Program
     {
         static void Main(string[] args)
         {
