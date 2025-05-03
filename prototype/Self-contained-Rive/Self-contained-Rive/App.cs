@@ -1,83 +1,81 @@
-using System;
-using System.Numerics;
+﻿using System.Diagnostics.CodeAnalysis;
 using Windows.ApplicationModel.Core;
-using Windows.UI;
 using Windows.UI.Core;
 using Windows.UI.Composition;
-using Windows.Foundation;
+using Windows.UI;
+using System.Numerics;
 
-namespace FrameworklessUWP
+namespace Self_contained_Rive
 {
-    public sealed class App : IFrameworkViewSource, IFrameworkView
+    /// <summary>
+    /// Represent a non-XAML UWP app, i.e. an app without XAML content that is hosted in a <see cref="CoreWindow"/> instance.
+    /// </summary>
+    public sealed partial class App : IFrameworkViewSource, IFrameworkView
     {
-        private Compositor _compositor;
-        private ContainerVisual _root;
-        private CoreWindow _window;
+        /// <summary>
+        /// The <see cref="CoreApplicationView"/> for the current app instance.
+        /// </summary>
+        private CoreApplicationView? _applicationView;
 
-        // IFrameworkViewSource implementation
+        /// <summary>
+        /// The <see cref="CoreWindow"/> used to display the app content.
+        /// </summary>
+        private CoreWindow? _window;
+
+        private Compositor? _compositor;
+        private ContainerVisual? _root;
+        private CompositionTarget? _compositionTarget;
+
+        /// <summary>
+        /// The entry point for the application.
+        /// </summary>
+        public static void Main()
+        {
+            CoreApplication.Run(new App());
+        }
+
+        /// <inheritdoc/>
         public IFrameworkView CreateView()
         {
             return this;
         }
 
-        // IFrameworkView implementation
+        /// <inheritdoc/>
+        [MemberNotNull(nameof(_applicationView))]
         public void Initialize(CoreApplicationView applicationView)
         {
-            // Register for window activation events
-            applicationView.Activated += OnActivated;
+            this._applicationView = applicationView;
         }
 
+        /// <inheritdoc/>
+        [MemberNotNull(nameof(_window))]
         public void SetWindow(CoreWindow window)
         {
-            _window = window;
-            
-            // Set up basic window event handlers
-            _window.VisibilityChanged += OnVisibilityChanged;
-            _window.Closed += OnClosed;
+            this._window = window;
+            SetupComposition();
         }
 
+        /// <inheritdoc/>
         public void Load(string entryPoint)
         {
-            // Not used in this simple example
         }
 
+        /// <inheritdoc/>
         public void Run()
         {
-            // Set up the composition visual tree
-            SetupComposition();
+            // Activate the current window
+            _window!.Activate();
 
-            // Process events
-            _window.Activate();
-            CoreDispatcher dispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
-            dispatcher.ProcessEvents(CoreProcessEventsOption.ProcessUntilQuit);
+            // Process any messages in the queue
+            _window.Dispatcher.ProcessEvents(CoreProcessEventsOption.ProcessUntilQuit);
         }
 
+        /// <inheritdoc/>
         public void Uninitialize()
         {
-            // Clean up resources
-            _root = null;
-            _compositor = null;
         }
 
-        // Event handlers
-        private void OnActivated(CoreApplicationView sender, Windows.ApplicationModel.Activation.IActivatedEventArgs args)
-        {
-            // Ensure the window is activated when the app is launched
-            CoreWindow.GetForCurrentThread().Activate();
-        }
-
-        private void OnVisibilityChanged(CoreWindow sender, VisibilityChangedEventArgs args)
-        {
-            // Handle window visibility changes
-        }
-
-        private void OnClosed(CoreWindow sender, CoreWindowEventArgs args)
-        {
-            // Handle window closing
-        }
-
-        // Set up the composition visual tree
-        private void SetupComposition()
+         private void SetupComposition()
         {
             // Create the compositor
             _compositor = new Compositor();
@@ -106,14 +104,17 @@ namespace FrameworklessUWP
             // Add the red square to the root visual
             _root.Children.InsertAtTop(redSquare);
 
+            _compositionTarget = _compositor.CreateTargetForCurrentView();
+            _compositionTarget.Root = _root;
+
             // In a frameworkless UWP app, we need to use the CoreWindow directly
             // This is a simplified approach for demonstration purposes
             // The actual implementation would require more setup in a real UWP app
-            
+
             // Note: In a real UWP app, you would typically use:
             // Windows.UI.Composition.CompositionTarget.FromVisual(_window).Root = _root;
             // But this requires proper initialization of the CompositionTarget
-            
+
             // For this example, we'll leave this as a comment since we can't
             // fully implement it without the proper UWP environment
         }

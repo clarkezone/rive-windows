@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
+
 <Package
   xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
   xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest"
@@ -6,15 +7,15 @@
   IgnorableNamespaces="uap mp">
 
   <Identity
-    Name="FrameworklessUWP"
-    Publisher="CN=Developer"
+    Name="22e2be76-5f20-4d71-8273-3d43f5b16766"
+    Publisher="CN=jeclarke"
     Version="1.0.0.0" />
 
-  <mp:PhoneIdentity PhoneProductId="00000000-0000-0000-0000-000000000000" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+  <mp:PhoneIdentity PhoneProductId="22e2be76-5f20-4d71-8273-3d43f5b16766" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
-    <DisplayName>FrameworklessUWP</DisplayName>
-    <PublisherDisplayName>Developer</PublisherDisplayName>
+    <DisplayName>Self_contained_Rive</DisplayName>
+    <PublisherDisplayName>jeclarke</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 
@@ -29,12 +30,12 @@
   <Applications>
     <Application Id="App"
       Executable="$targetnametoken$.exe"
-      EntryPoint="FrameworklessUWP.Program">
+      EntryPoint="Self_contained_Rive.App">
       <uap:VisualElements
-        DisplayName="FrameworklessUWP"
+        DisplayName="Self_contained_Rive"
         Square150x150Logo="Assets\Square150x150Logo.png"
         Square44x44Logo="Assets\Square44x44Logo.png"
-        Description="A frameworkless UWP app using Windows.UI.Composition"
+        Description="Self_contained_Rive"
         BackgroundColor="transparent">
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png"/>
         <uap:SplashScreen Image="Assets\SplashScreen.png" />

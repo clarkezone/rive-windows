@@ -1,0 +1,7 @@
+{
+  "profiles": {
+    "Self_contained_Rive": {
+      "commandName": "MsixPackage"
+    }
+  }
+}
