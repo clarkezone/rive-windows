@@ -1,5 +1,8 @@
 # Rive-windows
-Project to integrate the [Rive](https://rive.app/) runtime into Windows UI libraries.  Rough goal is to create a Rive `ContentIsland` using system compositor visual hosting, `CompositionSwapchain` for Windows Compositor rendering integration and the Rive DX11 backend in order to be able to easily host Rive content inside of classic win32, UWP frameworkless, UWP XAML, WinUI3, ReactNative targets with alpha transparency, z-order interleaving (no airspace between frameworks), transform and input support.
+Project to integrate the [Rive](https://rive.app/) runtime into Windows UI libraries.  
+
+The goal of this project is to enable Rive content and experiences to be available on Windows hosted in the broadest set of application host containers with the most optimal system performance.
+
 
 [dd](https://github.com/user-attachments/assets/60fee8c3-264c-4dc8-8093-35069216b08b)
 
