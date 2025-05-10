@@ -7,8 +7,13 @@ This page tracks the list of experiments and prototypes that will inform the pro
 Outcome: instructions for building DX11 backend and running samples
 Plan:
 
-
 # Prototypes
+
+## 0.2 Minimal Rive DLL
+Outcome: a Windows dll that doesnt import user32.dll or gdi32.dll with minimal exports to support helloworld rive using swapchain as currency for output
+
+## 0.3 Minimal Rive DLL appcontainerp
+Outcome: dll passes WAC or list of banned APIs
 
 ## 1. Self contained UWP Rive
 Outcome: SwapChain and Rive DX11 backend built directly into C++ UWP app
