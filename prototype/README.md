@@ -19,7 +19,7 @@ Outcome: list of potential problems
 # Prototypes
 
 ## 0.2 Minimal Rive DLL
-Outcome: a Windows dll that doesnt import user32.dll or gdi32.dll with minimal exports to support helloworld rive using swapchain as currency for output
+Outcome: a full-trust Windows dll that doesnt import user32.dll or gdi32.dll with minimal exports to support helloworld rive using swapchain as currency for output
 
 ## 0.3 Run WACK on DLL
 Outcome: Accurate list of components and banned APIs
