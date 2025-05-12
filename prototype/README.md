@@ -25,7 +25,11 @@ Outcome: a full-trust Windows dll that doesnt import user32.dll or gdi32.dll wit
 Outcome: Accurate list of components and banned APIs
 
 ## 0.4 Minimal Rive DLL appcontainer compliant
-Outcome: dll passes WAC or list of banned APIs.  May involve hacks / stubs
+Outcome: dll passes WAC or list of banned APIs.
+1. Run WACK on all components
+2. ForEach component
+3. ForEach banned API call sight, add a failfast until compiles and WACK passes
+4. Start app and replace failfast with bandaid to enable launch to complete
 
 ---
 # Everything from here is SPECULATIVE due to unknown unknowns.
