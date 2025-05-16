@@ -23,6 +23,8 @@ Plan:
 - Create a project with empty window using modern techniques, no glfw
 - Rebuild path_fiddle stripping all non-windows code and leveraging native windowing
 - Figure out how to pick up the libs from the Rive build system
+- Ensure swapchain binding
+- Use visual hosting, not HWND binding
 Outcome: standalone project added to this repo
 
 ## 0.2 Minimal Rive DLL
