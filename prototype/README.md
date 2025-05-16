@@ -5,18 +5,25 @@ This page tracks the list of experiments and prototypes that will inform the pro
 
 ## 0.1 Build Rive Windows DX11 backend
 Outcome: instructions for building DX11 backend and running samples
-Plan: TODO
+Status: DONE
 
-## 0.2 Explore all Rive renderer Windows-runnable samples
-Outcome: list of samples with screenshots and characteristics (eg input, binding etc)
+## 0.2 Test path_fiddle with a couple of RIV files
+Outcome: list of RIV with screenshots and characteristics (eg input, binding etc)
 
-## 0.3 Build DX12 backend
+## 0.3 Test DX12 backend
 Outcome: everything still works
 
 ## 0.4 Smoke-test for banned APIs by matching linker settings with Flutter UWP engine project
 Outcome: list of potential problems
 
 # Prototypes
+
+## 0.1 Standalone Windows Project
+Plan: 
+- Create a project with empty window using modern techniques, no glfw
+- Rebuild path_fiddle stripping all non-windows code and leveraging native windowing
+- Figure out how to pick up the libs from the Rive build system
+Outcome: standalone project added to this repo
 
 ## 0.2 Minimal Rive DLL
 Outcome: a full-trust Windows dll that doesnt import user32.dll or gdi32.dll with minimal exports to support helloworld rive using swapchain as currency for output
