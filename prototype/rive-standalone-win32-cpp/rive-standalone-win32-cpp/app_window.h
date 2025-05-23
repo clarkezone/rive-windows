@@ -1,8 +1,8 @@
 #pragma once
 #include "pch.h"
-#include "win32_window.h"
+#include "dx_window.h"
 
-class AppWindow : public Win32Window {
+class AppWindow : public DXWindow {
 protected:
     void OnPointerDown(int x, int y) override;
     void OnDpiChanged(int dpi) override;
@@ -10,5 +10,5 @@ protected:
 
 private:
     int current_dpi_ = 96;  // Track DPI for use in OnPointerDown
-    friend class Win32Window;
+	friend class DXWindow;
 };

@@ -77,6 +77,7 @@ bool Win32Window::Create(std::wstring_view title, const Point& origin, const Siz
     }
 
     std::cout << "Window created successfully\n";
+	WindowCreated();
     return true;
 }
 
@@ -212,4 +213,8 @@ void Win32Window::OnDpiChanged(int dpi) {
 
 void Win32Window::OnResize(int width, int height) {
     // Default implementation - subclasses can override
+}
+
+void Win32Window::WindowCreated()
+{
 }

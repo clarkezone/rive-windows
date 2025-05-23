@@ -36,6 +36,8 @@ protected:
     virtual void OnPointerDown(int x, int y);
     virtual void OnDpiChanged(int dpi);
     virtual void OnResize(int width, int height);
+	virtual void WindowCreated();
+    HWND window_handle_ = nullptr;
 
 private:
     static constexpr std::wstring_view kWindowClassName = L"Win32WindowClass";
@@ -47,7 +49,6 @@ private:
     void UnregisterWindowClass();
     void UpdateWindowSize(const RECT& rect);
 
-    HWND window_handle_ = nullptr;
     HINSTANCE instance_ = nullptr;
     std::wstring window_class_name_;
     int current_dpi_ = 96;
