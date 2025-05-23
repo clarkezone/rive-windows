@@ -13,3 +13,5 @@ cd <reporoot>\skia\dependencies
 sh make_glfw.sh
 cd <reporoot>\renderer
 ..\build\build_rive.ps1
+
+Out contains vsproject and binary.  path_fiddle.exe is dropped there.  TODO flags.  With no flags a single unflagged arg is treated as path to a .riv
