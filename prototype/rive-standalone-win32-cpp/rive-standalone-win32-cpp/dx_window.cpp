@@ -18,19 +18,32 @@ DXWindow::~DXWindow()
 }
 
 void DXWindow::WindowCreated() {
+    std::cout << "DXWindow::WindowCreated() called\n";
+    
     m_controller = CreateDispatcherQueueCont();
+    std::cout << "Created dispatcher queue controller\n";
     
     // Get initial window size
     RECT rect;
     GetClientRect(window_handle_, &rect);
     m_windowWidth = rect.right - rect.left;
     m_windowHeight = rect.bottom - rect.top;
+    std::cout << "Initial window size: " << m_windowWidth << "x" << m_windowHeight << "\n";
     
     // Initialize DirectX resources
-    if (SUCCEEDED(CreateDeviceResources())) {
+    HRESULT hr = CreateDeviceResources();
+    std::cout << "CreateDeviceResources() result: " << hr << "\n";
+    
+    if (SUCCEEDED(hr)) {
+        std::cout << "DirectX resources created successfully\n";
         PrepareVisuals();
+        std::cout << "Visuals prepared\n";
         CreateCompositionSurface();
+        std::cout << "Composition surface created\n";
         StartRenderThread();
+        std::cout << "Render thread started\n";
+    } else {
+        std::cout << "Failed to create DirectX resources, HR = " << hr << "\n";
     }
 }
 

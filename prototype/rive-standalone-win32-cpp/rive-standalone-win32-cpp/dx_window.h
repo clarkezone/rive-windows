@@ -47,6 +47,10 @@ private:
     int m_windowHeight = 0;
     bool m_deviceLost = false;
 
+public:
+    void StartRenderThread();
+    void StopRenderThread();
+
 protected:
     DXWindow();
     virtual ~DXWindow();
@@ -69,8 +73,6 @@ private:
     HRESULT RecreateDeviceResources();
     
     // Rendering
-    void StartRenderThread();
-    void StopRenderThread();
     void RenderLoop();
     void RenderClock();
     void DrawClockFace(float centerX, float centerY, float radius);
