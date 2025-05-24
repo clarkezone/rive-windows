@@ -67,10 +67,10 @@ private:
     void CreateCompositionSurface();
     
     // DirectX initialization
-    HRESULT CreateDeviceResources();
-    HRESULT CreateSwapChain();
-    HRESULT CreateRenderTarget();
-    HRESULT RecreateDeviceResources();
+    void CreateDeviceResources();
+    void CreateSwapChain();
+    void CreateRenderTarget();
+    void RecreateDeviceResources();
     
     // Rendering
     void RenderLoop();

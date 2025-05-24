@@ -42,8 +42,6 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE prev_instance, wchar_t* comman
     std::cout << "Window created with initial DPI: "
         << static_cast<int>(window->GetDpiScale() * 96) << "\n";
 
-    window->StartRenderThread();
-
     // Message loop
     MSG msg{};
     while (GetMessage(&msg, nullptr, 0, 0)) {

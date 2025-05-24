@@ -20,30 +20,32 @@ DXWindow::~DXWindow()
 void DXWindow::WindowCreated() {
     std::cout << "DXWindow::WindowCreated() called\n";
     
-    m_controller = CreateDispatcherQueueCont();
-    std::cout << "Created dispatcher queue controller\n";
-    
-    // Get initial window size
-    RECT rect;
-    GetClientRect(window_handle_, &rect);
-    m_windowWidth = rect.right - rect.left;
-    m_windowHeight = rect.bottom - rect.top;
-    std::cout << "Initial window size: " << m_windowWidth << "x" << m_windowHeight << "\n";
-    
-    // Initialize DirectX resources
-    HRESULT hr = CreateDeviceResources();
-    std::cout << "CreateDeviceResources() result: " << hr << "\n";
-    
-    if (SUCCEEDED(hr)) {
+    try {
+        m_controller = CreateDispatcherQueueCont();
+        std::cout << "Created dispatcher queue controller\n";
+        
+        // Get initial window size
+        RECT rect;
+        GetClientRect(window_handle_, &rect);
+        m_windowWidth = rect.right - rect.left;
+        m_windowHeight = rect.bottom - rect.top;
+        std::cout << "Initial window size: " << m_windowWidth << "x" << m_windowHeight << "\n";
+        
+        // Initialize DirectX resources
+        CreateDeviceResources();
         std::cout << "DirectX resources created successfully\n";
+        
         PrepareVisuals();
         std::cout << "Visuals prepared\n";
+        
         CreateCompositionSurface();
         std::cout << "Composition surface created\n";
+        
         StartRenderThread();
         std::cout << "Render thread started\n";
-    } else {
-        std::cout << "Failed to create DirectX resources, HR = " << hr << "\n";
+    }
+    catch (winrt::hresult_error const& ex) {
+        std::wcout << L"Failed to initialize DirectX: " << ex.message().c_str() << L" (0x" << std::hex << ex.code() << L")\n";
     }
 }
 
@@ -131,10 +133,8 @@ void DXWindow::CreateCompositionSurface()
     m_root.Children().InsertAtTop(m_dxVisual);
 }
 
-HRESULT DXWindow::CreateDeviceResources()
+void DXWindow::CreateDeviceResources()
 {
-    HRESULT hr = S_OK;
-
     // Create D3D11 device
     D3D_FEATURE_LEVEL featureLevels[] = {
         D3D_FEATURE_LEVEL_11_1,
@@ -146,7 +146,7 @@ HRESULT DXWindow::CreateDeviceResources()
     winrt::com_ptr<::ID3D11Device> device;
     winrt::com_ptr<::ID3D11DeviceContext> context;
     
-    hr = D3D11CreateDevice(
+    check_hresult(D3D11CreateDevice(
         nullptr,
         D3D_DRIVER_TYPE_HARDWARE,
         nullptr,
@@ -157,48 +157,36 @@ HRESULT DXWindow::CreateDeviceResources()
         device.put(),
         nullptr,
         context.put()
-    );
-
-    if (FAILED(hr)) return hr;
+    ));
 
     // Get D3D11.1 interfaces
-    hr = device->QueryInterface(IID_PPV_ARGS(m_d3dDevice.put()));
-    if (FAILED(hr)) return hr;
-
-    hr = context->QueryInterface(IID_PPV_ARGS(m_d3dContext.put()));
-    if (FAILED(hr)) return hr;
+    check_hresult(device->QueryInterface(IID_PPV_ARGS(m_d3dDevice.put())));
+    check_hresult(context->QueryInterface(IID_PPV_ARGS(m_d3dContext.put())));
 
     // Create D2D factory
-    hr = D2D1CreateFactory(
+    check_hresult(D2D1CreateFactory(
         D2D1_FACTORY_TYPE_SINGLE_THREADED,
         IID_PPV_ARGS(m_d2dFactory.put())
-    );
-    if (FAILED(hr)) return hr;
+    ));
 
     // Create D2D device
     winrt::com_ptr<::IDXGIDevice> dxgiDevice;
-    hr = m_d3dDevice->QueryInterface(IID_PPV_ARGS(dxgiDevice.put()));
-    if (FAILED(hr)) return hr;
-
-    hr = m_d2dFactory->CreateDevice(dxgiDevice.get(), m_d2dDevice.put());
-    if (FAILED(hr)) return hr;
-
-    hr = m_d2dDevice->CreateDeviceContext(
+    check_hresult(m_d3dDevice->QueryInterface(IID_PPV_ARGS(dxgiDevice.put())));
+    check_hresult(m_d2dFactory->CreateDevice(dxgiDevice.get(), m_d2dDevice.put()));
+    check_hresult(m_d2dDevice->CreateDeviceContext(
         D2D1_DEVICE_CONTEXT_OPTIONS_NONE,
         m_d2dContext.put()
-    );
-    if (FAILED(hr)) return hr;
+    ));
 
     // Create DirectWrite factory
-    hr = DWriteCreateFactory(
+    check_hresult(DWriteCreateFactory(
         DWRITE_FACTORY_TYPE_SHARED,
         __uuidof(IDWriteFactory),
         reinterpret_cast<IUnknown**>(m_dwriteFactory.put())
-    );
-    if (FAILED(hr)) return hr;
+    ));
 
     // Create text format
-    hr = m_dwriteFactory->CreateTextFormat(
+    check_hresult(m_dwriteFactory->CreateTextFormat(
         L"Segoe UI",
         nullptr,
         DWRITE_FONT_WEIGHT_NORMAL,
@@ -207,33 +195,25 @@ HRESULT DXWindow::CreateDeviceResources()
         32.0f,
         L"en-us",
         m_textFormat.put()
-    );
-    if (FAILED(hr)) return hr;
+    ));
 
     // Create swap chain
-    hr = CreateSwapChain();
-    if (FAILED(hr)) return hr;
+    CreateSwapChain();
 
     // Create render target
-    hr = CreateRenderTarget();
-    if (FAILED(hr)) return hr;
-
-    return S_OK;
+    CreateRenderTarget();
 }
 
-HRESULT DXWindow::CreateSwapChain()
+void DXWindow::CreateSwapChain()
 {
     winrt::com_ptr<::IDXGIDevice1> dxgiDevice;
-    HRESULT hr = m_d3dDevice->QueryInterface(IID_PPV_ARGS(dxgiDevice.put()));
-    if (FAILED(hr)) return hr;
+    check_hresult(m_d3dDevice->QueryInterface(IID_PPV_ARGS(dxgiDevice.put())));
 
     winrt::com_ptr<::IDXGIAdapter> adapter;
-    hr = dxgiDevice->GetAdapter(adapter.put());
-    if (FAILED(hr)) return hr;
+    check_hresult(dxgiDevice->GetAdapter(adapter.put()));
 
     winrt::com_ptr<::IDXGIFactory2> factory;
-    hr = adapter->GetParent(IID_PPV_ARGS(factory.put()));
-    if (FAILED(hr)) return hr;
+    check_hresult(adapter->GetParent(IID_PPV_ARGS(factory.put())));
 
     DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
     swapChainDesc.Width = m_windowWidth;
@@ -248,73 +228,60 @@ HRESULT DXWindow::CreateSwapChain()
     swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
     swapChainDesc.AlphaMode = DXGI_ALPHA_MODE_PREMULTIPLIED;
 
-    hr = factory->CreateSwapChainForComposition(
+    check_hresult(factory->CreateSwapChainForComposition(
         m_d3dDevice.get(),
         &swapChainDesc,
         nullptr,
         m_swapChain.put()
-    );
-
-    return hr;
+    ));
 }
 
-HRESULT DXWindow::CreateRenderTarget()
+void DXWindow::CreateRenderTarget()
 {
-    if (!m_swapChain) return E_FAIL;
+    if (!m_swapChain) return;
 
-    HRESULT hr = m_swapChain->GetBuffer(0, IID_PPV_ARGS(m_backBuffer.put()));
-    if (FAILED(hr)) return hr;
+    check_hresult(m_swapChain->GetBuffer(0, IID_PPV_ARGS(m_backBuffer.put())));
 
     winrt::com_ptr<::IDXGISurface> dxgiBackBuffer;
-    hr = m_backBuffer->QueryInterface(IID_PPV_ARGS(dxgiBackBuffer.put()));
-    if (FAILED(hr)) return hr;
+    check_hresult(m_backBuffer->QueryInterface(IID_PPV_ARGS(dxgiBackBuffer.put())));
 
     D2D1_BITMAP_PROPERTIES1 bitmapProperties = {};
     bitmapProperties.pixelFormat.format = DXGI_FORMAT_B8G8R8A8_UNORM;
     bitmapProperties.pixelFormat.alphaMode = D2D1_ALPHA_MODE_PREMULTIPLIED;
     bitmapProperties.bitmapOptions = D2D1_BITMAP_OPTIONS_TARGET | D2D1_BITMAP_OPTIONS_CANNOT_DRAW;
 
-    hr = m_d2dContext->CreateBitmapFromDxgiSurface(
+    check_hresult(m_d2dContext->CreateBitmapFromDxgiSurface(
         dxgiBackBuffer.get(),
         &bitmapProperties,
         m_d2dTargetBitmap.put()
-    );
-    if (FAILED(hr)) return hr;
+    ));
 
     m_d2dContext->SetTarget(m_d2dTargetBitmap.get());
 
     // Create brushes
-    hr = m_d2dContext->CreateSolidColorBrush(
+    check_hresult(m_d2dContext->CreateSolidColorBrush(
         D2D1::ColorF(D2D1::ColorF::White),
         m_clockBrush.put()
-    );
-    if (FAILED(hr)) return hr;
+    ));
 
-    hr = m_d2dContext->CreateSolidColorBrush(
+    check_hresult(m_d2dContext->CreateSolidColorBrush(
         D2D1::ColorF(D2D1::ColorF::DarkBlue),
         m_backgroundBrush.put()
-    );
-    if (FAILED(hr)) return hr;
+    ));
 
-    hr = m_d2dContext->CreateSolidColorBrush(
+    check_hresult(m_d2dContext->CreateSolidColorBrush(
         D2D1::ColorF(D2D1::ColorF::Yellow),
         m_textBrush.put()
-    );
-
-    return hr;
+    ));
 }
 
-HRESULT DXWindow::RecreateDeviceResources()
+void DXWindow::RecreateDeviceResources()
 {
     CleanupRenderingResources();
     CleanupDeviceResources();
     
-    HRESULT hr = CreateDeviceResources();
-    if (SUCCEEDED(hr)) {
-        CreateCompositionSurface();
-    }
-    
-    return hr;
+    CreateDeviceResources();
+    CreateCompositionSurface();
 }
 
 void DXWindow::StartRenderThread()
@@ -400,7 +367,7 @@ void DXWindow::RenderClock()
     // Draw digital time
     DrawDigitalTime(centerX, centerY + radius + 50);
 
-    HRESULT hr = m_d2dContext->EndDraw();
+    winrt::hresult hr = m_d2dContext->EndDraw();
     if (hr == D2DERR_RECREATE_TARGET) {
         m_deviceLost = true;
     } else if (SUCCEEDED(hr)) {
@@ -484,7 +451,7 @@ void DXWindow::DrawDigitalTime(float x, float y)
         timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
     
     winrt::com_ptr<::IDWriteTextLayout> textLayout;
-    HRESULT hr = m_dwriteFactory->CreateTextLayout(
+    winrt::hresult hr = m_dwriteFactory->CreateTextLayout(
         timeString,
         static_cast<UINT32>(wcslen(timeString)),
         m_textFormat.get(),
@@ -513,8 +480,12 @@ bool DXWindow::CheckDeviceLost()
 void DXWindow::HandleDeviceLost()
 {
     m_deviceLost = true;
-    if (SUCCEEDED(RecreateDeviceResources())) {
+    try {
+        RecreateDeviceResources();
         m_deviceLost = false;
+    }
+    catch (winrt::hresult_error const&) {
+        // Device recreation failed, stay in device lost state
     }
 }
 
