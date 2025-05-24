@@ -124,9 +124,18 @@ void DXWindow::CreateCompositionSurface()
     m_dxVisual = m_compositor.CreateSpriteVisual();
     m_dxVisual.RelativeSizeAdjustment({ 1.0f, 1.0f });
     
-    // For now, we'll use a simple surface brush approach
-    // In a full implementation, you would set up DXGI interop here
-    auto surfaceBrush = m_compositor.CreateColorBrush({ 255, 100, 100, 255 });
+    // Use ICompositorInterop to create composition surface for swap chain
+    auto compositorInterop = m_compositor.as<ABI::Windows::UI::Composition::ICompositorInterop>();
+    
+    winrt::com_ptr<ABI::Windows::UI::Composition::ICompositionSurface> compositionSurface;
+    check_hresult(compositorInterop->CreateCompositionSurfaceForSwapChain(
+        m_swapChain.get(),
+        compositionSurface.put()
+    ));
+    
+    // Create surface brush from the composition surface
+    auto surface = compositionSurface.as<winrt::Windows::UI::Composition::ICompositionSurface>();
+    auto surfaceBrush = m_compositor.CreateSurfaceBrush(surface);
     m_dxVisual.Brush(surfaceBrush);
     
     // Add to root
