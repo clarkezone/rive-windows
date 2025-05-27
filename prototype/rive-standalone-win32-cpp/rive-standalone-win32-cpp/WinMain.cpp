@@ -1,5 +1,5 @@
 ﻿#include "pch.h"
-#include "app_window.h"
+#include "rive_window.h"
 
 void EnableHighDPISupport() {
     // Enable per-monitor DPI awareness
@@ -22,15 +22,15 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE prev_instance, wchar_t* comman
         SetProcessDPIAware();
     }
 
-    // Create application window
-    auto window = std::make_unique<AppWindow>();
+    // Create Rive window
+    auto window = std::make_unique<RiveWindow>();
 
     Win32Window::Point origin{ CW_USEDEFAULT, CW_USEDEFAULT };
     Win32Window::Size size{ 800, 600 };
 
     std::cout << "Creating window...\n";
 
-    if (!window->Create(L"C++20 Win32 Application", origin, size)) {
+    if (!window->Create(L"Rive Window - DirectX 11", origin, size)) {
         std::cout << "Failed to create window\n";
         system("pause");
         return -1;
