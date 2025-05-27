@@ -3,13 +3,16 @@
 #include "win32_window.h"
 
 // TODO: Add Rive includes when dependencies are available
-// #include "rive/renderer/rive_renderer.hpp"
-// #include "rive/renderer/d3d11/render_context_d3d_impl.hpp"
-// #include "rive/renderer/d3d11/d3d11.hpp"
-// #include "rive/artboard.hpp"
-// #include "rive/file.hpp"
-// #include "rive/animation/state_machine_instance.hpp"
-// #include "rive/static_scene.hpp"
+ #include "../../../../../rive-app/rive-runtime/include/rive/rive_types.hpp"
+ #include "../../../../../rive-app/rive-runtime/include/rive/span.hpp"
+ #include "../../../../../rive-app/rive-runtime/include/rive/math/raw_path.hpp"
+ #include "../../../../../rive-app/rive-runtime/renderer/include/rive/renderer/rive_renderer.hpp"
+ #include "../../../../../rive-app/rive-runtime/renderer/include/rive/renderer/d3d11/render_context_d3d_impl.hpp"
+ #include "../../../../../rive-app/rive-runtime/renderer/include/rive/renderer/d3d11/d3d11.hpp"
+ #include "../../../../../rive-app/rive-runtime/include/rive/artboard.hpp"
+ #include "../../../../../rive-app/rive-runtime/include/rive/file.hpp"
+ #include "../../../../../rive-app/rive-runtime/include/rive/animation/state_machine_instance.hpp"
+ #include "../../../../../rive-app/rive-runtime/include/rive/static_scene.hpp"
 
 #include <fstream>
 #include <vector>

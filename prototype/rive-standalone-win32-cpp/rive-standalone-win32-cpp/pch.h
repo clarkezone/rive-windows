@@ -23,6 +23,7 @@
 
 // C++ Standard Library headers
 #include <iostream>
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <string_view>
