@@ -14,18 +14,22 @@ Outcome: list of RIV with screenshots and characteristics (eg input, binding etc
 Status: In progress, partially complete
 
 ## 0.3 Test DX12 backend
-Outcome: everything still works  
+Outcome: everything still works
+
 Status: Defered until later
 
 ## 0.4 Smoke-test for banned APIs by matching linker settings with Flutter UWP engine project
 Outcome: list of potential problems
+
 Status: not started
 
 # Prototypes
 
 ## 0.1 Standalone Windows Project
 Outcome: standalone project added to this repo
+
 Status: Step 7 in progress
+
 Plan: 
 1. Create a project with empty window using modern techniques, no glfw
 2. Rebuild path_fiddle stripping all non-windows code and leveraging native windowing
@@ -40,7 +44,9 @@ Plan:
 
 ## 0.2 Standalone UWP Project
 Outcome: a Windows UWP version launches (likely with WACK violations)
+
 Status: Not started
+
 Plan:
 1. Build minimal c++ UWP using CoreWindow / CoreApplicationView etc
 2. Port rive_window code from Prototype 0.1 on top of UWP windowing and input API's
