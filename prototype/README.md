@@ -25,7 +25,7 @@ Status:Defered until later
 
 # Prototypes
 
-## 0.1 Standalone Windows Project
+## 0.1 Standalone Windows win32 Project
 Outcome: standalone project added to this repo
 
 Status: Step 7 in progress
@@ -42,8 +42,8 @@ Plan:
 9. Ensure feature parity (wire up all mouse / keyboard input)
 
 
-## 0.2 Standalone UWP Project
-Outcome: a Windows UWP version launches (likely with WACK violations)
+## 0.2 Standalone Windows UWP Project
+Outcome: a Windows UWP version launches and renders content using CoreWindow, CoreInput etc (likely with WACK violations)
 
 Status: Not started
 
