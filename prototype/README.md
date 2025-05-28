@@ -22,6 +22,8 @@ Status: not started
 # Prototypes
 
 ## 0.1 Standalone Windows Project
+Outcome: standalone project added to this repo
+Status: Step 7 in progress
 Plan: 
 1. Create a project with empty window using modern techniques, no glfw
 2. Rebuild path_fiddle stripping all non-windows code and leveraging native windowing
@@ -32,12 +34,11 @@ Plan:
 7. Links
 8. Runs and draws content
 9. Ensure feature parity (wire up all mouse / keyboard input)
-    
-Outcome: standalone project added to this repo
-Status: Step 7 in progerss
+
 
 ## 0.2 Standalone UWP Project
 Outcome: a Windows UWP version launches (likely with WACK violations)
+Status: Not started
 Plan:
 1. Build minimal c++ UWP using CoreWindow / CoreApplicationView etc
 2. Port rive_window code from Prototype 0.1 on top of UWP windowing and input API's
