@@ -240,21 +240,46 @@ void RiveWindow::CreateRiveContent()
     if (!m_riveFileData.empty() && m_riveRenderContext) {
         m_riveFile = rive::File::import(m_riveFileData, m_riveRenderContext.get());
         if (m_riveFile) {
-            m_artboard = m_riveFile->artboardDefault();
-            if (m_artboard) {
-                // Create static scene - try without parameters first
-                m_scene = std::make_unique<rive::StaticScene>();
-                
-                m_viewModelInstance = m_riveFile->createViewModelInstance(m_artboard.get());
-                if (m_viewModelInstance) {
-                    m_artboard->bindViewModelInstance(m_viewModelInstance);
-                    if (m_scene) {
-                        m_scene->bindViewModelInstance(m_viewModelInstance);
-                    }
-                }
-            }
+            MakeScene();
         }
     }
+}
+
+void RiveWindow::ClearScene()
+{
+    m_artboard = nullptr;
+    m_scene = nullptr; 
+    m_viewModelInstance = nullptr;
+}
+
+void RiveWindow::MakeScene()
+{
+    ClearScene();
+    
+    // Following path_fiddle make_scenes pattern exactly
+    auto artboard = m_riveFile->artboardDefault();
+    std::unique_ptr<rive::Scene> scene;
+    
+    // Try animationAt(0) first (path_fiddle default pattern)
+    scene = artboard->animationAt(0);
+    
+    if (scene == nullptr) {
+        // This is a riv without any animations or state machines. Just draw the artboard.
+        scene = std::make_unique<rive::StaticScene>(artboard.get());
+    }
+
+    m_viewModelInstance = m_riveFile->createViewModelInstance(artboard.get());
+    artboard->bindViewModelInstance(m_viewModelInstance);
+    if (m_viewModelInstance != nullptr) {
+        scene->bindViewModelInstance(m_viewModelInstance);
+    }
+
+    // Set initial animation state
+    scene->advanceAndApply(0.0f);
+    
+    // Store the artboard and scene (following path_fiddle pattern)
+    m_artboard = std::move(artboard);
+    m_scene = std::move(scene);
 }
 
 void RiveWindow::RecreateDeviceResources()

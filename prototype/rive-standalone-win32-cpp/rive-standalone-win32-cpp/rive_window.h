@@ -91,6 +91,8 @@ private:
     // Rive setup
     void CreateRiveContext();
     void CreateRiveContent();
+    void ClearScene();
+    void MakeScene();
     
     // Rendering
     void RenderLoop();
