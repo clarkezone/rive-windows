@@ -4,41 +4,56 @@ This page tracks the list of experiments and prototypes that will inform the pro
 # Experiments
 
 ## 0.1 Build Rive Windows DX11 backend
-Outcome: instructions for building DX11 backend and running samples
+Outcome: instructions for building DX11 backend and running samples.
+
 Status: DONE
 
 ## 0.2 Test path_fiddle with a couple of RIV files
-Outcome: list of RIV with screenshots and characteristics (eg input, binding etc) [Fix markdown as part of this]
+Outcome: list of RIV with screenshots and characteristics (eg input, binding etc) [Fix markdown as part of this].
+
+Status: In progress, partially complete
 
 ## 0.3 Test DX12 backend
 Outcome: everything still works
 
+Status: Defered until later
+
 ## 0.4 Smoke-test for banned APIs by matching linker settings with Flutter UWP engine project
 Outcome: list of potential problems
 
+Status:Defered until later
+
 # Prototypes
 
-## 0.1 Standalone Windows Project
-Plan: 
-- Create a project with empty window using modern techniques, no glfw
-- Rebuild path_fiddle stripping all non-windows code and leveraging native windowing
-- Figure out how to pick up the libs from the Rive build system
-- Ensure swapchain binding
-- Use visual hosting, not HWND binding
+## 0.1 Standalone Windows win32 Project
 Outcome: standalone project added to this repo
 
-## 0.2 Minimal Rive DLL
-Outcome: a full-trust Windows dll that doesnt import user32.dll or gdi32.dll with minimal exports to support helloworld rive using swapchain as currency for output
+Status: Step 7 in progress
 
-## 0.3 Run WACK on DLL
-Outcome: Accurate list of components and banned APIs
+Plan: 
+1. Create a project with empty window using modern techniques, no glfw
+2. Rebuild path_fiddle stripping all non-windows code and leveraging native windowing
+3. Figure out how to pick up the libs from the Rive build system
+4. Ensure swapchain binding
+5. Use visual hosting, not HWND binding
+6. Compiles
+7. Links
+8. Runs and draws content
+9. Ensure feature parity (wire up all mouse / keyboard input)
 
-## 0.4 Minimal Rive DLL appcontainer compliant
-Outcome: dll passes WAC or list of banned APIs.
-1. Run WACK on all components
-2. ForEach component
-3. ForEach banned API call sight, add a failfast until compiles and WACK passes
-4. Start app and replace failfast with bandaid to enable launch to complete
+
+## 0.2 Standalone Windows UWP Project
+Outcome: a Windows UWP version launches and renders content using CoreWindow, CoreInput etc (likely with WACK violations)
+
+Status: Not started
+
+Plan:
+1. Build minimal c++ UWP using CoreWindow / CoreApplicationView etc
+2. Port rive_window code from Prototype 0.1 on top of UWP windowing and input API's
+3. Compiles
+4. links
+5. Runs
+6. Complete list of banned API's in Rive renderer and all dependencies.
 
 ---
 # Everything from here is SPECULATIVE due to unknown unknowns.
