@@ -73,8 +73,6 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
-      <AdditionalLibraryDirectories>D:\src\github.com\rive-app\rive-runtime\renderer\out\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>rive.lib;rive_pls_renderer.lib;rive_decoders.lib;rive_harfbuzz.lib;rive_sheenbidi.lib;rive_yoga.lib;libjpeg.lib;libpng.lib;libwebp.lib;miniaudio.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
@@ -84,7 +82,13 @@
       <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../../../rive-app/rive-runtime/include;../../../../../rive-app/rive-runtime/include/rive;../../../../../rive-app/rive-runtime/renderer/include;../../../../../rive-app/rive-runtime/include/rive/math</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</MultiProcessorCompilation>
+      <ExceptionHandling Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Sync</ExceptionHandling>
     </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>D:\src\github.com\rive-app\rive-runtime\renderer\out\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>rive.lib;rive_pls_renderer.lib;rive_decoders.lib;rive_harfbuzz.lib;rive_sheenbidi.lib;rive_yoga.lib;libjpeg.lib;libpng.lib;libwebp.lib;miniaudio.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Platform)'=='Win32'">
     <ClCompile>
@@ -96,8 +100,12 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions);WITH_RIVE_TEXT;WITH_RIVE_LAYOUT;_USE_MATH_DEFINES;NOMINMAX;RIVE_WINDOWS;_CRT_SECURE_NO_WARNINGS;YOGA_EXPORT=;_HAS_EXCEPTIONS=0;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Release|x64'">stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../../../rive-app/rive-runtime/include;../../../../../rive-app/rive-runtime/include/rive;../../../../../rive-app/rive-runtime/renderer/include;../../../../../rive-app/rive-runtime/include/rive/math</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</MultiProcessorCompilation>
+      <ExceptionHandling Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Sync</ExceptionHandling>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
