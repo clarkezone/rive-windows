@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "rive_window.h"
 #include <math.h>
+#include <fstream>
+#include <wrl/client.h>
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -219,8 +221,6 @@ void RiveWindow::CreateRenderTarget()
 
 void RiveWindow::CreateRiveContext()
 {
-    // TODO: Initialize Rive rendering context when dependencies are available
-    /*
     auto d3dContextOptions = rive::gpu::D3DContextOptions{};
     m_riveRenderContext = rive::gpu::RenderContextD3DImpl::MakeContext(
         m_d3dDevice.get(),
@@ -233,32 +233,28 @@ void RiveWindow::CreateRiveContext()
         m_riveRenderTarget = renderContextImpl->makeRenderTarget(m_windowWidth, m_windowHeight);
         m_riveRenderer = std::make_unique<rive::RiveRenderer>(m_riveRenderContext.get());
     }
-    */
 }
 
 void RiveWindow::CreateRiveContent()
 {
-    // TODO: Load and create Rive content when dependencies are available
-    /*
     if (!m_riveFileData.empty() && m_riveRenderContext) {
         m_riveFile = rive::File::import(m_riveFileData, m_riveRenderContext.get());
         if (m_riveFile) {
             m_artboard = m_riveFile->artboardDefault();
             if (m_artboard) {
-                m_scene = m_artboard->animationAt(0);
-                if (!m_scene) {
-                    m_scene = std::make_unique<rive::StaticScene>(m_artboard.get());
-                }
+                // Create static scene - try without parameters first
+                m_scene = std::make_unique<rive::StaticScene>();
                 
                 m_viewModelInstance = m_riveFile->createViewModelInstance(m_artboard.get());
                 if (m_viewModelInstance) {
                     m_artboard->bindViewModelInstance(m_viewModelInstance);
-                    m_scene->bindViewModelInstance(m_viewModelInstance);
+                    if (m_scene) {
+                        m_scene->bindViewModelInstance(m_viewModelInstance);
+                    }
                 }
             }
         }
     }
-    */
 }
 
 void RiveWindow::RecreateDeviceResources()
@@ -306,25 +302,15 @@ void RiveWindow::RenderLoop()
 
 void RiveWindow::RenderRive()
 {
-    if (!m_d3dContext || !m_backBuffer) return;
+    if (!m_d3dContext || !m_swapChain) return;
 
-    // Clear to a test color (dark blue) for now
-    winrt::com_ptr<::ID3D11RenderTargetView> renderTargetView;
-    check_hresult(m_d3dDevice->CreateRenderTargetView(
-        m_backBuffer.get(),
-        nullptr,
-        renderTargetView.put()
-    ));
-
-    // Clear the render target
-    float clearColor[4] = { 0.2f, 0.2f, 0.4f, 1.0f }; // Dark blue
-    m_d3dContext->ClearRenderTargetView(renderTargetView.get(), clearColor);
-
-    // TODO: Render Rive content when dependencies are available
-    /*
     if (m_riveRenderer && m_riveRenderTarget && m_scene) {
-        // Set render target
-        m_riveRenderTarget->setTargetTexture(m_backBuffer);
+        // Get fresh backbuffer from swap chain (following path_fiddle pattern)
+        Microsoft::WRL::ComPtr<ID3D11Texture2D> backbuffer;
+        check_hresult(m_swapChain->GetBuffer(0, IID_PPV_ARGS(backbuffer.ReleaseAndGetAddressOf())));
+        
+        // Set render target texture
+        m_riveRenderTarget->setTargetTexture(backbuffer);
         
         // Begin frame
         m_riveRenderContext->beginFrame({
@@ -355,7 +341,21 @@ void RiveWindow::RenderRive()
         m_riveRenderContext->flush({.renderTarget = m_riveRenderTarget.get()});
         m_riveRenderTarget->setTargetTexture(nullptr);
     }
-    */
+    else {
+        // Fallback: clear to test color if no Rive content
+        winrt::com_ptr<::ID3D11Texture2D> backbuffer;
+        check_hresult(m_swapChain->GetBuffer(0, IID_PPV_ARGS(backbuffer.put())));
+        
+        winrt::com_ptr<::ID3D11RenderTargetView> renderTargetView;
+        check_hresult(m_d3dDevice->CreateRenderTargetView(
+            backbuffer.get(),
+            nullptr,
+            renderTargetView.put()
+        ));
+
+        float clearColor[4] = { 0.2f, 0.2f, 0.4f, 1.0f }; // Dark blue
+        m_d3dContext->ClearRenderTargetView(renderTargetView.get(), clearColor);
+    }
 
     // Present the frame
     m_swapChain->Present(1, 0);
@@ -435,8 +435,6 @@ void RiveWindow::CleanupDeviceResources()
 
 void RiveWindow::CleanupRenderingResources()
 {
-    // TODO: Cleanup Rive resources when dependencies are available
-    /*
     m_riveRenderer = nullptr;
     m_riveRenderTarget = nullptr;
     m_riveRenderContext = nullptr;
@@ -444,7 +442,6 @@ void RiveWindow::CleanupRenderingResources()
     m_scene = nullptr;
     m_artboard = nullptr;
     m_riveFile = nullptr;
-    */
     m_riveFileData.clear();
     m_riveFilePath.clear();
 }

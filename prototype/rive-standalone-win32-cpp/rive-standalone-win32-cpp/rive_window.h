@@ -2,16 +2,14 @@
 #include "pch.h"
 #include "win32_window.h"
 
-#include "rive_types.hpp"
-#include "span.hpp"
-#include "math/raw_path.hpp"
 #include "rive/renderer/rive_renderer.hpp"
 #include "rive/renderer/d3d11/render_context_d3d_impl.hpp"
 #include "rive/renderer/d3d11/d3d11.hpp"
-#include "artboard.hpp"
-#include "file.hpp"
-#include "animation/state_machine_instance.hpp"
-#include "static_scene.hpp"
+#include "rive/artboard.hpp"
+#include "rive/file.hpp"
+#include "rive/animation/linear_animation_instance.hpp"
+#include "rive/animation/state_machine_instance.hpp"
+#include "rive/static_scene.hpp"
 
 #include <fstream>
 #include <vector>
@@ -38,15 +36,15 @@ private:
     winrt::com_ptr<::IDXGIFactory2> m_dxgiFactory;
     
     // Rive rendering resources (TODO: enable when Rive headers are available)
-    // std::unique_ptr<rive::gpu::RenderContext> m_riveRenderContext;
-    // rive::rcp<rive::gpu::RenderTargetD3D> m_riveRenderTarget;
-    // std::unique_ptr<rive::Renderer> m_riveRenderer;
+    std::unique_ptr<rive::gpu::RenderContext> m_riveRenderContext;
+    rive::rcp<rive::gpu::RenderTargetD3D> m_riveRenderTarget;
+    std::unique_ptr<rive::Renderer> m_riveRenderer;
     
     // Rive content (TODO: enable when Rive headers are available)
-    // std::unique_ptr<rive::File> m_riveFile;
-    // std::unique_ptr<rive::Artboard> m_artboard;
-    // std::unique_ptr<rive::Scene> m_scene;
-    // rive::rcp<rive::ViewModelInstance> m_viewModelInstance;
+    std::unique_ptr<rive::File> m_riveFile;
+    std::unique_ptr<rive::Artboard> m_artboard;
+    std::unique_ptr<rive::Scene> m_scene;
+    rive::rcp<rive::ViewModelInstance> m_viewModelInstance;
     
     // Placeholder for Rive file data
     std::vector<uint8_t> m_riveFileData;
