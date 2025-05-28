@@ -21,7 +21,7 @@ Status: Defered until later
 ## 0.4 Smoke-test for banned APIs by matching linker settings with Flutter UWP engine project
 Outcome: list of potential problems
 
-Status: not started
+Status:Defered until later
 
 # Prototypes
 
