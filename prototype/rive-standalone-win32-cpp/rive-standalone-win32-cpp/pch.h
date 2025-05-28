@@ -1,5 +1,9 @@
 ﻿#pragma once
 
+// Prevent Windows macros from conflicting with C++ standard library
+#define NOMINMAX
+#define WIN32_LEAN_AND_MEAN
+
 // Windows headers
 #include <windows.h>
 #include <windowsx.h>

@@ -2,31 +2,30 @@
 #include "pch.h"
 #include "win32_window.h"
 
-// TODO: Add Rive includes when dependencies are available
- #include "../../../../../rive-app/rive-runtime/include/rive/rive_types.hpp"
- #include "../../../../../rive-app/rive-runtime/include/rive/span.hpp"
- #include "../../../../../rive-app/rive-runtime/include/rive/math/raw_path.hpp"
- #include "../../../../../rive-app/rive-runtime/renderer/include/rive/renderer/rive_renderer.hpp"
- #include "../../../../../rive-app/rive-runtime/renderer/include/rive/renderer/d3d11/render_context_d3d_impl.hpp"
- #include "../../../../../rive-app/rive-runtime/renderer/include/rive/renderer/d3d11/d3d11.hpp"
- #include "../../../../../rive-app/rive-runtime/include/rive/artboard.hpp"
- #include "../../../../../rive-app/rive-runtime/include/rive/file.hpp"
- #include "../../../../../rive-app/rive-runtime/include/rive/animation/state_machine_instance.hpp"
- #include "../../../../../rive-app/rive-runtime/include/rive/static_scene.hpp"
+#include "rive_types.hpp"
+#include "span.hpp"
+#include "math/raw_path.hpp"
+#include "rive/renderer/rive_renderer.hpp"
+#include "rive/renderer/d3d11/render_context_d3d_impl.hpp"
+#include "rive/renderer/d3d11/d3d11.hpp"
+#include "artboard.hpp"
+#include "file.hpp"
+#include "animation/state_machine_instance.hpp"
+#include "static_scene.hpp"
 
 #include <fstream>
 #include <vector>
 
 using namespace winrt;
-using namespace Windows::UI;
-using namespace Windows::UI::Composition;
-using namespace Windows::UI::Composition::Desktop;
+using namespace winrt::Windows::UI;
+using namespace winrt::Windows::UI::Composition;
+using namespace winrt::Windows::UI::Composition::Desktop;
 
 class RiveWindow : public Win32Window {
 private:
     // Composition API
     DesktopWindowTarget m_target{ nullptr };
-    Windows::System::DispatcherQueueController m_controller{ nullptr };
+    winrt::Windows::System::DispatcherQueueController m_controller{ nullptr };
     Compositor m_compositor{ nullptr };
     ContainerVisual m_root{ nullptr };
     SpriteVisual m_dxVisual{ nullptr };
@@ -81,7 +80,7 @@ protected:
     
 private:
     // Composition setup
-    Windows::System::DispatcherQueueController CreateDispatcherQueueCont();
+    winrt::Windows::System::DispatcherQueueController CreateDispatcherQueueCont();
     void PrepareVisuals();
     void CreateCompositionSurface();
     
