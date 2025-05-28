@@ -34,7 +34,7 @@
   </ItemGroup>
   <PropertyGroup Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>ClangCL</PlatformToolset>
     <PlatformToolset Condition="'$(VisualStudioVersion)' == '16.0'">v142</PlatformToolset>
     <PlatformToolset Condition="'$(VisualStudioVersion)' == '15.0'">v141</PlatformToolset>
     <PlatformToolset Condition="'$(VisualStudioVersion)' == '14.0'">v140</PlatformToolset>
@@ -73,14 +73,17 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
+      <AdditionalLibraryDirectories>D:\src\github.com\rive-app\rive-runtime\renderer\out\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>rive.lib;rive_pls_renderer.lib;rive_decoders.lib;rive_harfbuzz.lib;rive_sheenbidi.lib;rive_yoga.lib;libjpeg.lib;libpng.lib;libwebp.lib;miniaudio.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions);WITH_RIVE_TEXT;WITH_RIVE_LAYOUT;DEBUG;_USE_MATH_DEFINES;NOMINMAX;RIVE_WINDOWS;_CRT_SECURE_NO_WARNINGS;YOGA_EXPORT=;_HAS_EXCEPTIONS=0;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;</PreprocessorDefinitions>
       <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../../../rive-app/rive-runtime/include;../../../../../rive-app/rive-runtime/include/rive;../../../../../rive-app/rive-runtime/renderer/include;../../../../../rive-app/rive-runtime/include/rive/math</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Platform)'=='Win32'">
@@ -94,10 +97,13 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
+      <SubSystem>Windows</SubSystem>
+      <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
+      <AdditionalLibraryDirectories>D:\src\github.com\rive-app\rive-runtime\renderer\out\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>rive.lib;rive_pls_renderer.lib;rive_decoders.lib;rive_harfbuzz.lib;rive_sheenbidi.lib;rive_yoga.lib;libjpeg.lib;libpng.lib;libwebp.lib;miniaudio.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
