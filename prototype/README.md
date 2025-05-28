@@ -50,8 +50,10 @@ Status: Not started
 Plan:
 1. Build minimal c++ UWP using CoreWindow / CoreApplicationView etc
 2. Port rive_window code from Prototype 0.1 on top of UWP windowing and input API's
-3. ForEach banned API call sight, add a failfast until compiles and WACK passes
-4. Start app and replace failfast with bandaid to enable launch to complete
+3. Compiles
+4. links
+5. Runs
+6. Complete list of banned API's in Rive renderer and all dependencies.
 
 ---
 # Everything from here is SPECULATIVE due to unknown unknowns.
