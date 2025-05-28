@@ -8,11 +8,11 @@ Outcome: instructions for building DX11 backend and running samples
 Status: DONE
 
 ## 0.2 Test path_fiddle with a couple of RIV files
-Outcome: list of RIV with screenshots and characteristics (eg input, binding etc) [Fix markdown as part of this]
+Outcome: list of RIV with screenshots and characteristics (eg input, binding etc) [Fix markdown as part of this]  
 Status: In progress, partially complete
 
 ## 0.3 Test DX12 backend
-Outcome: everything still works
+Outcome: everything still works  
 Status: Defered until later
 
 ## 0.4 Smoke-test for banned APIs by matching linker settings with Flutter UWP engine project
