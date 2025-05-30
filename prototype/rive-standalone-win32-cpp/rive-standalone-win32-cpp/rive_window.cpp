@@ -46,6 +46,10 @@ void RiveWindow::WindowCreated() {
         // Initialize Rive context
         CreateRiveContext();
         std::cout << "Rive context initialized\n";
+
+        if (!LoadRiveFile("D:\\src\\github.com\\clarkezone\\rive-windows\\prototype\\experiments\\riv-examples\\morphon_icons_(demo).riv")) {
+            std::cout << "Failed to load Rive file: " << "D:\\src\\github.com\\clarkezone\\rive-windows\\prototype\\experiments\\riv-examples\\morphon_icons_(demo).riv" << std::endl;
+        }
         
         StartRenderThread();
         std::cout << "Render thread started\n";
@@ -363,7 +367,8 @@ void RiveWindow::RenderRive()
         m_riveRenderer->restore();
         
         // Flush and present
-        m_riveRenderContext->flush({.renderTarget = m_riveRenderTarget.get()});
+        auto result = m_riveRenderTarget.get();
+        m_riveRenderContext->flush({result});
         m_riveRenderTarget->setTargetTexture(nullptr);
     }
     else {
@@ -407,7 +412,9 @@ bool RiveWindow::LoadRiveFile(const std::string& filePath)
         m_riveFilePath = filePath;
         
         std::cout << "Loaded Rive file: " << filePath << " (" << fileSize << " bytes)" << std::endl;
-        
+       
+
+
         // Create Rive content
         CreateRiveContent();
         

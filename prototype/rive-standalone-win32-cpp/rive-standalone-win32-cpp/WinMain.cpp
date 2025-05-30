@@ -8,6 +8,7 @@ void EnableHighDPISupport() {
 
 int WINAPI wWinMain(HINSTANCE instance, HINSTANCE prev_instance, wchar_t* command_line, int show_command) {
     // Enable console output first for debugging
+    winrt::init_apartment();
     if (AllocConsole()) {
         FILE* stdout_file;
         freopen_s(&stdout_file, "CONOUT$", "w", stdout);
