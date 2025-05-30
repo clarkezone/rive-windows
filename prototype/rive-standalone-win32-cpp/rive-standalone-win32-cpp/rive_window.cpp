@@ -47,8 +47,8 @@ void RiveWindow::WindowCreated() {
         CreateRiveContext();
         std::cout << "Rive context initialized\n";
 
-        if (!LoadRiveFile("D:\\src\\github.com\\clarkezone\\rive-windows\\prototype\\experiments\\riv-examples\\morphon_icons_(demo).riv")) {
-            std::cout << "Failed to load Rive file: " << "D:\\src\\github.com\\clarkezone\\rive-windows\\prototype\\experiments\\riv-examples\\morphon_icons_(demo).riv" << std::endl;
+        if (!LoadRiveFile("C:\\Users\\jeclarke\\Downloads\\meeting_ui.riv")) {
+            std::cout << "Failed to load Rive file"  << std::endl;
         }
         
         StartRenderThread();
@@ -85,7 +85,8 @@ void RiveWindow::OnResize(int width, int height) {
             
             HRESULT hr = m_swapChain->ResizeBuffers(2, width, height, DXGI_FORMAT_B8G8R8A8_UNORM, 0);
             if (SUCCEEDED(hr)) {
-                CreateRenderTarget();
+                //CreateRenderTarget();
+                CreateRiveContext();
             }
         }
     }
@@ -188,7 +189,8 @@ void RiveWindow::CreateDeviceResources()
     CreateSwapChain();
 
     // Create render target
-    CreateRenderTarget();
+    //CreateRenderTarget();
+    CreateRiveContext();
 }
 
 void RiveWindow::CreateSwapChain()
@@ -200,7 +202,7 @@ void RiveWindow::CreateSwapChain()
     swapChainDesc.Stereo = FALSE;
     swapChainDesc.SampleDesc.Count = 1;
     swapChainDesc.SampleDesc.Quality = 0;
-    swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+    swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT | DXGI_USAGE_UNORDERED_ACCESS;
     swapChainDesc.BufferCount = 2;
     swapChainDesc.Scaling = DXGI_SCALING_STRETCH;
     swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
@@ -216,9 +218,14 @@ void RiveWindow::CreateSwapChain()
 
 void RiveWindow::CreateRenderTarget()
 {
-    if (!m_swapChain) return;
+    //if (!m_swapChain) return;
 
-    check_hresult(m_swapChain->GetBuffer(0, IID_PPV_ARGS(m_backBuffer.put())));
+    //check_hresult(m_swapChain->GetBuffer(0, IID_PPV_ARGS(m_backBuffer.put())));
+
+    //auto renderContextImpl =
+    //    m_riveRenderContext->static_impl_cast<rive::gpu::RenderContextD3DImpl>();
+    //m_riveRenderTarget = renderContextImpl->makeRenderTarget(m_windowWidth, m_windowHeight);
+    //m_readbackTexture = nullptr;
     
     // TODO: Create Rive render target when Rive dependencies are available
 }
@@ -226,12 +233,13 @@ void RiveWindow::CreateRenderTarget()
 void RiveWindow::CreateRiveContext()
 {
     auto d3dContextOptions = rive::gpu::D3DContextOptions{};
-    m_riveRenderContext = rive::gpu::RenderContextD3DImpl::MakeContext(
-        m_d3dDevice.get(),
-        m_d3dContext.get(),
-        d3dContextOptions
-    );
-    
+
+    m_riveGpu = m_d3dDevice.get();
+	m_riveGpuContext = m_d3dContext.get();
+    m_riveRenderContext = rive::gpu::RenderContextD3DImpl::MakeContext(m_riveGpu,
+        m_riveGpuContext,
+        d3dContextOptions);
+
     if (m_riveRenderContext) {
         auto renderContextImpl = m_riveRenderContext->static_impl_cast<rive::gpu::RenderContextD3DImpl>();
         m_riveRenderTarget = renderContextImpl->makeRenderTarget(m_windowWidth, m_windowHeight);
@@ -368,7 +376,7 @@ void RiveWindow::RenderRive()
         
         // Flush and present
         auto result = m_riveRenderTarget.get();
-        m_riveRenderContext->flush({result});
+        m_riveRenderContext->flush({.renderTarget = result});
         m_riveRenderTarget->setTargetTexture(nullptr);
     }
     else {

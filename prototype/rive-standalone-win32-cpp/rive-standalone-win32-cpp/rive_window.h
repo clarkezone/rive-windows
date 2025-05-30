@@ -29,13 +29,15 @@ private:
     SpriteVisual m_dxVisual{ nullptr };
     
     // DirectX 11 resources
-    winrt::com_ptr<::ID3D11Device1> m_d3dDevice;
+    winrt::com_ptr<::ID3D11Device> m_d3dDevice;
     winrt::com_ptr<::ID3D11DeviceContext1> m_d3dContext;
     winrt::com_ptr<::IDXGISwapChain1> m_swapChain;
     winrt::com_ptr<::ID3D11Texture2D> m_backBuffer;
     winrt::com_ptr<::IDXGIFactory2> m_dxgiFactory;
     
     // Rive rendering resources (TODO: enable when Rive headers are available)
+    ComPtr<::ID3D11Device> m_riveGpu;
+    ComPtr<::ID3D11DeviceContext> m_riveGpuContext;
     std::unique_ptr<rive::gpu::RenderContext> m_riveRenderContext;
     rive::rcp<rive::gpu::RenderTargetD3D> m_riveRenderTarget;
     std::unique_ptr<rive::Renderer> m_riveRenderer;
