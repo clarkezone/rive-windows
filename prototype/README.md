@@ -32,17 +32,20 @@ Outcome:
 ~7. Links~
 ~8. Runs and draws content~
 ~9. Window Resizing~
+- [ ] Verify on another machine (ensure riv path is correct)
+- [ ] Screenshot or video
+- [ ] ? Test in release mode?
 
 ## 0.2 WinRive component refactor
 Outcome:
 - WinRive core lib project
 - Win32 Test project rewired to lib
-- WinRive WinRT componet DLL
-- Add test buttons to play, stop, load
+- Add win32 test buttons to play, pause, stop, load different scenes
 
 ## 0.3 UWP host project
 Outcome: 
-- a Windows UWP version launches and renders content using CoreWindow and WinRive component
+- WinRive WinRT componet DLL wrapping WinRive lib
+- Windows UWP test app launches and renders content using CoreWindow and WinRive component
 - Loading / device initialization / Rendering with animation / windows resizing / no input
 
 Status: Not started
