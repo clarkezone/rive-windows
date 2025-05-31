@@ -33,15 +33,15 @@ Outcome:
 - [x] Status: COMPLETED
 
 ~Plan:~ 
-1. Create a project with empty window using modern techniques, no glfw
-2. Rebuild path_fiddle stripping all non-windows code and leveraging native windowing
-3. Figure out how to pick up the libs from the Rive build system
-4. Ensure swapchain binding
-5. Use visual hosting, not HWND binding
-6. Compiles
-7. Links
-8. Runs and draws content
-9. Window Resizing~~
+~1. Create a project with empty window using modern techniques, no glfw~
+~2. Rebuild path_fiddle stripping all non-windows code and leveraging native windowing~
+~3. Figure out how to pick up the libs from the Rive build system~
+~4. Ensure swapchain binding~
+~5. Use visual hosting, not HWND binding~
+~6. Compiles~
+~7. Links~
+~8. Runs and draws content~
+~9. Window Resizing~
 
 ## 0.2 WinRive component refactor
 Outcome:
