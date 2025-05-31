@@ -13,16 +13,6 @@ Outcome: list of RIV with screenshots and characteristics (eg input, binding etc
 
 Status: In progress, partially complete
 
-## 0.3 Test DX12 backend
-Outcome: everything still works
-
-Status: Defered until later
-
-## 0.4 Smoke-test for banned APIs by matching linker settings with Flutter UWP engine project
-Outcome: list of potential problems
-
-Status:Defered until later
-
 # Prototypes
 
 ## 0.1 Standalone Windows win32 Project
