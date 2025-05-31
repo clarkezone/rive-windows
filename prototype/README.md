@@ -45,10 +45,10 @@ Outcome:
 
 ## 0.2 WinRive component refactor
 Outcome:
-- create a WinRive core lib project
+- WinRive core lib project
+- Win32 Test project rewired to lib
 - WinRive WinRT componet DLL
-- Win32 Test project rewired to component
-- add test buttons to play, stop, load
+- Add test buttons to play, stop, load
 
 ## 0.3 UWP host project
 Outcome: 
