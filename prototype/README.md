@@ -15,7 +15,7 @@ Status: In progress, partially complete
 
 # Prototypes
 
-## 0.1 Standalone Windows win32 Project
+## 0.1 Standalone Windows win32 Project <====== We are here
 Outcome:
 - standalone project added to this repo that can render Rive content in a Win32 window
 - Loading / device initialization / Rendering with animation / windows resizing / no input
