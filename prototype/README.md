@@ -32,9 +32,9 @@ Outcome:
 ~7. Links~
 ~8. Runs and draws content~
 ~9. Window Resizing~
-- [ ] Verify on another machine (ensure riv path is correct)
 - [ ] Screenshot or video
-- [ ] ? Test in release mode?
+- [ ] Verify on another machine (ensure riv path is correct)
+- [ ] Test in release mode
 
 ## 0.2 WinRive component refactor
 Outcome:
@@ -57,7 +57,8 @@ Status: Not started
 - Key input
 - DPI handling
 - Scripting
-- TODO: rest of rive featureset
+- TODO: enumerate rest of rive featureset
+- TODO: is there a rive test file with all the things as a goal to get working?
 
 ## DirectX12
 
