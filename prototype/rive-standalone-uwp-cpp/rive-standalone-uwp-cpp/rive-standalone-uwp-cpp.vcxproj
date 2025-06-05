@@ -107,11 +107,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
-    <ClInclude Include="..\..\shared\rive_renderer.h" />
+    <ClInclude Include="..\..\shared\dx_renderer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp" />
-    <ClCompile Include="..\..\shared\rive_renderer.cpp">
+    <ClCompile Include="..\..\shared\dx_renderer.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="pch.cpp">

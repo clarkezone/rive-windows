@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "../../shared/rive_renderer.h"
+#include "../../shared/dx_renderer.h"
 
 using namespace winrt;
 using namespace winrt::Windows::ApplicationModel::Core;
@@ -14,7 +14,7 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView>
     CompositionTarget m_target{ nullptr };
     ContainerVisual m_root{ nullptr };
     SpriteVisual m_coloredRectangle{ nullptr };
-    std::unique_ptr<RiveRenderer> m_riveRenderer;
+    std::unique_ptr<DXRenderer> m_dxRenderer;
 
     IFrameworkView CreateView()
     {
@@ -32,10 +32,10 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView>
     void Uninitialize()
     {
         // Clean up renderer
-        if (m_riveRenderer) {
-            m_riveRenderer->StopRenderThread();
-            m_riveRenderer->Shutdown();
-            m_riveRenderer.reset();
+        if (m_dxRenderer) {
+            m_dxRenderer->StopRenderThread();
+            m_dxRenderer->Shutdown();
+            m_dxRenderer.reset();
         }
     }
 
@@ -75,8 +75,8 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView>
         // Create a simple colored rectangle visual
         CreateColoredRectangle();
 
-        // Initialize RiveRenderer
-        InitializeRiveRenderer();
+        // Initialize DXRenderer
+        InitializeDXRenderer();
     }
 
     void CreateColoredRectangle()
@@ -98,11 +98,11 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView>
         std::cout << "Created simple colored rectangle visual\n";
     }
 
-    void InitializeRiveRenderer()
+    void InitializeDXRenderer()
     {
         try {
-            // Create RiveRenderer instance
-            m_riveRenderer = std::make_unique<RiveRenderer>();
+            // Create DXRenderer instance
+            m_dxRenderer = std::make_unique<DXRenderer>();
             
             // Get initial window size (use default if not available yet)
             CoreWindow window = CoreWindow::GetForCurrentThread();
@@ -115,36 +115,36 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView>
             if (height <= 0) height = 600;
             
             // Initialize the renderer
-            if (m_riveRenderer->Initialize(m_compositor, width, height)) {
+            if (m_dxRenderer->Initialize(m_compositor, width, height)) {
                 // Get the visual from the renderer and add it to our root
-                auto riveVisual = m_riveRenderer->GetVisual();
-                if (riveVisual) {
-                    // Position the Rive visual next to the colored rectangle
-                    riveVisual.Offset({ 300.0f, 50.0f, 0.0f });
+                auto dxVisual = m_dxRenderer->GetVisual();
+                if (dxVisual) {
+                    // Position the DX visual next to the colored rectangle
+                    dxVisual.Offset({ 300.0f, 50.0f, 0.0f });
                     
-                    m_root.Children().InsertAtTop(riveVisual);
+                    m_root.Children().InsertAtTop(dxVisual);
                     
-                    // Start the render thread
-                    m_riveRenderer->StartRenderThread();
+                    // Start the renderer's animation/tick
+                    m_dxRenderer->StartRenderThread();
                     
-                    std::cout << "RiveRenderer initialized and added to composition tree\n";
+                    std::cout << "DXRenderer initialized and started animation\n";
                 }
             } else {
-                std::cout << "Failed to initialize RiveRenderer\n";
+                std::cout << "Failed to initialize DXRenderer\n";
             }
         }
         catch (winrt::hresult_error const& ex) {
-            std::wcout << L"Failed to create RiveRenderer: " << ex.message().c_str() << L"\n";
+            std::wcout << L"Failed to create DXRenderer: " << ex.message().c_str() << L"\n";
         }
     }
 
     void OnSizeChanged(CoreWindow const& sender, WindowSizeChangedEventArgs const& args)
     {
-        if (m_riveRenderer) {
+        if (m_dxRenderer) {
             // Update the renderer size
             int width = static_cast<int>(args.Size().Width);
             int height = static_cast<int>(args.Size().Height);
-            m_riveRenderer->SetSize(width, height);
+            m_dxRenderer->SetSize(width, height);
         }
     }
 };
