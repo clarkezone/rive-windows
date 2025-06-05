@@ -11,10 +11,10 @@ using namespace Windows::UI::Composition;
 
 struct App : implements<App, IFrameworkViewSource, IFrameworkView>
 {
+    Compositor m_compositor{ nullptr };
     CompositionTarget m_target{ nullptr };
-    VisualCollection m_visuals{ nullptr };
-    Visual m_selected{ nullptr };
-    float2 m_offset{};
+    ContainerVisual m_root{ nullptr };
+    SpriteVisual m_rectangleVisual{ nullptr };
 
     IFrameworkView CreateView()
     {
@@ -44,104 +44,67 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView>
 
     void SetWindow(CoreWindow const & window)
     {
-        Compositor compositor;
-        ContainerVisual root = compositor.CreateContainerVisual();
-        m_target = compositor.CreateTargetForCurrentView();
-        m_target.Root(root);
-        m_visuals = root.Children();
+        // Initialize Composition
+        PrepareVisuals();
 
-        window.PointerPressed({ this, &App::OnPointerPressed });
-        window.PointerMoved({ this, &App::OnPointerMoved });
-
-        window.PointerReleased([&](auto && ...)
-        {
-            m_selected = nullptr;
-        });
+        // Handle window size changes
+        window.SizeChanged({ this, &App::OnSizeChanged });
     }
 
-    void OnPointerPressed(IInspectable const &, PointerEventArgs const & args)
+    void PrepareVisuals()
     {
-        float2 const point = args.CurrentPoint().Position();
+        // Create compositor
+        m_compositor = Compositor();
 
-        for (Visual visual : m_visuals)
-        {
-            float3 const offset = visual.Offset();
-            float2 const size = visual.Size();
+        // Create target for current view - this is the UWP equivalent of CreateDesktopWindowTarget
+        m_target = m_compositor.CreateTargetForCurrentView();
 
-            if (point.x >= offset.x &&
-                point.x < offset.x + size.x &&
-                point.y >= offset.y &&
-                point.y < offset.y + size.y)
-            {
-                m_selected = visual;
-                m_offset.x = offset.x - point.x;
-                m_offset.y = offset.y - point.y;
-            }
-        }
+        // Create root container visual
+        m_root = m_compositor.CreateContainerVisual();
+        m_root.RelativeSizeAdjustment({ 1.0f, 1.0f });
 
-        if (m_selected)
-        {
-            m_visuals.Remove(m_selected);
-            m_visuals.InsertAtTop(m_selected);
-        }
-        else
-        {
-            AddVisual(point);
-        }
+        // Set root as the target
+        m_target.Root(m_root);
+
+        // Create a simple colored rectangle
+        CreateRectangleVisual();
     }
 
-    void OnPointerMoved(IInspectable const &, PointerEventArgs const & args)
+    void CreateRectangleVisual()
     {
-        if (m_selected)
-        {
-            float2 const point = args.CurrentPoint().Position();
+        // Create a sprite visual for the rectangle
+        m_rectangleVisual = m_compositor.CreateSpriteVisual();
 
-            m_selected.Offset(
-            {
-                point.x + m_offset.x,
-                point.y + m_offset.y,
-                0.0f
-            });
-        }
+        // Set size to 200x200 pixels
+        m_rectangleVisual.Size({ 200.0f, 200.0f });
+
+        // Position it in the center (will be updated when window size is known)
+        m_rectangleVisual.Offset({ 100.0f, 100.0f, 0.0f });
+
+        // Create a solid color brush - using a nice blue color
+        auto colorBrush = m_compositor.CreateColorBrush({ 0xFF, 0x41, 0x69, 0xE1 }); // Royal Blue
+        m_rectangleVisual.Brush(colorBrush);
+
+        // Add to the root visual
+        m_root.Children().InsertAtTop(m_rectangleVisual);
     }
 
-    void AddVisual(float2 const point)
+    void OnSizeChanged(CoreWindow const& sender, WindowSizeChangedEventArgs const& args)
     {
-        Compositor compositor = m_visuals.Compositor();
-        SpriteVisual visual = compositor.CreateSpriteVisual();
-
-        static Color colors[] =
+        if (m_rectangleVisual)
         {
-            { 0xDC, 0x5B, 0x9B, 0xD5 },
-            { 0xDC, 0xED, 0x7D, 0x31 },
-            { 0xDC, 0x70, 0xAD, 0x47 },
-            { 0xDC, 0xFF, 0xC0, 0x00 }
-        };
-
-        static unsigned last = 0;
-        unsigned const next = ++last % _countof(colors);
-        visual.Brush(compositor.CreateColorBrush(colors[next]));
-
-        float const BlockSize = 100.0f;
-
-        visual.Size(
-        {
-            BlockSize,
-            BlockSize
-        });
-
-        visual.Offset(
-        {
-            point.x - BlockSize / 2.0f,
-            point.y - BlockSize / 2.0f,
-            0.0f,
-        });
-
-        m_visuals.InsertAtTop(visual);
-
-        m_selected = visual;
-        m_offset.x = -BlockSize / 2.0f;
-        m_offset.y = -BlockSize / 2.0f;
+            // Center the rectangle in the window
+            float windowWidth = args.Size().Width;
+            float windowHeight = args.Size().Height;
+            
+            float rectWidth = 200.0f;
+            float rectHeight = 200.0f;
+            
+            float centerX = (windowWidth - rectWidth) / 2.0f;
+            float centerY = (windowHeight - rectHeight) / 2.0f;
+            
+            m_rectangleVisual.Offset({ centerX, centerY, 0.0f });
+        }
     }
 };
 
