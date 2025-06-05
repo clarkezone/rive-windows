@@ -1,21 +1,20 @@
 #include "pch.h"
-#include "../../shared/dx_renderer.h"
+#include "../../shared/rive_renderer.h"
 
 using namespace winrt;
-
-using namespace Windows;
-using namespace Windows::ApplicationModel::Core;
-using namespace Windows::Foundation::Numerics;
-using namespace Windows::UI;
-using namespace Windows::UI::Core;
-using namespace Windows::UI::Composition;
+using namespace winrt::Windows::ApplicationModel::Core;
+using namespace winrt::Windows::Foundation::Numerics;
+using namespace winrt::Windows::UI;
+using namespace winrt::Windows::UI::Core;
+using namespace winrt::Windows::UI::Composition;
 
 struct App : implements<App, IFrameworkViewSource, IFrameworkView>
 {
     Compositor m_compositor{ nullptr };
     CompositionTarget m_target{ nullptr };
     ContainerVisual m_root{ nullptr };
-    std::unique_ptr<DXRenderer> m_dxRenderer;
+    SpriteVisual m_coloredRectangle{ nullptr };
+    std::unique_ptr<RiveRenderer> m_riveRenderer;
 
     IFrameworkView CreateView()
     {
@@ -32,6 +31,12 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView>
 
     void Uninitialize()
     {
+        // Clean up renderer
+        if (m_riveRenderer) {
+            m_riveRenderer->StopRenderThread();
+            m_riveRenderer->Shutdown();
+            m_riveRenderer.reset();
+        }
     }
 
     void Run()
@@ -67,15 +72,37 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView>
         // Set root as the target
         m_target.Root(m_root);
 
-        // Initialize DXRenderer
-        InitializeDXRenderer();
+        // Create a simple colored rectangle visual
+        CreateColoredRectangle();
+
+        // Initialize RiveRenderer
+        InitializeRiveRenderer();
     }
 
-    void InitializeDXRenderer()
+    void CreateColoredRectangle()
+    {
+        // Create a sprite visual for a simple colored rectangle
+        m_coloredRectangle = m_compositor.CreateSpriteVisual();
+        
+        // Set size and position
+        m_coloredRectangle.Size({ 200.0f, 150.0f });
+        m_coloredRectangle.Offset({ 50.0f, 50.0f, 0.0f });
+        
+        // Create a colored brush (bright blue)
+        auto colorBrush = m_compositor.CreateColorBrush(Colors::DeepSkyBlue());
+        m_coloredRectangle.Brush(colorBrush);
+        
+        // Add to the visual tree
+        m_root.Children().InsertAtTop(m_coloredRectangle);
+        
+        std::cout << "Created simple colored rectangle visual\n";
+    }
+
+    void InitializeRiveRenderer()
     {
         try {
-            // Create DXRenderer instance
-            m_dxRenderer = std::make_unique<DXRenderer>();
+            // Create RiveRenderer instance
+            m_riveRenderer = std::make_unique<RiveRenderer>();
             
             // Get initial window size (use default if not available yet)
             CoreWindow window = CoreWindow::GetForCurrentThread();
@@ -88,33 +115,36 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView>
             if (height <= 0) height = 600;
             
             // Initialize the renderer
-            if (m_dxRenderer->Initialize(m_compositor, width, height)) {
+            if (m_riveRenderer->Initialize(m_compositor, width, height)) {
                 // Get the visual from the renderer and add it to our root
-                auto dxVisual = m_dxRenderer->GetVisual();
-                if (dxVisual) {
-                    m_root.Children().InsertAtTop(dxVisual);
+                auto riveVisual = m_riveRenderer->GetVisual();
+                if (riveVisual) {
+                    // Position the Rive visual next to the colored rectangle
+                    riveVisual.Offset({ 300.0f, 50.0f, 0.0f });
+                    
+                    m_root.Children().InsertAtTop(riveVisual);
                     
                     // Start the render thread
-                    m_dxRenderer->StartRenderThread();
+                    m_riveRenderer->StartRenderThread();
                     
-                    std::cout << "DXRenderer initialized and added to composition tree\n";
+                    std::cout << "RiveRenderer initialized and added to composition tree\n";
                 }
             } else {
-                std::cout << "Failed to initialize DXRenderer\n";
+                std::cout << "Failed to initialize RiveRenderer\n";
             }
         }
         catch (winrt::hresult_error const& ex) {
-            std::wcout << L"Failed to create DXRenderer: " << ex.message().c_str() << L"\n";
+            std::wcout << L"Failed to create RiveRenderer: " << ex.message().c_str() << L"\n";
         }
     }
 
     void OnSizeChanged(CoreWindow const& sender, WindowSizeChangedEventArgs const& args)
     {
-        if (m_dxRenderer) {
+        if (m_riveRenderer) {
             // Update the renderer size
             int width = static_cast<int>(args.Size().Width);
             int height = static_cast<int>(args.Size().Height);
-            m_dxRenderer->SetSize(width, height);
+            m_riveRenderer->SetSize(width, height);
         }
     }
 };

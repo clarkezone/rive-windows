@@ -118,11 +118,19 @@
     <ClInclude Include="app_window.h" />
     <ClInclude Include="dx_window.h" />
     <ClInclude Include="rive_window.h" />
+    <ClInclude Include="..\..\shared\dx_renderer.h" />
+    <ClInclude Include="..\..\shared\rive_renderer.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="resource.h" />
     <ClCompile Include="app_window.cpp" />
     <ClCompile Include="dx_window.cpp" />
     <ClCompile Include="rive_window.cpp" />
+    <ClCompile Include="..\..\shared\dx_renderer.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\rive_renderer.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="win32_window.cpp" />
     <ClCompile Include="WinMain.cpp" />
     <ClCompile Include="pch.cpp">
