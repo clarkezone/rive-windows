@@ -2,12 +2,20 @@
 #include "win32_window.h"
 #include "../../shared/rive_renderer.h"
 
-// Forward declaration from dx_window.cpp
-winrt::Windows::UI::Composition::Desktop::DesktopWindowTarget CreateDesktopWindowTarget(
-    winrt::Windows::UI::Composition::Compositor const& compositor, HWND window);
-
 // Forward declaration for dispatcher queue controller
 winrt::Windows::System::DispatcherQueueController CreateDispatcherQueueController();
+
+// CreateDesktopWindowTarget implementation
+winrt::Windows::UI::Composition::Desktop::DesktopWindowTarget CreateDesktopWindowTarget(
+    winrt::Windows::UI::Composition::Compositor const& compositor, HWND window)
+{
+    namespace abi = ABI::Windows::UI::Composition::Desktop;
+
+    auto interop = compositor.as<abi::ICompositorDesktopInterop>();
+    winrt::Windows::UI::Composition::Desktop::DesktopWindowTarget target{ nullptr };
+    winrt::check_hresult(interop->CreateDesktopWindowTarget(window, false, reinterpret_cast<abi::IDesktopWindowTarget**>(winrt::put_abi(target))));
+    return target;
+}
 
 // Global variables for composition and renderer
 std::unique_ptr<RiveRenderer> g_riveRenderer;
