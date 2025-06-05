@@ -31,7 +31,7 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE prev_instance, wchar_t* comman
 
     std::cout << "Creating window...\n";
 
-    if (!window->Create(L"Rive Window - DirectX 11", origin, size)) {
+    if (!window->Create(L"Rive Window - DirectX 11 - Windows.UI.Composition", origin, size)) {
         std::cout << "Failed to create window\n";
         system("pause");
         return -1;
