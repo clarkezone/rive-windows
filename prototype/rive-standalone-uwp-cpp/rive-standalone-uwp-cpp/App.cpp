@@ -1,4 +1,5 @@
 #include "pch.h"
+#include "../../shared/dx_renderer.h"
 
 using namespace winrt;
 
@@ -14,7 +15,7 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView>
     Compositor m_compositor{ nullptr };
     CompositionTarget m_target{ nullptr };
     ContainerVisual m_root{ nullptr };
-    SpriteVisual m_rectangleVisual{ nullptr };
+    std::unique_ptr<DXRenderer> m_dxRenderer;
 
     IFrameworkView CreateView()
     {
@@ -66,44 +67,54 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView>
         // Set root as the target
         m_target.Root(m_root);
 
-        // Create a simple colored rectangle
-        CreateRectangleVisual();
+        // Initialize DXRenderer
+        InitializeDXRenderer();
     }
 
-    void CreateRectangleVisual()
+    void InitializeDXRenderer()
     {
-        // Create a sprite visual for the rectangle
-        m_rectangleVisual = m_compositor.CreateSpriteVisual();
-
-        // Set size to 200x200 pixels
-        m_rectangleVisual.Size({ 200.0f, 200.0f });
-
-        // Position it in the center (will be updated when window size is known)
-        m_rectangleVisual.Offset({ 100.0f, 100.0f, 0.0f });
-
-        // Create a solid color brush - using a nice blue color
-        auto colorBrush = m_compositor.CreateColorBrush({ 0xFF, 0x41, 0x69, 0xE1 }); // Royal Blue
-        m_rectangleVisual.Brush(colorBrush);
-
-        // Add to the root visual
-        m_root.Children().InsertAtTop(m_rectangleVisual);
+        try {
+            // Create DXRenderer instance
+            m_dxRenderer = std::make_unique<DXRenderer>();
+            
+            // Get initial window size (use default if not available yet)
+            CoreWindow window = CoreWindow::GetForCurrentThread();
+            auto bounds = window.Bounds();
+            int width = static_cast<int>(bounds.Width);
+            int height = static_cast<int>(bounds.Height);
+            
+            // Use reasonable defaults if window size is not available
+            if (width <= 0) width = 800;
+            if (height <= 0) height = 600;
+            
+            // Initialize the renderer
+            if (m_dxRenderer->Initialize(m_compositor, width, height)) {
+                // Get the visual from the renderer and add it to our root
+                auto dxVisual = m_dxRenderer->GetVisual();
+                if (dxVisual) {
+                    m_root.Children().InsertAtTop(dxVisual);
+                    
+                    // Start the render thread
+                    m_dxRenderer->StartRenderThread();
+                    
+                    std::cout << "DXRenderer initialized and added to composition tree\n";
+                }
+            } else {
+                std::cout << "Failed to initialize DXRenderer\n";
+            }
+        }
+        catch (winrt::hresult_error const& ex) {
+            std::wcout << L"Failed to create DXRenderer: " << ex.message().c_str() << L"\n";
+        }
     }
 
     void OnSizeChanged(CoreWindow const& sender, WindowSizeChangedEventArgs const& args)
     {
-        if (m_rectangleVisual)
-        {
-            // Center the rectangle in the window
-            float windowWidth = args.Size().Width;
-            float windowHeight = args.Size().Height;
-            
-            float rectWidth = 200.0f;
-            float rectHeight = 200.0f;
-            
-            float centerX = (windowWidth - rectWidth) / 2.0f;
-            float centerY = (windowHeight - rectHeight) / 2.0f;
-            
-            m_rectangleVisual.Offset({ centerX, centerY, 0.0f });
+        if (m_dxRenderer) {
+            // Update the renderer size
+            int width = static_cast<int>(args.Size().Width);
+            int height = static_cast<int>(args.Size().Height);
+            m_dxRenderer->SetSize(width, height);
         }
     }
 };
