@@ -1,4 +1,5 @@
-﻿using Windows.UI.Xaml.Controls;
+﻿using System.Diagnostics;
+using Windows.UI.Xaml.Controls;
 
 namespace CSXamlHost
 {
@@ -10,6 +11,9 @@ namespace CSXamlHost
         public MainPage()
         {
             InitializeComponent();
+            WinRive.Class foo = new WinRive.Class();
+            foo.MyProperty = 10;
+            Debug.WriteLine(foo.MyProperty);
         }
     }
 }

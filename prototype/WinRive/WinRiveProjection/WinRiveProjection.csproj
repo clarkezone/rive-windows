@@ -6,7 +6,6 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 	<PropertyGroup>
-		<WindowsSdkPackageVersion>10.0.$([System.Version]::Parse('$(TargetPlatformVersion)').Build).54</WindowsSdkPackageVersion>
 		<CSWinRTIncludes>
 			WinRive;
 		</CSWinRTIncludes>
@@ -15,11 +14,12 @@
 		<CsWinRTIIDOptimizerOptOut>true</CsWinRTIIDOptimizerOptOut>
 	</PropertyGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\lib\winrt.lib.uap.vcxproj" PrivateAssets="compile" />
-		<CSWinRTInputs Include="$(MergedWinmdDirectory)\WinRive.winmd" />
+		<ProjectReference Include="..\WinRive\WinRive.vcxproj" />
+		<CSWinRTInputs Include="..\WinRive\x64\Debug\Merged\WinRive.winmd" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Windows.CSWinRT" Version="2.1.6" />
 	</ItemGroup>
+
 </Project>

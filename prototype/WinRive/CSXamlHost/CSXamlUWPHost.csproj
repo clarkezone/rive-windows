@@ -14,6 +14,8 @@
     <EnableMsixTooling>true</EnableMsixTooling>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\WinRive\WinRive.vcxproj" />
+    <Reference Include="WinRiveProjection">
+      <HintPath>..\WinRiveProjection\bin\Debug\net9.0\WinRiveProjection.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>
