@@ -6,6 +6,7 @@ namespace winrt::WinRive::implementation
 {
     struct Class : ClassT<Class>
     {
+        int32_t value;
         Class() = default;
 
         int32_t MyProperty();
