@@ -100,6 +100,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <ModuleDefinitionFile>WinRive.def</ModuleDefinitionFile>
+      <AdditionalDependencies>d3d11.lib;dxgi.lib;d2d1.lib;dwrite.lib;windowsapp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
@@ -121,6 +122,11 @@
     <ClInclude Include="Class.h">
       <DependentUpon>Class.idl</DependentUpon>
     </ClInclude>
+    <ClInclude Include="RiveControl.h">
+      <DependentUpon>RiveControl.idl</DependentUpon>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\rive_renderer.h" />
+    <ClInclude Include="..\..\shared\dx_renderer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -129,10 +135,20 @@
     <ClCompile Include="Class.cpp">
       <DependentUpon>Class.idl</DependentUpon>
     </ClCompile>
+    <ClCompile Include="RiveControl.cpp">
+      <DependentUpon>RiveControl.idl</DependentUpon>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\rive_renderer.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\dx_renderer.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="Class.idl" />
+    <Midl Include="RiveControl.idl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

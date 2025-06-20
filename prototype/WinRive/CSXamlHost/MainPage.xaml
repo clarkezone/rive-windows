@@ -9,6 +9,23 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
-
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        
+        <TextBlock Grid.Row="0" 
+                   Text="Rive Animation Demo" 
+                   Style="{StaticResource HeaderTextBlockStyle}" 
+                   Margin="20,10,0,10"/>
+        
+        <!-- Container for the Rive animation -->
+        <Border x:Name="RiveContainer" 
+                Grid.Row="1" 
+                Background="#333333" 
+                Margin="20" 
+                BorderBrush="DarkGray" 
+                BorderThickness="1" 
+                CornerRadius="8"/>
     </Grid>
 </Page>
