@@ -1,15 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net9.0-windows10.0.26100.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Platforms>x64;x86;ARM64</Platforms>
     <Platform>x64</Platform>
+	<PublishAot>true</PublishAot>
+	  <DisableRuntimeMarshalling>true</DisableRuntimeMarshalling>
   </PropertyGroup>
 	<PropertyGroup>
 		<CSWinRTIncludes>
-			WinRive;Windows.UI.Composition;
+			WinRive;
 		</CSWinRTIncludes>
 		<CSWinRTWindowsMetadata>local</CSWinRTWindowsMetadata>
 		<CsWinRTGenerateProjection>true</CsWinRTGenerateProjection>
@@ -21,7 +23,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Windows.CSWinRT" Version="2.1.6" />
+		<PackageReference Include="Microsoft.Windows.CSWinRT" Version="2.2.0" />
 	</ItemGroup>
 
 </Project>

@@ -5,10 +5,10 @@ namespace WinRive
     {
         RiveControl();
         
-        // Initialize the Rive renderer with a composition visual
+	// Initialize the Rive renderer with compositor and dimensions
         Boolean Initialize(Windows.UI.Composition.Compositor compositor, Int32 width, Int32 height);
         
-        // Get the visual that can be added to the composition tree
+        // Return the root visual of the Rive content tree
         Windows.UI.Composition.Visual GetVisual();
         
         // Load a Rive file from a path

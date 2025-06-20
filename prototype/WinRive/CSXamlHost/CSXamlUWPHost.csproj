@@ -18,12 +18,8 @@
     <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.2.0" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\WinRiveProjection\WinRiveProjection.csproj" />
     <ProjectReference Include="..\WinRive\WinRive.vcxproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="WinRiveProjection">
-      <HintPath>..\WinRiveProjection\bin\Debug\net9.0\x64\WinRiveProjection.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\RiveAssets\interactive_bento_grid.riv">

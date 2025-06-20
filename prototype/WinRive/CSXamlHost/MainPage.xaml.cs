@@ -2,7 +2,6 @@
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Hosting;
-using Windows.UI.Composition;
 
 namespace CSXamlHost
 {
@@ -12,7 +11,7 @@ namespace CSXamlHost
     public sealed partial class MainPage : Page
     {
         private WinRive.RiveControl _riveControl;
-        private const string RiveFileName = "interactive_bento_grid.riv";
+        private const string RiveFileName = "meeting_ui.riv";
 
         public MainPage()
         {
