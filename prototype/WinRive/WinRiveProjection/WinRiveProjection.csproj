@@ -5,7 +5,6 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Platforms>x64;x86;ARM64</Platforms>
-    <Platform>x64</Platform>
 	<PublishAot>true</PublishAot>
 	  <DisableRuntimeMarshalling>true</DisableRuntimeMarshalling>
   </PropertyGroup>
@@ -19,7 +18,7 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\WinRive\WinRive.vcxproj" />
-		<CSWinRTInputs Include="..\WinRive\x64\Debug\Merged\WinRive.winmd" />
+		<CSWinRTInputs Include="..\WinRive\$(Platform)\$(Configuration)\Merged\WinRive.winmd" />
 	</ItemGroup>
 
 	<ItemGroup>
