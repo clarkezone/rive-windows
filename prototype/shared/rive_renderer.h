@@ -32,7 +32,7 @@
 #include <iostream>
 
 // Rive headers (only include if available)
-#ifdef WITH_RIVE_TEXT
+#if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
 #include "rive/renderer/rive_renderer.hpp"
 #include "rive/renderer/d3d11/render_context_d3d_impl.hpp"
 #include "rive/renderer/d3d11/d3d11.hpp"
@@ -56,7 +56,7 @@ private:
     winrt::com_ptr<::ID3D11Texture2D> m_backBuffer;
     winrt::com_ptr<::IDXGIFactory2> m_dxgiFactory;
     
-#ifdef WITH_RIVE_TEXT
+#if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
     // Rive rendering resources
     Microsoft::WRL::ComPtr<::ID3D11Device> m_riveGpu;
     Microsoft::WRL::ComPtr<::ID3D11DeviceContext> m_riveGpuContext;

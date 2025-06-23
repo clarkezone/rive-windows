@@ -204,7 +204,7 @@ void RiveRenderer::CreateRenderTarget()
 
 void RiveRenderer::CreateRiveContext()
 {
-#ifdef WITH_RIVE_TEXT
+#if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
     auto d3dContextOptions = rive::gpu::D3DContextOptions{};
 
     m_riveGpu = m_d3dDevice.get();
@@ -223,7 +223,7 @@ void RiveRenderer::CreateRiveContext()
 
 void RiveRenderer::CreateRiveContent()
 {
-#ifdef WITH_RIVE_TEXT
+#if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
     if (!m_riveFileData.empty() && m_riveRenderContext) {
         m_riveFile = rive::File::import(m_riveFileData, m_riveRenderContext.get());
         if (m_riveFile) {
@@ -235,7 +235,7 @@ void RiveRenderer::CreateRiveContent()
 
 void RiveRenderer::ClearScene()
 {
-#ifdef WITH_RIVE_TEXT
+#if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
     m_artboard = nullptr;
     m_scene = nullptr; 
     m_viewModelInstance = nullptr;
@@ -244,7 +244,7 @@ void RiveRenderer::ClearScene()
 
 void RiveRenderer::MakeScene()
 {
-#ifdef WITH_RIVE_TEXT
+#if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
     ClearScene();
     
     // Following path_fiddle make_scenes pattern exactly
@@ -321,7 +321,7 @@ void RiveRenderer::RenderRive()
 {
     if (!m_d3dContext || !m_swapChain) return;
 
-#ifdef WITH_RIVE_TEXT
+#if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
     if (m_riveRenderer && m_riveRenderTarget && m_scene) {
         // Get fresh backbuffer from swap chain (following path_fiddle pattern)
         Microsoft::WRL::ComPtr<ID3D11Texture2D> backbuffer;
@@ -423,7 +423,7 @@ void RiveRenderer::CleanupDeviceResources()
 
 void RiveRenderer::CleanupRenderingResources()
 {
-#ifdef WITH_RIVE_TEXT
+#if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
     m_riveRenderer = nullptr;
     m_riveRenderTarget = nullptr;
     m_riveRenderContext = nullptr;

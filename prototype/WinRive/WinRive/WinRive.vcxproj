@@ -100,21 +100,34 @@
       <SubSystem>Console</SubSystem>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <ModuleDefinitionFile>WinRive.def</ModuleDefinitionFile>
-      <AdditionalDependencies>d3d11.lib;dxgi.lib;d2d1.lib;dwrite.lib;windowsapp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;dxgi.lib;d2d1.lib;dwrite.lib;windowsapp.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\rive.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\rive_pls_renderer.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\rive_decoders.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\rive_harfbuzz.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\rive_sheenbidi.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\rive_yoga.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\zlib.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\libpng.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\libjpeg.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\libwebp.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\miniaudio.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>/NODEFAULTLIB:libcmt.lib /NODEFAULTLIB:msvcrt.lib /NODEFAULTLIB:libcmtd.lib /FORCE:MULTIPLE %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
     <ClCompile>
-      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions);WITH_RIVE_TEXT;WITH_RIVE_LAYOUT;DEBUG;_USE_MATH_DEFINES;NOMINMAX;RIVE_WINDOWS;_CRT_SECURE_NO_WARNINGS;YOGA_EXPORT=;_HAS_EXCEPTIONS=0;_HAS_ITERATOR_DEBUGGING=1;_ITERATOR_DEBUG_LEVEL=2;_SILENCE_CXX20_IS_POD_DEPRECATION_WARNING;RIVE_HEADERS_AVAILABLE</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\shared;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\include;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\include\rive;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\include;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\include\rive\math;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
     <ClCompile>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions);WITH_RIVE_TEXT;WITH_RIVE_LAYOUT;_USE_MATH_DEFINES;NOMINMAX;RIVE_WINDOWS;_CRT_SECURE_NO_WARNINGS;YOGA_EXPORT=;_HAS_EXCEPTIONS=0;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;_SILENCE_CXX20_IS_POD_DEPRECATION_WARNING;RIVE_HEADERS_AVAILABLE</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\shared;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\include;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\include\rive;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\include;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\include\rive\math;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>d3d11.lib;dxgi.lib;d2d1.lib;dwrite.lib;windowsapp.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\rive.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\rive_pls_renderer.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\rive_decoders.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\rive_harfbuzz.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\rive_sheenbidi.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\rive_yoga.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\zlib.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\libpng.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\libjpeg.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\libwebp.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\miniaudio.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>/NODEFAULTLIB:libcmt.lib /NODEFAULTLIB:msvcrt.lib /NODEFAULTLIB:libcmtd.lib /FORCE:MULTIPLE %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

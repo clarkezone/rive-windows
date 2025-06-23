@@ -1,7 +1,7 @@
 {
   "profiles": {
-    "CSXamlHost": {
-      "commandName": "MsixPackage",
+    "WinRiveProjection": {
+      "commandName": "Project",
       "nativeDebugging": true
     }
   }

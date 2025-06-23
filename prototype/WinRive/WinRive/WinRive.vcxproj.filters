@@ -13,12 +13,17 @@
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="Class.cpp" />
     <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
+    <ClCompile Include="..\..\shared\rive_renderer.cpp" />
+    <ClCompile Include="..\..\shared\dx_renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
+    <ClInclude Include="..\..\shared\rive_renderer.h" />
+    <ClInclude Include="..\..\shared\dx_renderer.h" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="Class.idl" />
+    <Midl Include="RiveControl.idl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="WinRive.def" />
