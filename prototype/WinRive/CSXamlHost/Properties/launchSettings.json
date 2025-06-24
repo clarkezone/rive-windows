@@ -2,7 +2,7 @@
   "profiles": {
     "CSXamlHost": {
       "commandName": "MsixPackage",
-      "nativeDebugging": true
+      "nativeDebugging": false
     }
   }
 }

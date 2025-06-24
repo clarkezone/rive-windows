@@ -11,7 +11,7 @@ namespace CSXamlHost
     public sealed partial class MainPage : Page
     {
         private WinRive.RiveControl _riveControl;
-        private const string RiveFileName = "meeting_ui.riv";
+        private const string RiveFileName = "vector_feathering__avatar.riv";
 
         public MainPage()
         {

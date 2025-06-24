@@ -27,7 +27,13 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Content Update="Assets\RiveAssets\layouttest.riv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Update="Assets\RiveAssets\meeting_ui.riv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\RiveAssets\morphon_icons_%28demo%29.riv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
