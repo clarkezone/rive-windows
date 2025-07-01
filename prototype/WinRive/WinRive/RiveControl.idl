@@ -5,8 +5,13 @@ namespace WinRive
     {
         RiveControl();
         
-	// Initialize the Rive renderer with compositor and dimensions
+        // Initialize the Rive renderer with compositor and dimensions
         Boolean Initialize(Windows.UI.Composition.Compositor compositor, Int32 width, Int32 height);
+        
+        // Initialize the Rive renderer with compositor, CoreWindow for input, and dimensions
+        Boolean InitializeWithCoreWindow(Windows.UI.Composition.Compositor compositor, 
+                                       Windows.UI.Core.CoreWindow window, 
+                                       Int32 width, Int32 height);
         
         // Return the root visual of the Rive content tree
         Windows.UI.Composition.Visual GetVisual();

@@ -28,8 +28,11 @@ namespace CSXamlHost
             // Get the compositor from the XAML visual tree
             var compositor = ElementCompositionPreview.GetElementVisual(RiveContainer).Compositor;
 
-            // Initialize the Rive control with the compositor and initial size
-            if (_riveControl.Initialize(compositor, (int)RiveContainer.ActualWidth, (int)RiveContainer.ActualHeight))
+            // Get the CoreWindow for input handling
+            var coreWindow = Windows.UI.Core.CoreWindow.GetForCurrentThread();
+
+            // Initialize the Rive control with the compositor, CoreWindow, and initial size
+            if (_riveControl.InitializeWithCoreWindow(compositor, coreWindow, (int)RiveContainer.ActualWidth, (int)RiveContainer.ActualHeight))
             {
                 // Get the visual from the Rive control
                 var riveVisual = _riveControl.GetVisual();

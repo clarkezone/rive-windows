@@ -17,9 +17,36 @@ namespace winrt::WinRive::implementation
     {
         if (m_riveRenderer)
         {
+            m_width = width;
+            m_height = height;
             return m_riveRenderer->Initialize(compositor, width, height);
         }
         return false;
+    }
+
+    bool RiveControl::InitializeWithCoreWindow(winrt::Windows::UI::Composition::Compositor const& compositor,
+                                              winrt::Windows::UI::Core::CoreWindow const& window,
+                                              int32_t width, int32_t height)
+    {
+        if (!Initialize(compositor, width, height))
+        {
+            return false;
+        }
+
+        // Store the CoreWindow reference
+        m_coreWindow = window;
+
+        // Register for pointer events
+        if (m_coreWindow)
+        {
+            m_pointerMovedToken = m_coreWindow.PointerMoved({ this, &RiveControl::OnPointerMoved });
+            m_pointerPressedToken = m_coreWindow.PointerPressed({ this, &RiveControl::OnPointerPressed });
+            m_pointerReleasedToken = m_coreWindow.PointerReleased({ this, &RiveControl::OnPointerReleased });
+            
+            OutputDebugStringW(L"RiveControl: Registered for CoreWindow pointer events\n");
+        }
+
+        return true;
     }
 
     winrt::Windows::UI::Composition::Visual RiveControl::GetVisual()
@@ -90,6 +117,8 @@ namespace winrt::WinRive::implementation
 
     void RiveControl::SetSize(int32_t width, int32_t height)
     {
+        m_width = width;
+        m_height = height;
         if (m_riveRenderer)
         {
             m_riveRenderer->SetSize(width, height);
@@ -98,11 +127,83 @@ namespace winrt::WinRive::implementation
 
     void RiveControl::Shutdown()
     {
+        // Unregister event handlers
+        if (m_coreWindow)
+        {
+            m_coreWindow.PointerMoved(m_pointerMovedToken);
+            m_coreWindow.PointerPressed(m_pointerPressedToken);
+            m_coreWindow.PointerReleased(m_pointerReleasedToken);
+            m_coreWindow = nullptr;
+        }
+
         if (m_riveRenderer)
         {
             m_riveRenderer->StopRenderThread();
             m_riveRenderer->Shutdown();
             m_riveRenderer.reset();
         }
+    }
+
+    void RiveControl::OnPointerMoved(winrt::Windows::UI::Core::CoreWindow const& sender,
+                                   winrt::Windows::UI::Core::PointerEventArgs const& args)
+    {
+        auto point = args.CurrentPoint().Position();
+        
+        // Get the visual to calculate relative position
+        auto visual = GetVisual();
+        if (!visual)
+            return;
+
+        // For now, we'll use the raw coordinates
+        // In a full implementation, we'd transform these to visual space
+        if (IsPointInBounds(point))
+        {
+            wchar_t debugMsg[256];
+            swprintf_s(debugMsg, L"RiveControl: Mouse moved to (%.1f, %.1f)\n", point.X, point.Y);
+            OutputDebugStringW(debugMsg);
+
+            // TODO: Forward to RiveRenderer for interaction handling
+            // m_riveRenderer->HandlePointerMove(point.X, point.Y);
+        }
+    }
+
+    void RiveControl::OnPointerPressed(winrt::Windows::UI::Core::CoreWindow const& sender,
+                                     winrt::Windows::UI::Core::PointerEventArgs const& args)
+    {
+        auto point = args.CurrentPoint().Position();
+        
+        if (IsPointInBounds(point))
+        {
+            wchar_t debugMsg[256];
+            swprintf_s(debugMsg, L"RiveControl: Mouse pressed at (%.1f, %.1f)\n", point.X, point.Y);
+            OutputDebugStringW(debugMsg);
+
+            // TODO: Forward to RiveRenderer
+            // m_riveRenderer->HandlePointerPress(point.X, point.Y);
+        }
+    }
+
+    void RiveControl::OnPointerReleased(winrt::Windows::UI::Core::CoreWindow const& sender,
+                                       winrt::Windows::UI::Core::PointerEventArgs const& args)
+    {
+        auto point = args.CurrentPoint().Position();
+        
+        if (IsPointInBounds(point))
+        {
+            wchar_t debugMsg[256];
+            swprintf_s(debugMsg, L"RiveControl: Mouse released at (%.1f, %.1f)\n", point.X, point.Y);
+            OutputDebugStringW(debugMsg);
+
+            // TODO: Forward to RiveRenderer
+            // m_riveRenderer->HandlePointerRelease(point.X, point.Y);
+        }
+    }
+
+    bool RiveControl::IsPointInBounds(winrt::Windows::Foundation::Point const& point)
+    {
+        // Simple bounds check - in a real implementation, we'd need to consider
+        // the visual's position relative to the window
+        return point.X >= 0 && point.X <= m_width &&
+               point.Y >= 0 && point.Y <= m_height;
     }
 }
