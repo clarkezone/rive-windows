@@ -1,5 +1,20 @@
 namespace WinRive
 {
+    struct StateMachineInfo
+    {
+        String Name;
+        Int32 Index;
+        Boolean IsDefault;
+    };
+
+    struct StateMachineInput
+    {
+        String Name;
+        String Type; // "Boolean", "Number", "Trigger"
+        Boolean BooleanValue;
+        Double NumberValue;
+    };
+
     [default_interface]
     runtimeclass RiveControl
     {
@@ -33,5 +48,27 @@ namespace WinRive
         
         // Clean up resources
         void Shutdown();
+
+        // State machine enumeration
+        Windows.Foundation.Collections.IVectorView<StateMachineInfo> GetStateMachines();
+        StateMachineInfo GetDefaultStateMachine();
+        Int32 GetStateMachineCount();
+
+        // State machine control
+        Boolean SetActiveStateMachine(Int32 index);
+        Boolean SetActiveStateMachineByName(String name);
+        Int32 GetActiveStateMachineIndex();
+
+        // State machine playback control
+        void PlayStateMachine();
+        void PauseStateMachine();
+        void ResetStateMachine();
+        Boolean IsStateMachineActive();
+
+        // Input control
+        Windows.Foundation.Collections.IVectorView<StateMachineInput> GetStateMachineInputs();
+        Boolean SetBooleanInput(String inputName, Boolean value);
+        Boolean SetNumberInput(String inputName, Double value);
+        Boolean FireTrigger(String inputName);
     }
 }

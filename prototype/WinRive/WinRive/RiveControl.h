@@ -38,6 +38,28 @@ namespace winrt::WinRive::implementation
         // Clean up resources
         void Shutdown();
 
+        // State machine enumeration
+        winrt::Windows::Foundation::Collections::IVectorView<winrt::WinRive::StateMachineInfo> GetStateMachines();
+        winrt::WinRive::StateMachineInfo GetDefaultStateMachine();
+        int32_t GetStateMachineCount();
+
+        // State machine control
+        bool SetActiveStateMachine(int32_t index);
+        bool SetActiveStateMachineByName(hstring const& name);
+        int32_t GetActiveStateMachineIndex();
+
+        // State machine playback control
+        void PlayStateMachine();
+        void PauseStateMachine();
+        void ResetStateMachine();
+        bool IsStateMachineActive();
+
+        // Input control
+        winrt::Windows::Foundation::Collections::IVectorView<winrt::WinRive::StateMachineInput> GetStateMachineInputs();
+        bool SetBooleanInput(hstring const& inputName, bool value);
+        bool SetNumberInput(hstring const& inputName, double value);
+        bool FireTrigger(hstring const& inputName);
+
     private:
         // The Rive renderer instance
         std::unique_ptr<RiveRenderer> m_riveRenderer;

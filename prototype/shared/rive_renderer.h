@@ -78,6 +78,13 @@ private:
     std::unique_ptr<rive::Artboard> m_artboard;
     std::unique_ptr<rive::Scene> m_scene;
     rive::rcp<rive::ViewModelInstance> m_viewModelInstance;
+    
+    // State machine management
+    std::vector<std::unique_ptr<rive::StateMachineInstance>> m_stateMachines;
+    rive::StateMachineInstance* m_activeStateMachine = nullptr;
+    int m_activeStateMachineIndex = -1;
+    int m_defaultStateMachineIndex = -1;
+    bool m_stateMachineActive = false;
 #endif
     
     // Rive file data
@@ -136,6 +143,35 @@ public:
     void QueuePointerPress(float x, float y);  
     void QueuePointerRelease(float x, float y);
 
+    // State machine management
+    struct StateMachineInfo {
+        std::string name;
+        int index;
+        bool isDefault;
+    };
+    
+    struct StateMachineInputInfo {
+        std::string name;
+        std::string type;
+        bool booleanValue;
+        double numberValue;
+    };
+    
+    std::vector<StateMachineInfo> EnumerateStateMachines();
+    StateMachineInfo GetDefaultStateMachine();
+    int GetStateMachineCount();
+    bool SetActiveStateMachine(int index);
+    bool SetActiveStateMachineByName(const std::string& name);
+    int GetActiveStateMachineIndex();
+    void PlayStateMachine();
+    void PauseStateMachine();
+    void ResetStateMachine();
+    bool IsStateMachineActive();
+    std::vector<StateMachineInputInfo> GetStateMachineInputs();
+    bool SetBooleanInput(const std::string& name, bool value);
+    bool SetNumberInput(const std::string& name, double value);
+    bool FireTrigger(const std::string& name);
+
 private:
     // Composition setup
     void CreateCompositionSurface();
@@ -171,4 +207,7 @@ private:
     // Coordinate transformation
     bool TransformToArtboardSpace(float& x, float& y);
     void UpdateArtboardAlignment();  // Called when size changes
+    
+    // State machine initialization
+    void EnumerateAndInitializeStateMachines();
 };

@@ -211,4 +211,163 @@ namespace winrt::WinRive::implementation
         return point.X >= 0 && point.X <= m_width &&
                point.Y >= 0 && point.Y <= m_height;
     }
+
+    // State machine enumeration
+    winrt::Windows::Foundation::Collections::IVectorView<winrt::WinRive::StateMachineInfo> RiveControl::GetStateMachines()
+    {
+        std::vector<winrt::WinRive::StateMachineInfo> result;
+        
+        if (m_riveRenderer)
+        {
+            auto stateMachines = m_riveRenderer->EnumerateStateMachines();
+            for (const auto& sm : stateMachines)
+            {
+                WinRive::StateMachineInfo info;
+                info.Name = winrt::to_hstring(sm.name);
+                info.Index = sm.index;
+                info.IsDefault = sm.isDefault;
+                result.push_back(info);
+            }
+        }
+        
+        return winrt::single_threaded_vector<WinRive::StateMachineInfo>(std::move(result)).GetView();
+    }
+
+    winrt::WinRive::StateMachineInfo RiveControl::GetDefaultStateMachine()
+    {
+        WinRive::StateMachineInfo defaultInfo;
+        defaultInfo.Name = L"";
+        defaultInfo.Index = -1;
+        defaultInfo.IsDefault = false;
+        
+        if (m_riveRenderer)
+        {
+            auto defaultSM = m_riveRenderer->GetDefaultStateMachine();
+            defaultInfo.Name = winrt::to_hstring(defaultSM.name);
+            defaultInfo.Index = defaultSM.index;
+            defaultInfo.IsDefault = defaultSM.isDefault;
+        }
+        
+        return defaultInfo;
+    }
+
+    int32_t RiveControl::GetStateMachineCount()
+    {
+        if (m_riveRenderer)
+        {
+            return m_riveRenderer->GetStateMachineCount();
+        }
+        return 0;
+    }
+
+    // State machine control
+    bool RiveControl::SetActiveStateMachine(int32_t index)
+    {
+        if (m_riveRenderer)
+        {
+            return m_riveRenderer->SetActiveStateMachine(index);
+        }
+        return false;
+    }
+
+    bool RiveControl::SetActiveStateMachineByName(hstring const& name)
+    {
+        if (m_riveRenderer)
+        {
+            return m_riveRenderer->SetActiveStateMachineByName(winrt::to_string(name));
+        }
+        return false;
+    }
+
+    int32_t RiveControl::GetActiveStateMachineIndex()
+    {
+        if (m_riveRenderer)
+        {
+            return m_riveRenderer->GetActiveStateMachineIndex();
+        }
+        return -1;
+    }
+
+    // State machine playback control
+    void RiveControl::PlayStateMachine()
+    {
+        if (m_riveRenderer)
+        {
+            m_riveRenderer->PlayStateMachine();
+        }
+    }
+
+    void RiveControl::PauseStateMachine()
+    {
+        if (m_riveRenderer)
+        {
+            m_riveRenderer->PauseStateMachine();
+        }
+    }
+
+    void RiveControl::ResetStateMachine()
+    {
+        if (m_riveRenderer)
+        {
+            m_riveRenderer->ResetStateMachine();
+        }
+    }
+
+    bool RiveControl::IsStateMachineActive()
+    {
+        if (m_riveRenderer)
+        {
+            return m_riveRenderer->IsStateMachineActive();
+        }
+        return false;
+    }
+
+    // Input control
+    winrt::Windows::Foundation::Collections::IVectorView<winrt::WinRive::StateMachineInput> RiveControl::GetStateMachineInputs()
+    {
+        std::vector<winrt::WinRive::StateMachineInput> result;
+        
+        if (m_riveRenderer)
+        {
+            auto inputs = m_riveRenderer->GetStateMachineInputs();
+            for (const auto& input : inputs)
+            {
+                winrt::WinRive::StateMachineInput inputInfo;
+                inputInfo.Name = winrt::to_hstring(input.name);
+                inputInfo.Type = winrt::to_hstring(input.type);
+                inputInfo.BooleanValue = input.booleanValue;
+                inputInfo.NumberValue = input.numberValue;
+                result.push_back(inputInfo);
+            }
+        }
+        
+        return winrt::single_threaded_vector(std::move(result)).GetView();
+    }
+
+    bool RiveControl::SetBooleanInput(hstring const& inputName, bool value)
+    {
+        if (m_riveRenderer)
+        {
+            return m_riveRenderer->SetBooleanInput(winrt::to_string(inputName), value);
+        }
+        return false;
+    }
+
+    bool RiveControl::SetNumberInput(hstring const& inputName, double value)
+    {
+        if (m_riveRenderer)
+        {
+            return m_riveRenderer->SetNumberInput(winrt::to_string(inputName), value);
+        }
+        return false;
+    }
+
+    bool RiveControl::FireTrigger(hstring const& inputName)
+    {
+        if (m_riveRenderer)
+        {
+            return m_riveRenderer->FireTrigger(winrt::to_string(inputName));
+        }
+        return false;
+    }
 }
