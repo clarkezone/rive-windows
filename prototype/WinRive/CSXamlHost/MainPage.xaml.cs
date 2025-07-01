@@ -64,5 +64,20 @@ namespace CSXamlHost
                 _riveControl.SetSize((int)RiveContainer.ActualWidth, (int)RiveContainer.ActualHeight);
             }
         }
+
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.AddedItems.Count > 0 && _riveControl != null)
+            {
+                var selectedItem = (ComboBoxItem)e.AddedItems[0];
+                string riverFileName = (string)selectedItem.Tag;
+                _riveControl.LoadRiveFileFromPackage(riverFileName);
+                Debug.WriteLine($"Selected Rive file: {riverFileName}");
+            } 
+            else 
+            {
+                Debug.WriteLine("No Rive file selected.");
+            }
+        }
     }
 }

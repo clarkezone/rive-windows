@@ -30,7 +30,13 @@
             BorderThickness="1"
             CornerRadius="8" />
 
-        <ComboBox HorizontalAlignment="Right" Grid.Row="0" VerticalAlignment="Center" SelectedIndex="0" Margin="10">
+        <ComboBox
+            Grid.Row="0"
+            Margin="10"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Center"
+            SelectedIndex="0"
+            SelectionChanged="ComboBox_SelectionChanged">
             <ComboBoxItem Content="Vector Feathering Avatar" Tag="vector_feathering__avatar.riv" />
             <ComboBoxItem Content="Meeting UI" Tag="meeting_ui.riv" />
             <ComboBoxItem Content="Layout Test" Tag="layouttest.riv" />
