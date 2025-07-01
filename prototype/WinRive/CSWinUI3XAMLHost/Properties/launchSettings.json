@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "CSWinUI3XAMLHost (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "CSWinUI3XAMLHost (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Application
-    x:Class="CS_WinUI3_XAML_Host.App"
+    x:Class="CSWinUI3XAMLHost.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:CS_WinUI3_XAML_Host">
+    xmlns:local="using:CSWinUI3XAMLHost">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
