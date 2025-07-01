@@ -6,6 +6,12 @@
 
 RiveRenderer::RiveRenderer()
 {
+#if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
+    // Initialize transform matrix to identity
+    m_artboardTransform = rive::Mat2D();
+#endif
+    m_transformValid = false;
+    m_lastPointerDown = false;
 }
 
 RiveRenderer::~RiveRenderer()
@@ -57,6 +63,9 @@ void RiveRenderer::SetSize(int width, int height)
     if (width > 0 && height > 0 && (width != m_renderWidth || height != m_renderHeight)) {
         m_renderWidth = width;
         m_renderHeight = height;
+        
+        // Invalidate artboard alignment transform
+        m_transformValid = false;
         
         // Resize the swap chain
         if (m_swapChain) {
@@ -310,6 +319,9 @@ void RiveRenderer::RenderLoop()
                 continue;
             }
             
+            // Process input events at start of render frame
+            ProcessInputQueue();
+            
             RenderRive();
         }
         
@@ -410,6 +422,137 @@ void RiveRenderer::PauseRendering()
 void RiveRenderer::ResumeRendering()
 {
     m_isPaused = false;
+}
+
+// Input handling - coordinates should be relative to renderer bounds
+void RiveRenderer::QueuePointerMove(float x, float y)
+{
+    std::lock_guard<std::mutex> lock(m_inputQueueMutex);
+    MouseInputEvent event;
+    event.type = MouseInputEvent::Move;
+    event.x = x;
+    event.y = y;
+    event.timestamp = std::chrono::steady_clock::now();
+    m_inputQueue.push(event);
+}
+
+void RiveRenderer::QueuePointerPress(float x, float y)
+{
+    std::lock_guard<std::mutex> lock(m_inputQueueMutex);
+    MouseInputEvent event;
+    event.type = MouseInputEvent::Press;
+    event.x = x;
+    event.y = y;
+    event.timestamp = std::chrono::steady_clock::now();
+    m_inputQueue.push(event);
+}
+
+void RiveRenderer::QueuePointerRelease(float x, float y)
+{
+    std::lock_guard<std::mutex> lock(m_inputQueueMutex);
+    MouseInputEvent event;
+    event.type = MouseInputEvent::Release;
+    event.x = x;
+    event.y = y;
+    event.timestamp = std::chrono::steady_clock::now();
+    m_inputQueue.push(event);
+}
+
+// Input processing
+void RiveRenderer::ProcessInputQueue()
+{
+    std::lock_guard<std::mutex> lock(m_inputQueueMutex);
+    
+    while (!m_inputQueue.empty()) {
+        MouseInputEvent event = m_inputQueue.front();
+        m_inputQueue.pop();
+        
+        // Transform coordinates to artboard space
+        float artboardX = event.x;
+        float artboardY = event.y;
+        
+        if (TransformToArtboardSpace(artboardX, artboardY)) {
+            // Forward to state machine if available
+            bool isDown = (event.type == MouseInputEvent::Press) ? true : 
+                         (event.type == MouseInputEvent::Release) ? false : m_lastPointerDown;
+            
+            ForwardPointerEventToStateMachine(artboardX, artboardY, isDown);
+            
+            // Update pointer state tracking
+            if (event.type == MouseInputEvent::Press) {
+                m_lastPointerDown = true;
+            } else if (event.type == MouseInputEvent::Release) {
+                m_lastPointerDown = false;
+            }
+        }
+    }
+}
+
+void RiveRenderer::ForwardPointerEventToStateMachine(float x, float y, bool isDown)
+{
+#if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
+    if (m_scene) {
+        // Check if current scene is a state machine
+        auto stateMachine = dynamic_cast<rive::StateMachineInstance*>(m_scene.get());
+        if (stateMachine) {
+            // Forward pointer event to state machine
+            stateMachine->pointerMove(rive::Vec2D(x, y));
+            if (isDown) {
+                stateMachine->pointerDown(rive::Vec2D(x, y));
+            } else {
+                stateMachine->pointerUp(rive::Vec2D(x, y));
+            }
+        }
+    }
+#endif
+}
+
+// Coordinate transformation
+bool RiveRenderer::TransformToArtboardSpace(float& x, float& y)
+{
+#if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
+    // Only attempt transformation if we have a valid artboard
+    if (!m_artboard) {
+        return false;
+    }
+    
+    // Update alignment if needed
+    if (!m_transformValid) {
+        UpdateArtboardAlignment();
+    }
+    
+    // Only proceed if we have a valid transform
+    if (m_transformValid) {
+        // Apply inverse transform to convert from renderer space to artboard space
+        rive::Mat2D inverseTransform = m_artboardTransform.invertOrIdentity();
+        rive::Vec2D point = inverseTransform * rive::Vec2D(x, y);
+        x = point.x;
+        y = point.y;
+        return true;
+    }
+#endif
+    
+    return false;
+}
+
+void RiveRenderer::UpdateArtboardAlignment()
+{
+#if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
+    if (m_artboard) {
+        // Calculate transform to fit artboard within renderer bounds
+        m_artboardTransform = rive::computeAlignment(
+            rive::Fit::contain,
+            rive::Alignment::center,
+            rive::AABB(0, 0, static_cast<float>(m_renderWidth), static_cast<float>(m_renderHeight)),
+            m_artboard->bounds()
+        );
+        m_transformValid = true;
+    } else {
+        m_transformValid = false;
+    }
+#else
+    m_transformValid = false;
+#endif
 }
 
 void RiveRenderer::CleanupDeviceResources()

@@ -30,6 +30,7 @@
 #include <fstream>
 #include <vector>
 #include <iostream>
+#include <queue>
 
 // Rive headers (only include if available)
 #if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
@@ -42,6 +43,14 @@
 #include "rive/animation/state_machine_instance.hpp"
 #include "rive/static_scene.hpp"
 #endif
+
+// Input event structure for thread-safe input handling
+struct MouseInputEvent {
+    enum Type { Move, Press, Release };
+    Type type;
+    float x, y;  // Relative to RiveRenderer bounds (0,0 to width,height)
+    std::chrono::steady_clock::time_point timestamp;
+};
 
 class RiveRenderer {
 private:
@@ -85,6 +94,17 @@ private:
     int m_renderWidth = 800;
     int m_renderHeight = 600;
     bool m_deviceLost = false;
+    
+    // Input event queue system
+    std::queue<MouseInputEvent> m_inputQueue;
+    std::mutex m_inputQueueMutex;
+    
+    // Coordinate transformation & alignment
+#if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
+    rive::Mat2D m_artboardTransform;  // Stores the alignment transformation
+#endif
+    bool m_transformValid = false;
+    bool m_lastPointerDown = false;  // Track pointer state
 
 public:
     RiveRenderer();
@@ -110,6 +130,11 @@ public:
     void StopRenderThread();
     void PauseRendering();
     void ResumeRendering();
+    
+    // Input handling - coordinates should be relative to renderer bounds
+    void QueuePointerMove(float x, float y);
+    void QueuePointerPress(float x, float y);  
+    void QueuePointerRelease(float x, float y);
 
 private:
     // Composition setup
@@ -138,4 +163,12 @@ private:
     // Resource cleanup
     void CleanupDeviceResources();
     void CleanupRenderingResources();
+    
+    // Input processing
+    void ProcessInputQueue();
+    void ForwardPointerEventToStateMachine(float x, float y, bool isDown);
+    
+    // Coordinate transformation
+    bool TransformToArtboardSpace(float& x, float& y);
+    void UpdateArtboardAlignment();  // Called when size changes
 };

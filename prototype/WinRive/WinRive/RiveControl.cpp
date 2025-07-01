@@ -154,16 +154,17 @@ namespace winrt::WinRive::implementation
         if (!visual)
             return;
 
-        // For now, we'll use the raw coordinates
-        // In a full implementation, we'd transform these to visual space
+        // Transform coordinates to renderer bounds (0,0 to width,height)
         if (IsPointInBounds(point))
         {
-            wchar_t debugMsg[256];
-            swprintf_s(debugMsg, L"RiveControl: Mouse moved to (%.1f, %.1f)\n", point.X, point.Y);
-            OutputDebugStringW(debugMsg);
-
-            // TODO: Forward to RiveRenderer for interaction handling
-            // m_riveRenderer->HandlePointerMove(point.X, point.Y);
+            // Convert CoreWindow coordinates to RiveRenderer bounds
+            float rendererX = point.X;
+            float rendererY = point.Y;
+            
+            // Forward to RiveRenderer input queue
+            if (m_riveRenderer) {
+                m_riveRenderer->QueuePointerMove(rendererX, rendererY);
+            }
         }
     }
 
@@ -174,12 +175,14 @@ namespace winrt::WinRive::implementation
         
         if (IsPointInBounds(point))
         {
-            wchar_t debugMsg[256];
-            swprintf_s(debugMsg, L"RiveControl: Mouse pressed at (%.1f, %.1f)\n", point.X, point.Y);
-            OutputDebugStringW(debugMsg);
-
-            // TODO: Forward to RiveRenderer
-            // m_riveRenderer->HandlePointerPress(point.X, point.Y);
+            // Convert CoreWindow coordinates to RiveRenderer bounds
+            float rendererX = point.X;
+            float rendererY = point.Y;
+            
+            // Forward to RiveRenderer input queue
+            if (m_riveRenderer) {
+                m_riveRenderer->QueuePointerPress(rendererX, rendererY);
+            }
         }
     }
 
@@ -190,12 +193,14 @@ namespace winrt::WinRive::implementation
         
         if (IsPointInBounds(point))
         {
-            wchar_t debugMsg[256];
-            swprintf_s(debugMsg, L"RiveControl: Mouse released at (%.1f, %.1f)\n", point.X, point.Y);
-            OutputDebugStringW(debugMsg);
-
-            // TODO: Forward to RiveRenderer
-            // m_riveRenderer->HandlePointerRelease(point.X, point.Y);
+            // Convert CoreWindow coordinates to RiveRenderer bounds
+            float rendererX = point.X;
+            float rendererY = point.Y;
+            
+            // Forward to RiveRenderer input queue
+            if (m_riveRenderer) {
+                m_riveRenderer->QueuePointerRelease(rendererX, rendererY);
+            }
         }
     }
 
