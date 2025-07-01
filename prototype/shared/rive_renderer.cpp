@@ -319,8 +319,24 @@ void RiveRenderer::RenderLoop()
                 continue;
             }
             
-            // Process input events at start of render frame
-            ProcessInputQueue();
+            // Only process input if we have valid Rive content and rendering context
+#if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
+            if (m_riveRenderContext && m_scene && m_artboard) {
+                ProcessInputQueue();
+            } else {
+                // Clear input queue if not ready to process
+                std::lock_guard<std::mutex> inputLock(m_inputQueueMutex);
+                while (!m_inputQueue.empty()) {
+                    m_inputQueue.pop();
+                }
+            }
+#else
+            // Clear input queue if Rive is not available
+            std::lock_guard<std::mutex> inputLock(m_inputQueueMutex);
+            while (!m_inputQueue.empty()) {
+                m_inputQueue.pop();
+            }
+#endif
             
             RenderRive();
         }
@@ -463,6 +479,23 @@ void RiveRenderer::ProcessInputQueue()
 {
     std::lock_guard<std::mutex> lock(m_inputQueueMutex);
     
+    // Early exit if no Rive content is loaded
+#if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
+    if (!m_scene || !m_artboard) {
+        // Clear the queue but don't process events
+        while (!m_inputQueue.empty()) {
+            m_inputQueue.pop();
+        }
+        return;
+    }
+#else
+    // Clear the queue if Rive is not available
+    while (!m_inputQueue.empty()) {
+        m_inputQueue.pop();
+    }
+    return;
+#endif
+    
     while (!m_inputQueue.empty()) {
         MouseInputEvent event = m_inputQueue.front();
         m_inputQueue.pop();
@@ -492,16 +525,12 @@ void RiveRenderer::ForwardPointerEventToStateMachine(float x, float y, bool isDo
 {
 #if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
     if (m_scene) {
-        // Check if current scene is a state machine
-        auto stateMachine = dynamic_cast<rive::StateMachineInstance*>(m_scene.get());
-        if (stateMachine) {
-            // Forward pointer event to state machine
-            stateMachine->pointerMove(rive::Vec2D(x, y));
-            if (isDown) {
-                stateMachine->pointerDown(rive::Vec2D(x, y));
-            } else {
-                stateMachine->pointerUp(rive::Vec2D(x, y));
-            }
+        // Scene base class already provides pointer methods - no cast needed!
+        m_scene->pointerMove(rive::Vec2D(x, y));
+        if (isDown) {
+            m_scene->pointerDown(rive::Vec2D(x, y));
+        } else {
+            m_scene->pointerUp(rive::Vec2D(x, y));
         }
     }
 #endif
