@@ -75,7 +75,7 @@ private:
     
     // Rive content
     std::unique_ptr<rive::File> m_riveFile;
-    std::unique_ptr<rive::Artboard> m_artboard;
+    std::unique_ptr<rive::ArtboardInstance> m_artboard;
     std::unique_ptr<rive::Scene> m_scene;
     rive::rcp<rive::ViewModelInstance> m_viewModelInstance;
     

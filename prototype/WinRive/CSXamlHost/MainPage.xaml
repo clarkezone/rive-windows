@@ -36,6 +36,16 @@
             BorderThickness="1"
             CornerRadius="8" />
 
+
+        <!-- State Machine Controls Panel -->
+        <ScrollViewer
+            Grid.Row="0"
+            Grid.RowSpan="2"
+            Grid.Column="1"
+            Margin="10"
+            Background="#F5F5F5"
+            VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="15">
         <ComboBox
             Grid.Row="0"
             Grid.Column="0"
@@ -47,18 +57,9 @@
             <ComboBoxItem Content="Vector Feathering Avatar" Tag="vector_feathering__avatar.riv" />
             <ComboBoxItem Content="Meeting UI" Tag="meeting_ui.riv" />
             <ComboBoxItem Content="Layout Test" Tag="layouttest.riv" />
-            <ComboBoxItem Content="New Animation" Tag="world_creator.riv" />
+            <ComboBoxItem Content="Google Ad" Tag="world_creator.riv" />
+            <ComboBoxItem Content="Pointer Test" Tag="pointer_events.riv" />
         </ComboBox>
-
-        <!-- State Machine Controls Panel -->
-        <ScrollViewer
-            Grid.Row="0"
-            Grid.RowSpan="2"
-            Grid.Column="1"
-            Margin="10"
-            Background="#F5F5F5"
-            VerticalScrollBarVisibility="Auto">
-            <StackPanel Margin="15">
                 <TextBlock
                     Margin="0,0,0,15"
                     FontSize="16"

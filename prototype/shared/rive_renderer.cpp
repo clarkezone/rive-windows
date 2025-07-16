@@ -258,28 +258,37 @@ void RiveRenderer::MakeScene()
 #if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
     ClearScene();
     
-    // Following path_fiddle make_scenes pattern exactly
-    auto artboard = m_riveFile->artboardDefault();
+    // Following path_fiddle make_scenes pattern - but using ArtboardInstance for API compatibility
+    auto rawArtboard = m_riveFile->artboardDefault();
+    auto artboard = rawArtboard->instance();
     std::unique_ptr<rive::Scene> scene;
     
-    // Try animationAt(0) first (path_fiddle default pattern)
-    scene = artboard->animationAt(0);
+    // Try default state machine first, then animation, following path_fiddle priority
+    if (m_defaultStateMachineIndex >= 0) {
+        scene = artboard->stateMachineAt(m_defaultStateMachineIndex);
+    }
+    else {
+        scene = artboard->animationAt(0);
+    }
     
     if (scene == nullptr) {
         // This is a riv without any animations or state machines. Just draw the artboard.
         scene = std::make_unique<rive::StaticScene>(artboard.get());
     }
 
-    m_viewModelInstance = m_riveFile->createViewModelInstance(artboard.get());
+    int viewModelId = artboard->viewModelId();
+    m_viewModelInstance = viewModelId == -1 
+        ? m_riveFile->createViewModelInstance(artboard.get())
+        : m_riveFile->createViewModelInstance(viewModelId, 0);
     artboard->bindViewModelInstance(m_viewModelInstance);
     if (m_viewModelInstance != nullptr) {
         scene->bindViewModelInstance(m_viewModelInstance);
     }
 
-    // Set initial animation state
+    // Set initial animation state (path_fiddle uses scene->durationSeconds() * i / count, we use 0)
     scene->advanceAndApply(0.0f);
     
-    // Store the artboard and scene (following path_fiddle pattern)
+    // Store the artboard instance and scene
     m_artboard = std::move(artboard);
     m_scene = std::move(scene);
 #endif
@@ -368,8 +377,15 @@ void RiveRenderer::RenderRive()
             .msaaSampleCount = 0
         });
         
-        // Advance animation
-        m_scene->advanceAndApply(1.0f / 60.0f);
+        // Advance animation/state machine - only if active
+        if (m_activeStateMachine && m_stateMachineActive) {
+            // For state machines, advance only if active
+            m_scene->advanceAndApply(1.0f / 60.0f);
+        } else if (!m_activeStateMachine) {
+            // For regular animations, always advance
+            m_scene->advanceAndApply(1.0f / 60.0f);
+        }
+        // If state machine is paused (m_stateMachineActive == false), don't advance
         
         // Calculate transform to fit content
         rive::Mat2D transform = rive::computeAlignment(
@@ -649,13 +665,14 @@ void RiveRenderer::EnumerateAndInitializeStateMachines()
             std::cout << "No default state machine specified, using first one\n";
         }
         
-        // Create instances for each state machine  
+        // Following path_fiddle pattern: we don't enumerate state machines beforehand
+        // Instead, we create them on-demand when SetActiveStateMachine is called
+        // For now, just store placeholder entries to maintain the API
         for (size_t i = 0; i < stateMachineCount; ++i) {
             std::string smName = m_artboard->stateMachineNameAt(i);
             std::cout << "Found state machine " << i << ": " << smName << "\n";
             
-            // For now, create a placeholder nullptr entry to maintain the count
-            // TODO: Implement actual state machine instance creation with correct API
+            // Store placeholder - we'll create the actual instance when needed
             m_stateMachines.push_back(nullptr);
         }
         
@@ -724,19 +741,37 @@ int RiveRenderer::GetStateMachineCount()
 bool RiveRenderer::SetActiveStateMachine(int index)
 {
 #if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
-    if (index < 0 || index >= static_cast<int>(m_stateMachines.size())) {
+    if (!m_artboard || index < 0 || index >= static_cast<int>(m_stateMachines.size())) {
         std::cout << "Invalid state machine index: " << index << std::endl;
         return false;
     }
     
-    // For now, just track the active index since we have placeholder entries
-    m_activeStateMachine = m_stateMachines[index].get(); // This will be nullptr for now
+    // Create state machine instance on-demand using ArtboardInstance API
+    auto stateMachineInstance = m_artboard->stateMachineAt(index);
+    if (!stateMachineInstance) {
+        std::cout << "Failed to create state machine at index: " << index << std::endl;
+        return false;
+    }
+    
+    // Set the active state machine index
     m_activeStateMachineIndex = index;
+    
+    // Replace the current scene with the state machine instance
+    // StateMachineInstance inherits from Scene
+    m_scene = std::move(stateMachineInstance);
+    
+    // Update the active state machine pointer
+    m_activeStateMachine = static_cast<rive::StateMachineInstance*>(m_scene.get());
+    
+    // Bind view model instance if available
+    if (m_viewModelInstance != nullptr) {
+        m_scene->bindViewModelInstance(m_viewModelInstance);  
+    }
+    
     m_stateMachineActive = true;
     
-    // TODO: Replace scene with actual state machine instance when API is fixed
-    std::string smName = m_artboard ? m_artboard->stateMachineNameAt(index) : "Unknown";
-    std::cout << "Activated state machine at index " << index << " (" << smName << ") - placeholder mode" << std::endl;
+    std::string smName = m_artboard->stateMachineNameAt(index);
+    std::cout << "Activated state machine at index " << index << " (" << smName << ")" << std::endl;
     return true;
 #endif
     
@@ -777,6 +812,8 @@ void RiveRenderer::PlayStateMachine()
     if (m_activeStateMachine) {
         m_stateMachineActive = true;
         std::cout << "State machine playback started\n";
+    } else {
+        std::cout << "No active state machine to play\n";
     }
 #endif
 }
@@ -793,7 +830,26 @@ void RiveRenderer::ResetStateMachine()
 {
 #if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
     if (m_activeStateMachine && m_activeStateMachineIndex >= 0) {
-        std::cout << "State machine reset (simplified implementation)\n";
+        std::cout << "Resetting state machine at index " << m_activeStateMachineIndex << std::endl;
+        
+        // Recreate the state machine to reset its state
+        auto stateMachineInstance = m_artboard->stateMachineAt(m_activeStateMachineIndex);
+        if (stateMachineInstance) {
+            // Replace the current scene with the fresh state machine instance
+            m_scene = std::move(stateMachineInstance);
+            m_activeStateMachine = static_cast<rive::StateMachineInstance*>(m_scene.get());
+            
+            // Bind view model instance if available
+            if (m_viewModelInstance != nullptr) {
+                m_scene->bindViewModelInstance(m_viewModelInstance);  
+            }
+            
+            std::cout << "State machine reset successfully\n";
+        } else {
+            std::cout << "Failed to recreate state machine for reset\n";
+        }
+    } else {
+        std::cout << "No active state machine to reset\n";
     }
 #endif
 }
