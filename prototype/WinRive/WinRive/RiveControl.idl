@@ -1,5 +1,12 @@
 namespace WinRive
 {
+    enum HostingMode
+    {
+        UWP_CoreWindow,
+        WinUI3_Compositor,
+        Win32_HWND
+    };
+
     struct StateMachineInfo
     {
         String Name;
@@ -27,6 +34,21 @@ namespace WinRive
         Boolean InitializeWithCoreWindow(Windows.UI.Composition.Compositor compositor, 
                                        Windows.UI.Core.CoreWindow window, 
                                        Int32 width, Int32 height);
+        
+        // New initialization methods for different hosting scenarios
+        Boolean InitializeForUWP(Windows.UI.Composition.Compositor compositor, 
+                                  Windows.UI.Core.CoreWindow window, 
+                                  Int32 width, Int32 height);
+                                  
+        Boolean InitializeForWinUI3(Windows.UI.Composition.Compositor compositor,
+                                     Int32 width, Int32 height);
+                                     
+        Boolean InitializeForWin32(Windows.UI.Composition.Compositor compositor,
+                                    UInt64 hwnd, // HWND as uint64
+                                    Int32 width, Int32 height);
+        
+        // Get the current hosting mode
+        HostingMode GetHostingMode();
         
         // Return the root visual of the Rive content tree
         Windows.UI.Composition.Visual GetVisual();

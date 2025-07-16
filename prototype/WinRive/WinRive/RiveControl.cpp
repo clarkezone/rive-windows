@@ -4,8 +4,10 @@
 
 namespace winrt::WinRive::implementation
 {
-    RiveControl::RiveControl() : m_riveRenderer(std::make_unique<RiveRenderer>())
+    RiveControl::RiveControl()
     {
+        m_riveRenderer = std::make_unique<RiveRenderer>();
+        m_hostingMode = winrt::WinRive::HostingMode::UWP_CoreWindow;
     }
 
     RiveControl::~RiveControl()
@@ -15,6 +17,82 @@ namespace winrt::WinRive::implementation
 
     bool RiveControl::Initialize(winrt::Windows::UI::Composition::Compositor const& compositor, int32_t width, int32_t height)
     {
+        m_hostingMode = winrt::WinRive::HostingMode::WinUI3_Compositor;
+        return InitializeCommon(compositor, width, height);
+    }
+
+    bool RiveControl::InitializeWithCoreWindow(winrt::Windows::UI::Composition::Compositor const& compositor,
+                                              winrt::Windows::UI::Core::CoreWindow const& window,
+                                              int32_t width, int32_t height)
+    {
+        // Legacy method - redirect to new UWP method for backward compatibility
+        return InitializeForUWP(compositor, window, width, height);
+    }
+
+    bool RiveControl::InitializeForUWP(winrt::Windows::UI::Composition::Compositor const& compositor,
+                                       winrt::Windows::UI::Core::CoreWindow const& window,
+                                       int32_t width, int32_t height)
+    {
+        m_hostingMode = winrt::WinRive::HostingMode::UWP_CoreWindow;
+        
+        if (!InitializeCommon(compositor, width, height))
+        {
+            return false;
+        }
+
+        // Store CoreWindow for backward compatibility
+        m_coreWindow = window;
+        if (m_coreWindow)
+        {
+            m_pointerMovedToken = m_coreWindow.PointerMoved({ this, &RiveControl::OnPointerMoved });
+            m_pointerPressedToken = m_coreWindow.PointerPressed({ this, &RiveControl::OnPointerPressed });
+            m_pointerReleasedToken = m_coreWindow.PointerReleased({ this, &RiveControl::OnPointerReleased });
+            
+            OutputDebugStringW(L"RiveControl: Initialized for UWP with CoreWindow\n");
+        }
+
+        return true;
+    }
+
+    bool RiveControl::InitializeForWinUI3(winrt::Windows::UI::Composition::Compositor const& compositor,
+                                          int32_t width, int32_t height)
+    {
+        m_hostingMode = winrt::WinRive::HostingMode::WinUI3_Compositor;
+        
+        if (!InitializeCommon(compositor, width, height))
+        {
+            return false;
+        }
+
+        OutputDebugStringW(L"RiveControl: Initialized for WinUI3\n");
+        return true;
+    }
+
+    bool RiveControl::InitializeForWin32(winrt::Windows::UI::Composition::Compositor const& compositor,
+                                         uint64_t hwnd,
+                                         int32_t width, int32_t height)
+    {
+        m_hostingMode = winrt::WinRive::HostingMode::Win32_HWND;
+        
+        if (!InitializeCommon(compositor, width, height))
+        {
+            return false;
+        }
+
+        // Store HWND for Win32 hosting
+        m_hwnd = reinterpret_cast<HWND>(hwnd);
+
+        OutputDebugStringW(L"RiveControl: Initialized for Win32\n");
+        return true;
+    }
+
+    winrt::WinRive::HostingMode RiveControl::GetHostingMode()
+    {
+        return m_hostingMode;
+    }
+
+    bool RiveControl::InitializeCommon(winrt::Windows::UI::Composition::Compositor const& compositor, int32_t width, int32_t height)
+    {
         if (m_riveRenderer)
         {
             m_width = width;
@@ -22,31 +100,6 @@ namespace winrt::WinRive::implementation
             return m_riveRenderer->Initialize(compositor, width, height);
         }
         return false;
-    }
-
-    bool RiveControl::InitializeWithCoreWindow(winrt::Windows::UI::Composition::Compositor const& compositor,
-                                              winrt::Windows::UI::Core::CoreWindow const& window,
-                                              int32_t width, int32_t height)
-    {
-        if (!Initialize(compositor, width, height))
-        {
-            return false;
-        }
-
-        // Store the CoreWindow reference
-        m_coreWindow = window;
-
-        // Register for pointer events
-        if (m_coreWindow)
-        {
-            m_pointerMovedToken = m_coreWindow.PointerMoved({ this, &RiveControl::OnPointerMoved });
-            m_pointerPressedToken = m_coreWindow.PointerPressed({ this, &RiveControl::OnPointerPressed });
-            m_pointerReleasedToken = m_coreWindow.PointerReleased({ this, &RiveControl::OnPointerReleased });
-            
-            OutputDebugStringW(L"RiveControl: Registered for CoreWindow pointer events\n");
-        }
-
-        return true;
     }
 
     winrt::Windows::UI::Composition::Visual RiveControl::GetVisual()
@@ -123,24 +176,31 @@ namespace winrt::WinRive::implementation
         {
             m_riveRenderer->SetSize(width, height);
         }
+        
+        // TODO: Update input provider bounds if available in future
     }
 
     void RiveControl::Shutdown()
     {
-        // Unregister event handlers
-        if (m_coreWindow)
-        {
-            m_coreWindow.PointerMoved(m_pointerMovedToken);
-            m_coreWindow.PointerPressed(m_pointerPressedToken);
-            m_coreWindow.PointerReleased(m_pointerReleasedToken);
-            m_coreWindow = nullptr;
-        }
+        CleanupInput();
 
         if (m_riveRenderer)
         {
             m_riveRenderer->StopRenderThread();
             m_riveRenderer->Shutdown();
             m_riveRenderer.reset();
+        }
+    }
+
+    void RiveControl::CleanupInput()
+    {
+        // Cleanup legacy CoreWindow handlers
+        if (m_coreWindow)
+        {
+            m_coreWindow.PointerMoved(m_pointerMovedToken);
+            m_coreWindow.PointerPressed(m_pointerPressedToken);
+            m_coreWindow.PointerReleased(m_pointerReleasedToken);
+            m_coreWindow = nullptr;
         }
     }
 
@@ -158,8 +218,8 @@ namespace winrt::WinRive::implementation
         if (IsPointInBounds(point))
         {
             // Convert CoreWindow coordinates to RiveRenderer bounds
-            float rendererX = point.X;
-            float rendererY = point.Y;
+            float rendererX = static_cast<float>(point.X);
+            float rendererY = static_cast<float>(point.Y);
             
             // Forward to RiveRenderer input queue
             if (m_riveRenderer) {
@@ -176,8 +236,8 @@ namespace winrt::WinRive::implementation
         if (IsPointInBounds(point))
         {
             // Convert CoreWindow coordinates to RiveRenderer bounds
-            float rendererX = point.X;
-            float rendererY = point.Y;
+            float rendererX = static_cast<float>(point.X);
+            float rendererY = static_cast<float>(point.Y);
             
             // Forward to RiveRenderer input queue
             if (m_riveRenderer) {
@@ -194,8 +254,8 @@ namespace winrt::WinRive::implementation
         if (IsPointInBounds(point))
         {
             // Convert CoreWindow coordinates to RiveRenderer bounds
-            float rendererX = point.X;
-            float rendererY = point.Y;
+            float rendererX = static_cast<float>(point.X);
+            float rendererY = static_cast<float>(point.Y);
             
             // Forward to RiveRenderer input queue
             if (m_riveRenderer) {

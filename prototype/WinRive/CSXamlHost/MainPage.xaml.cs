@@ -38,6 +38,10 @@ namespace CSXamlHost
             // Initialize the Rive control with the compositor, CoreWindow, and initial size
             if (_riveControl.InitializeWithCoreWindow(compositor, coreWindow, (int)RiveContainer.ActualWidth, (int)RiveContainer.ActualHeight))
             {
+                // Test the new hosting mode functionality
+                var hostingMode = _riveControl.GetHostingMode();
+                Debug.WriteLine($"WinRive initialized with hosting mode: {hostingMode}");
+                UpdateStatus($"Hosting mode: {hostingMode}");
                 // Get the visual from the Rive control
                 var riveVisual = _riveControl.GetVisual();
 

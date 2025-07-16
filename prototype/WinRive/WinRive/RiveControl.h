@@ -17,6 +17,21 @@ namespace winrt::WinRive::implementation
                                     winrt::Windows::UI::Core::CoreWindow const& window,
                                     int32_t width, int32_t height);
         
+        // New initialization methods for different hosting scenarios
+        bool InitializeForUWP(winrt::Windows::UI::Composition::Compositor const& compositor,
+                              winrt::Windows::UI::Core::CoreWindow const& window,
+                              int32_t width, int32_t height);
+                              
+        bool InitializeForWinUI3(winrt::Windows::UI::Composition::Compositor const& compositor,
+                                 int32_t width, int32_t height);
+                                 
+        bool InitializeForWin32(winrt::Windows::UI::Composition::Compositor const& compositor,
+                                uint64_t hwnd,
+                                int32_t width, int32_t height);
+        
+        // Get the current hosting mode
+        winrt::WinRive::HostingMode GetHostingMode();
+        
         // Get the visual that can be added to the composition tree
         winrt::Windows::UI::Composition::Visual GetVisual();
         
@@ -64,19 +79,30 @@ namespace winrt::WinRive::implementation
         // The Rive renderer instance
         std::unique_ptr<RiveRenderer> m_riveRenderer;
         
-        // CoreWindow for input handling
-        winrt::Windows::UI::Core::CoreWindow m_coreWindow{ nullptr };
+        // Current hosting mode
+        winrt::WinRive::HostingMode m_hostingMode{ winrt::WinRive::HostingMode::UWP_CoreWindow };
         
-        // Event tokens for cleanup
+        // Visual bounds
+        int32_t m_width{ 0 };
+        int32_t m_height{ 0 };
+        
+        // Win32 hosting specific
+        HWND m_hwnd{ nullptr };
+        
+        // Backward compatibility - CoreWindow support
+        winrt::Windows::UI::Core::CoreWindow m_coreWindow{ nullptr };
         winrt::event_token m_pointerMovedToken;
         winrt::event_token m_pointerPressedToken;
         winrt::event_token m_pointerReleasedToken;
         
-        // Visual bounds for hit testing
-        int32_t m_width{ 0 };
-        int32_t m_height{ 0 };
+        // Placeholder for future input provider
+        void* m_inputProvider{ nullptr };
         
-        // Event handlers
+        // Internal initialization
+        bool InitializeCommon(winrt::Windows::UI::Composition::Compositor const& compositor, 
+                             int32_t width, int32_t height);
+        
+        // Legacy event handlers for backward compatibility
         void OnPointerMoved(winrt::Windows::UI::Core::CoreWindow const& sender,
                            winrt::Windows::UI::Core::PointerEventArgs const& args);
         void OnPointerPressed(winrt::Windows::UI::Core::CoreWindow const& sender,
@@ -84,8 +110,9 @@ namespace winrt::WinRive::implementation
         void OnPointerReleased(winrt::Windows::UI::Core::CoreWindow const& sender,
                               winrt::Windows::UI::Core::PointerEventArgs const& args);
         
-        // Helper to check if point is within visual bounds
+        // Helper methods
         bool IsPointInBounds(winrt::Windows::Foundation::Point const& point);
+        void CleanupInput();
     };
 }
 
