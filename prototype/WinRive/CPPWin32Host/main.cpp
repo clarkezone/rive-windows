@@ -130,8 +130,12 @@ struct Window : DesktopWindow<Window>
         case WM_LBUTTONUP:
         case WM_RBUTTONDOWN:
         case WM_RBUTTONUP:
-            // Forward mouse messages to WinRive for Rive interaction
-            // The WinRive control handles input through its Win32 hosting mode
+        case WM_MOUSELEAVE:
+            // Forward mouse messages to WinRive control using new API
+            if (m_riveControl)
+            {
+                HandleMouseInput(message, wparam, lparam);
+            }
             break;
         }
 
@@ -158,8 +162,8 @@ struct Window : DesktopWindow<Window>
             // Create WinRive control
             m_riveControl = winrt::WinRive::RiveControl();
             
-            // Initialize for Win32 hosting with HWND
-            if (m_riveControl.InitializeForWin32(compositor, reinterpret_cast<uint64_t>(m_window), width, height))
+            // Initialize with simplified API
+            if (m_riveControl.Initialize(compositor, width, height))
             {
                 // Get the visual from the Rive control and add to composition tree
                 auto riveVisual = m_riveControl.GetVisual();
@@ -173,7 +177,7 @@ struct Window : DesktopWindow<Window>
                     try 
                     {
                         // Try to load from a common location - update this path as needed
-                        if (m_riveControl.LoadRiveFile(L"C:\\Users\\jeclarke\\Desktop\\meeting_ui.riv"))
+                        if (m_riveControl.LoadRiveFile(L"C:\\Users\\jeclarke\\Desktop\\world_creator.riv"))
                         {
                             m_riveControl.StartRenderLoop();
                         }
@@ -200,6 +204,33 @@ struct Window : DesktopWindow<Window>
             AddVisual(visuals, 220.0f, 100.0f);
             AddVisual(visuals, 100.0f, 220.0f);
             AddVisual(visuals, 220.0f, 220.0f);
+        }
+    }
+
+    void HandleMouseInput(UINT message, WPARAM wparam, LPARAM lparam) noexcept
+    {
+        // Extract coordinates from lparam
+        int x = GET_X_LPARAM(lparam);
+        int y = GET_Y_LPARAM(lparam);
+
+        // Convert to float for the new API
+        float fx = static_cast<float>(x);
+        float fy = static_cast<float>(y);
+
+        // Forward to RiveControl using the new simplified API
+        switch (message)
+        {
+        case WM_MOUSEMOVE:
+            m_riveControl.QueuePointerMove(fx, fy);
+            break;
+        case WM_LBUTTONDOWN:
+        case WM_RBUTTONDOWN:
+            m_riveControl.QueuePointerPress(fx, fy);
+            break;
+        case WM_LBUTTONUP:
+        case WM_RBUTTONUP:
+            m_riveControl.QueuePointerRelease(fx, fy);
+            break;
         }
     }
 

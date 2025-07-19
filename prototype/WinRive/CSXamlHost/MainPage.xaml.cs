@@ -32,16 +32,14 @@ namespace CSXamlHost
             // Get the compositor from the XAML visual tree
             var compositor = ElementCompositionPreview.GetElementVisual(RiveContainer).Compositor;
 
-            // Get the CoreWindow for input handling
-            var coreWindow = Windows.UI.Core.CoreWindow.GetForCurrentThread();
-
-            // Initialize the Rive control with the compositor, CoreWindow, and initial size
-            if (_riveControl.InitializeWithCoreWindow(compositor, coreWindow, (int)RiveContainer.ActualWidth, (int)RiveContainer.ActualHeight))
+            // Initialize the Rive control with the simple new API
+            if (_riveControl.Initialize(compositor, (int)RiveContainer.ActualWidth, (int)RiveContainer.ActualHeight))
             {
-                // Test the new hosting mode functionality
-                var hostingMode = _riveControl.GetHostingMode();
-                Debug.WriteLine($"WinRive initialized with hosting mode: {hostingMode}");
-                UpdateStatus($"Hosting mode: {hostingMode}");
+                Debug.WriteLine("WinRive initialized successfully");
+                UpdateStatus("WinRive initialized");
+                
+                // Set up CoreWindow input handling for this UWP host
+                SetupInputHandling();
                 // Get the visual from the Rive control
                 var riveVisual = _riveControl.GetVisual();
 
@@ -344,6 +342,93 @@ namespace CSXamlHost
             PlayButton.IsEnabled = false;
             PauseButton.IsEnabled = false;
             ResetButton.IsEnabled = false;
+        }
+
+        private void SetupInputHandling()
+        {
+            // Set up CoreWindow input handling for UWP
+            var coreWindow = Windows.UI.Core.CoreWindow.GetForCurrentThread();
+            if (coreWindow != null)
+            {
+                coreWindow.PointerMoved += CoreWindow_PointerMoved;
+                coreWindow.PointerPressed += CoreWindow_PointerPressed;
+                coreWindow.PointerReleased += CoreWindow_PointerReleased;
+                
+                Debug.WriteLine("CoreWindow input handling set up");
+            }
+            else
+            {
+                Debug.WriteLine("Failed to get CoreWindow for input handling");
+            }
+        }
+
+        private void CoreWindow_PointerMoved(Windows.UI.Core.CoreWindow sender, Windows.UI.Core.PointerEventArgs args)
+        {
+            if (_riveControl != null)
+            {
+                var point = args.CurrentPoint.Position;
+                
+                // Convert to RiveContainer relative coordinates
+                var containerBounds = RiveContainer.TransformToVisual(null).TransformBounds(
+                    new Windows.Foundation.Rect(0, 0, RiveContainer.ActualWidth, RiveContainer.ActualHeight));
+                
+                // Check if pointer is within the RiveContainer bounds
+                if (point.X >= containerBounds.Left && point.X <= containerBounds.Right &&
+                    point.Y >= containerBounds.Top && point.Y <= containerBounds.Bottom)
+                {
+                    // Convert to container-relative coordinates
+                    float relativeX = (float)(point.X - containerBounds.Left);
+                    float relativeY = (float)(point.Y - containerBounds.Top);
+                    
+                    _riveControl.QueuePointerMove(relativeX, relativeY);
+                }
+            }
+        }
+
+        private void CoreWindow_PointerPressed(Windows.UI.Core.CoreWindow sender, Windows.UI.Core.PointerEventArgs args)
+        {
+            if (_riveControl != null)
+            {
+                var point = args.CurrentPoint.Position;
+                
+                // Convert to RiveContainer relative coordinates
+                var containerBounds = RiveContainer.TransformToVisual(null).TransformBounds(
+                    new Windows.Foundation.Rect(0, 0, RiveContainer.ActualWidth, RiveContainer.ActualHeight));
+                
+                // Check if pointer is within the RiveContainer bounds
+                if (point.X >= containerBounds.Left && point.X <= containerBounds.Right &&
+                    point.Y >= containerBounds.Top && point.Y <= containerBounds.Bottom)
+                {
+                    // Convert to container-relative coordinates
+                    float relativeX = (float)(point.X - containerBounds.Left);
+                    float relativeY = (float)(point.Y - containerBounds.Top);
+                    
+                    _riveControl.QueuePointerPress(relativeX, relativeY);
+                }
+            }
+        }
+
+        private void CoreWindow_PointerReleased(Windows.UI.Core.CoreWindow sender, Windows.UI.Core.PointerEventArgs args)
+        {
+            if (_riveControl != null)
+            {
+                var point = args.CurrentPoint.Position;
+                
+                // Convert to RiveContainer relative coordinates
+                var containerBounds = RiveContainer.TransformToVisual(null).TransformBounds(
+                    new Windows.Foundation.Rect(0, 0, RiveContainer.ActualWidth, RiveContainer.ActualHeight));
+                
+                // Check if pointer is within the RiveContainer bounds
+                if (point.X >= containerBounds.Left && point.X <= containerBounds.Right &&
+                    point.Y >= containerBounds.Top && point.Y <= containerBounds.Bottom)
+                {
+                    // Convert to container-relative coordinates
+                    float relativeX = (float)(point.X - containerBounds.Left);
+                    float relativeY = (float)(point.Y - containerBounds.Top);
+                    
+                    _riveControl.QueuePointerRelease(relativeX, relativeY);
+                }
+            }
         }
 
         private void UpdateStatus(string message)

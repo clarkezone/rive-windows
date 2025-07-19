@@ -93,14 +93,14 @@
       <PrecompiledHeaderOutputFile>$(IntDir)pch.pch</PrecompiledHeaderOutputFile>
       <WarningLevel>Level4</WarningLevel>
       <AdditionalOptions>%(AdditionalOptions) /bigobj /FS</AdditionalOptions>
-      <PreprocessorDefinitions>_WINRT_DLL;WIN32_LEAN_AND_MEAN;WINRT_LEAN_AND_MEAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINRT_DLL;WINRT_LEAN_AND_MEAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalUsingDirectories>$(WindowsSDK_WindowsMetadata);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <ModuleDefinitionFile>WinRive.def</ModuleDefinitionFile>
-      <AdditionalDependencies>d3d11.lib;dxgi.lib;d2d1.lib;dwrite.lib;windowsapp.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\rive.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\rive_pls_renderer.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\rive_decoders.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\rive_harfbuzz.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\rive_sheenbidi.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\rive_yoga.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\zlib.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\libpng.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\libjpeg.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\libwebp.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\miniaudio.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;dxgi.lib;d2d1.lib;dwrite.lib;windowsapp.lib;user32.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\rive.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\rive_pls_renderer.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\rive_decoders.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\rive_harfbuzz.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\rive_sheenbidi.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\rive_yoga.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\zlib.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\libpng.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\libjpeg.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\libwebp.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\miniaudio.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/NODEFAULTLIB:libcmt.lib /NODEFAULTLIB:msvcrt.lib /NODEFAULTLIB:libcmtd.lib /FORCE:MULTIPLE %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
@@ -126,7 +126,7 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>d3d11.lib;dxgi.lib;d2d1.lib;dwrite.lib;windowsapp.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\rive.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\rive_pls_renderer.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\rive_decoders.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\rive_harfbuzz.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\rive_sheenbidi.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\rive_yoga.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\zlib.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\libpng.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\libjpeg.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\libwebp.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\miniaudio.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;dxgi.lib;d2d1.lib;dwrite.lib;windowsapp.lib;user32.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\rive.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\rive_pls_renderer.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\rive_decoders.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\rive_harfbuzz.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\rive_sheenbidi.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\rive_yoga.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\zlib.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\libpng.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\libjpeg.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\libwebp.lib;C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug\miniaudio.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/NODEFAULTLIB:libcmt.lib /NODEFAULTLIB:msvcrt.lib /NODEFAULTLIB:libcmtd.lib /FORCE:MULTIPLE %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
@@ -138,6 +138,7 @@
     <ClInclude Include="RiveControl.h">
       <DependentUpon>RiveControl.idl</DependentUpon>
     </ClInclude>
+    <ClInclude Include="InputProvider.h" />
     <ClInclude Include="..\..\shared\rive_renderer.h" />
     <ClInclude Include="..\..\shared\dx_renderer.h" />
   </ItemGroup>
@@ -151,6 +152,7 @@
     <ClCompile Include="RiveControl.cpp">
       <DependentUpon>RiveControl.idl</DependentUpon>
     </ClCompile>
+    <ClCompile Include="InputProvider.cpp" />
     <ClCompile Include="..\..\shared\rive_renderer.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>

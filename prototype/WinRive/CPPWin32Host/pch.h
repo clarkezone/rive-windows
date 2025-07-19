@@ -10,6 +10,7 @@
 
 // Windows headers
 #include <windows.h>
+#include <windowsx.h>
 #include <DispatcherQueue.h>
 
 // WinRT headers
