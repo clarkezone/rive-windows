@@ -42,14 +42,11 @@ namespace CSWinUI3XAMLHost
                 // Create the Rive control
                 _riveControl = new WinRive.RiveControl();
 
-                // Get the compositor from the XAML visual tree
-                var microsoftCompositor = ElementCompositionPreview.GetElementVisual(RiveContainer).Compositor;
-                
-                // Cast to the Windows.UI.Composition.Compositor interface
-                var windowsCompositor = (Windows.UI.Composition.Compositor)(object)microsoftCompositor;
+                Windows.UI.Composition.Compositor systemCompositor = new Windows.UI.Composition.Compositor();
+
 
                 // Initialize the Rive control
-                if (_riveControl.Initialize(windowsCompositor, (int)RiveContainer.ActualWidth, (int)RiveContainer.ActualHeight))
+                if (_riveControl.Initialize(systemCompositor, (int)RiveContainer.ActualWidth, (int)RiveContainer.ActualHeight))
                 {
                     Debug.WriteLine("WinRive initialized successfully");
                     UpdateStatus("WinRive initialized");

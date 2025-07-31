@@ -197,13 +197,13 @@ void RiveRenderer::CreateSwapChain()
     swapChainDesc.Scaling = DXGI_SCALING_STRETCH;
     swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
     swapChainDesc.AlphaMode = DXGI_ALPHA_MODE_PREMULTIPLIED;
-
-    winrt::check_hresult(m_dxgiFactory->CreateSwapChainForComposition(
+    auto hr = m_dxgiFactory->CreateSwapChainForComposition(
         m_d3dDevice.get(),
         &swapChainDesc,
         nullptr,
         m_swapChain.put()
-    ));
+    );
+    winrt::check_hresult(hr);
 }
 
 void RiveRenderer::CreateRenderTarget()

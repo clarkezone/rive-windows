@@ -1,7 +1,8 @@
 {
   "profiles": {
     "CSWinUI3XAMLHost (Package)": {
-      "commandName": "MsixPackage"
+      "commandName": "MsixPackage",
+      "nativeDebugging": true
     },
     "CSWinUI3XAMLHost (Unpackaged)": {
       "commandName": "Project"
