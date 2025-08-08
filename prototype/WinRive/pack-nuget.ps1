@@ -53,8 +53,8 @@ param(
 $ErrorActionPreference = "Stop"
 $InformationPreference = if ($ShowDetails) { "Continue" } else { "SilentlyContinue" }
 
-# Platform configurations
-$Platforms = @("Win32", "x64", "ARM64")
+# Platform configurations (temporarily just x64 for testing)
+$Platforms = @("x64")
 $SolutionFile = "WinRive.sln"
 $NuSpecFile = "WinRive.nuspec"
 
@@ -190,14 +190,14 @@ function Verify-BuildArtifacts {
     # Check for WinRT metadata and DLLs for each platform
     foreach ($platform in $Platforms) {
         $platformDir = switch ($platform) {
-            "Win32" { "x86" }
+            "x86" { "x86" }
             "x64" { "x64" }
             "ARM64" { "ARM64" }
         }
         
-        # WinRive artifacts
-        $winmdPath = "Debug\WinRive\WinRive.winmd"  # Should be same for all platforms
-        $dllPath = "Debug\WinRive\WinRive.dll"
+        # WinRive artifacts  
+        $winmdPath = "WinRive\$platformDir\$Configuration\Merged\WinRive.winmd"
+        $dllPath = "$platformDir\$Configuration\WinRive\WinRive.dll"
         
         if (-not (Test-Path $winmdPath)) {
             Write-Error-And-Exit "Missing WinRT metadata: $winmdPath"
@@ -207,8 +207,8 @@ function Verify-BuildArtifacts {
             Write-Error-And-Exit "Missing WinRive DLL: $dllPath"
         }
         
-        # WinRiveProjection artifacts
-        $projectionPath = "WinRiveProjection\bin\$Configuration\net9.0-windows10.0.26100.0\WinRiveProjection.dll"
+        # WinRiveProjection artifacts (projection generates WinRive.dll in its output)
+        $projectionPath = "WinRiveProjection\bin\$platformDir\$Configuration\net9.0-windows10.0.26100.0\WinRive.dll"
         if (-not (Test-Path $projectionPath)) {
             Write-Error-And-Exit "Missing WinRiveProjection DLL: $projectionPath"
         }
