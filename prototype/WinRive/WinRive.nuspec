@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>WinRive</id>
+    <version>1.0.0</version>
+    <title>WinRive - Rive Animation Runtime for Windows</title>
+    <authors>WinRive Team</authors>
+    <owners>WinRive Team</owners>
+    <description>
+      WinRive provides a native Windows Runtime component for integrating Rive animations into Windows applications.
+      This package includes both the native WinRT component and C# projections for .NET 9 applications targeting Windows 10.0.26100.0 and later.
+      
+      Features:
+      - Native WinRT component with high-performance Rive animation rendering
+      - C# projections for easy integration with .NET applications
+      - Multi-platform support (x86, x64, ARM64)
+      - Bundled Rive runtime dependencies
+      - Support for WinUI 3, UWP, and Win32 applications
+    </description>
+    <releaseNotes>
+      Initial release of WinRive NuGet package.
+      - Native WinRT component for Rive animation support
+      - C# projections for .NET 9 applications
+      - Multi-platform support (x86, x64, ARM64)
+      - Automatic deployment of native dependencies
+    </releaseNotes>
+    <copyright>Copyright © WinRive Team</copyright>
+    <tags>rive animation winrt windows winui uwp graphics</tags>
+    <license type="expression">MIT</license>
+    <projectUrl>https://github.com/clarkezone/rive-windows</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    
+    <dependencies>
+      <group targetFramework="net9.0-windows10.0.26100.0">
+        <dependency id="Microsoft.Windows.CsWinRT" version="2.2.0" />
+        <dependency id="Microsoft.Windows.SDK.BuildTools" version="10.0.26100.1" />
+      </group>
+    </dependencies>
+  </metadata>
+  
+  <files>
+    <!-- C# Projection Assembly for .NET 9 -->
+    <file src="WinRiveProjection\bin\Release\net9.0-windows10.0.26100.0\WinRiveProjection.dll" 
+          target="lib\net9.0-windows10.0.26100.0\WinRiveProjection.dll" />
+    <file src="WinRiveProjection\bin\Release\net9.0-windows10.0.26100.0\WinRiveProjection.pdb" 
+          target="lib\net9.0-windows10.0.26100.0\WinRiveProjection.pdb" />
+    
+    <!-- WinRT Metadata -->
+    <file src="WinRive\x86\Release\Merged\WinRive.winmd" 
+          target="lib\winrt\WinRive.winmd" />
+    
+    <!-- Native Libraries - x86 -->
+    <file src="WinRive\x86\Release\WinRive.dll" 
+          target="runtimes\win-x86\native\WinRive.dll" />
+    <file src="WinRive\x86\Release\WinRive.pdb" 
+          target="runtimes\win-x86\native\WinRive.pdb" />
+    
+    <!-- Native Libraries - x64 -->
+    <file src="WinRive\x64\Release\WinRive.dll" 
+          target="runtimes\win-x64\native\WinRive.dll" />
+    <file src="WinRive\x64\Release\WinRive.pdb" 
+          target="runtimes\win-x64\native\WinRive.pdb" />
+    
+    <!-- Native Libraries - ARM64 -->
+    <file src="WinRive\ARM64\Release\WinRive.dll" 
+          target="runtimes\win-arm64\native\WinRive.dll" />
+    <file src="WinRive\ARM64\Release\WinRive.pdb" 
+          target="runtimes\win-arm64\native\WinRive.pdb" />
+    
+    <!-- Rive Runtime Dependencies - x86 -->
+    <file src="Dependencies\x86\Release\*.dll" 
+          target="runtimes\win-x86\native\" />
+    
+    <!-- Rive Runtime Dependencies - x64 -->
+    <file src="Dependencies\x64\Release\*.dll" 
+          target="runtimes\win-x64\native\" />
+    
+    <!-- Rive Runtime Dependencies - ARM64 -->
+    <file src="Dependencies\ARM64\Release\*.dll" 
+          target="runtimes\win-arm64\native\" />
+    
+    <!-- MSBuild Integration Files -->
+    <file src="build\WinRive.props" 
+          target="build\WinRive.props" />
+    <file src="build\WinRive.targets" 
+          target="build\WinRive.targets" />
+    
+    <!-- Content and Documentation -->
+    <file src="README.md" 
+          target="README.md" />
+    <file src="LICENSE" 
+          target="LICENSE" />
+  </files>
+</package>

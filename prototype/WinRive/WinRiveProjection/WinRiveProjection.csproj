@@ -5,24 +5,44 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Platforms>x64;x86;ARM64</Platforms>
-	<PublishAot>true</PublishAot>
-	  <DisableRuntimeMarshalling>true</DisableRuntimeMarshalling>
+    <PublishAot>true</PublishAot>
+    <DisableRuntimeMarshalling>true</DisableRuntimeMarshalling>
   </PropertyGroup>
-	<PropertyGroup>
-		<CSWinRTIncludes>
-			WinRive;
-		</CSWinRTIncludes>
-		<CSWinRTWindowsMetadata>local</CSWinRTWindowsMetadata>
-		<CsWinRTGenerateProjection>true</CsWinRTGenerateProjection>
-		<CsWinRTIIDOptimizerOptOut>true</CsWinRTIIDOptimizerOptOut>
-	</PropertyGroup>
-	<ItemGroup>
-		<ProjectReference Include="..\WinRive\WinRive.vcxproj" />
-		<CSWinRTInputs Include="..\WinRive\$(Platform)\$(Configuration)\Merged\WinRive.winmd" />
-	</ItemGroup>
+  
+  <!-- NuGet Package Properties (only active when BuildingForNuGet=true) -->
+  <PropertyGroup Condition="'$(BuildingForNuGet)' == 'true'">
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>WinRive</PackageId>
+    <PackageVersion>1.0.0</PackageVersion>
+    <Title>WinRive - Rive Animation Runtime for Windows</Title>
+    <Authors>WinRive Team</Authors>
+    <Company>WinRive Team</Company>
+    <Description>C# projections for WinRive native Windows Runtime component. Enables easy integration of Rive animations into .NET 9 applications.</Description>
+    <Copyright>Copyright © WinRive Team</Copyright>
+    <PackageTags>rive;animation;winrt;windows;winui;uwp;csharp;dotnet</PackageTags>
+    <PackageProjectUrl>https://github.com/clarkezone/rive-windows</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+  
+  <PropertyGroup>
+    <CSWinRTIncludes>WinRive;</CSWinRTIncludes>
+    <CSWinRTWindowsMetadata>local</CSWinRTWindowsMetadata>
+    <CsWinRTGenerateProjection>true</CsWinRTGenerateProjection>
+    <CsWinRTIIDOptimizerOptOut>true</CsWinRTIIDOptimizerOptOut>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\WinRive\WinRive.vcxproj" />
+    <CSWinRTInputs Include="..\WinRive\$(Platform)\$(Configuration)\Merged\WinRive.winmd" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<PackageReference Include="Microsoft.Windows.CSWinRT" Version="2.2.0" />
-	</ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Windows.CSWinRT" Version="2.2.0" />
+  </ItemGroup>
 
 </Project>

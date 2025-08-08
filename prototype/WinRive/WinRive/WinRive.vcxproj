@@ -17,6 +17,25 @@
     <WindowsTargetPlatformVersion Condition=" '$(WindowsTargetPlatformVersion)' == '' ">10.0.26100.0</WindowsTargetPlatformVersion>
     <WindowsTargetPlatformMinVersion>10.0.17134.0</WindowsTargetPlatformMinVersion>
   </PropertyGroup>
+  
+  <!-- NuGet Package Properties (only active when BuildingForNuGet=true) -->
+  <PropertyGroup Condition="'$(BuildingForNuGet)' == 'true'" Label="NuGet Package Configuration">
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>WinRive</PackageId>
+    <PackageVersion>1.0.0</PackageVersion>
+    <Title>WinRive - Rive Animation Runtime for Windows</Title>
+    <Authors>WinRive Team</Authors>
+    <Company>WinRive Team</Company>
+    <Description>Native Windows Runtime component for integrating Rive animations into Windows applications. Includes C# projections for .NET 9 applications.</Description>
+    <Copyright>Copyright © WinRive Team</Copyright>
+    <PackageTags>rive;animation;winrt;windows;winui;uwp;graphics</PackageTags>
+    <PackageProjectUrl>https://github.com/clarkezone/rive-windows</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|ARM">
@@ -185,5 +204,48 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.props'))" />
     <Error Condition="!Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.targets'))" />
+  </Target>
+  
+  <!-- NuGet Package: Stage Rive runtime dependencies for packaging -->
+  <Target Name="StageRiveRuntimeDependencies" AfterTargets="Build" Condition="'$(BuildingForNuGet)' == 'true'">
+    <PropertyGroup>
+      <!-- Map platform names to match NuGet conventions -->
+      <NuGetPlatform Condition="'$(Platform)' == 'Win32'">win-x86</NuGetPlatform>
+      <NuGetPlatform Condition="'$(Platform)' == 'x64'">win-x64</NuGetPlatform>
+      <NuGetPlatform Condition="'$(Platform)' == 'ARM64'">win-arm64</NuGetPlatform>
+      
+      <!-- Rive runtime source path (currently hardcoded, could be made configurable) -->
+      <RiveRuntimePath>C:\Users\jeclarke\src\github.com\rive-app\rive-runtime\renderer\out\debug</RiveRuntimePath>
+      
+      <!-- Staging directory for dependencies -->
+      <DependenciesStageDir>$(SolutionDir)Dependencies\$(NuGetPlatform)\$(Configuration)</DependenciesStageDir>
+    </PropertyGroup>
+    
+    <ItemGroup>
+      <!-- Define Rive runtime libraries that need to be included in package -->
+      <RiveRuntimeLibraries Include="$(RiveRuntimePath)\rive.lib" />
+      <RiveRuntimeLibraries Include="$(RiveRuntimePath)\rive_pls_renderer.lib" />
+      <RiveRuntimeLibraries Include="$(RiveRuntimePath)\rive_decoders.lib" />
+      <RiveRuntimeLibraries Include="$(RiveRuntimePath)\rive_harfbuzz.lib" />
+      <RiveRuntimeLibraries Include="$(RiveRuntimePath)\rive_sheenbidi.lib" />
+      <RiveRuntimeLibraries Include="$(RiveRuntimePath)\rive_yoga.lib" />
+      <RiveRuntimeLibraries Include="$(RiveRuntimePath)\zlib.lib" />
+      <RiveRuntimeLibraries Include="$(RiveRuntimePath)\libpng.lib" />
+      <RiveRuntimeLibraries Include="$(RiveRuntimePath)\libjpeg.lib" />
+      <RiveRuntimeLibraries Include="$(RiveRuntimePath)\libwebp.lib" />
+      <RiveRuntimeLibraries Include="$(RiveRuntimePath)\miniaudio.lib" />
+    </ItemGroup>
+    
+    <MakeDir Directories="$(DependenciesStageDir)" />
+    
+    <Message Text="Staging Rive runtime dependencies for NuGet package ($(NuGetPlatform)/$(Configuration))..." Importance="high" />
+    
+    <!-- Copy runtime libraries to staging directory for NuGet packaging -->
+    <Copy SourceFiles="@(RiveRuntimeLibraries)" 
+          DestinationFolder="$(DependenciesStageDir)" 
+          SkipUnchangedFiles="true"
+          ContinueOnError="true" />
+    
+    <Message Text="Staged @(RiveRuntimeLibraries->Count()) Rive runtime libraries to $(DependenciesStageDir)" Importance="normal" />
   </Target>
 </Project>
