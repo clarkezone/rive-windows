@@ -39,17 +39,13 @@
   </metadata>
   
   <files>
-    <!-- C# Projection Assembly for .NET 9 (the projection generates WinRive.dll, not WinRiveProjection.dll) -->
+    <!-- C# Projection Assembly for .NET 9 - Using correct projection DLL -->
+    <file src="WinRiveProjection\bin\x64\Debug\net9.0-windows10.0.26100.0\WinRiveProjection.dll"
+          target="lib\net9.0-windows10.0.26100.0\WinRiveProjection.dll" />
+    
+    <!-- C# Projection Dependency - WinRT generated assembly -->
     <file src="WinRiveProjection\bin\x64\Debug\net9.0-windows10.0.26100.0\WinRive.dll" 
           target="lib\net9.0-windows10.0.26100.0\WinRive.dll" />
-    
-    <!-- WinRT Metadata -->
-    <file src="WinRive\x64\Debug\Merged\WinRive.winmd" 
-          target="lib\winrt\WinRive.winmd" />
-    
-    <!-- Native Libraries - x64 only (we're only building x64 for now) -->
-    <file src="x64\Debug\WinRive\WinRive.dll" 
-          target="runtimes\win-x64\native\WinRive.dll" />
     
     <!-- MSBuild Integration Files -->
     <file src="build\WinRive.props" 
