@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  
+  <!-- Import properties if not already imported -->
+  <Import Project="WinRive.props" Condition="'$(WinRivePackageVersion)' == ''" />
+  
+  <!-- Import common validation targets -->
+  <Import Project="WinRive.common.targets" />
+  
+  <!-- Define native libraries to deploy based on platform -->
+  <ItemGroup Condition="'$(TargetPlatformIdentifier)' != 'UAP'">
+    <!-- WinRive native library -->
+    <WinRiveNativeLibraries Include="$(WinRiveNativePath)\WinRive.dll" Condition="Exists('$(WinRiveNativePath)\WinRive.dll')" />
+    <WinRiveNativeLibraries Include="$(WinRiveNativePath)\WinRive.pdb" Condition="Exists('$(WinRiveNativePath)\WinRive.pdb') And '$(Configuration)' == 'Debug'" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <WindowsMetadataReference Include="$(WinRiveUWPWinMDPath)" Implementation="$(ImplementationDllName)" />
+  </ItemGroup>
+  
+  <!-- Copy native libraries to output directory for non-UWP apps -->
+  <Target Name="CopyWinRiveNativeLibraries" 
+          BeforeTargets="Build" 
+          Condition="'$(TargetPlatformIdentifier)' != 'UAP' And '@(WinRiveNativeLibraries)' != ''">
+    
+    <Message Text="Deploying WinRive native libraries from $(WinRiveNativePath) for platform $(Platform)" Importance="normal" />
+    
+    <Copy SourceFiles="@(WinRiveNativeLibraries)"
+          DestinationFolder="$(OutputPath)"
+          SkipUnchangedFiles="true"
+          UseHardlinksIfPossible="true" />
+  </Target>
+  
+</Project>

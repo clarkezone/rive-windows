@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <WinRiveMinPlatformVersion>10.0.19041.0</WinRiveMinPlatformVersion>
+  </PropertyGroup>
+
+  <UsingTask TaskName="WinRiveIsPlatformTooOld"
+             TaskFactory="CodeTaskFactory"
+             AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+
+    <ParameterGroup>
+      <ActualVersion />
+      <RequiredVersion />
+      <Result ParameterType="System.Boolean" Output="true" />
+    </ParameterGroup>
+    
+    <Task>
+      <Code Type="Fragment" Language="cs">
+        Version actual = Version.Parse(ActualVersion);
+        Version required = Version.Parse(RequiredVersion);
+        Result = actual &lt; required;
+      </Code>
+    </Task>
+  </UsingTask>
+
+  <Target Name="WinRiveValidatePlatformVersion"
+          BeforeTargets="ResolveAssemblyReferences"
+          Condition="('$(TargetPlatformVersion)' != '' and '$(TargetPlatformVersion)' != '10.0') and '$(DisableWinRivePlatformCheck)' == ''">
+
+    <WinRiveIsPlatformTooOld ActualVersion="$(TargetPlatformVersion)" RequiredVersion="$(WinRiveMinPlatformVersion)">
+      <Output TaskParameter="Result" PropertyName="WinRivePlatformTooOld" />
+    </WinRiveIsPlatformTooOld>
+
+    <Error Condition="$(WinRivePlatformTooOld)" Text="This version of WinRive requires Windows SDK &gt;= $(WinRiveMinPlatformVersion), but TargetPlatformVersion is $(TargetPlatformVersion)." />
+  </Target>
+
+</Project>

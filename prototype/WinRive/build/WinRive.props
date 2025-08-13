@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  
+  <PropertyGroup Label="WinRive Package Configuration">
+    <!-- Package identification -->
+    <WinRivePackageVersion>1.0.0</WinRivePackageVersion>
+    <WinRivePackageId>WinRive</WinRivePackageId>
+    
+    <!-- Runtime configuration -->
+    <WinRiveRuntimePath>$(MSBuildThisFileDirectory)..\runtimes</WinRiveRuntimePath>
+    <WinRiveLibPath>$(MSBuildThisFileDirectory)..\lib</WinRiveLibPath>
+    
+    <!-- Platform-specific paths -->
+    <WinRiveNativePath Condition="'$(Platform)' == 'Win32'">$(WinRiveRuntimePath)\win-x86\native</WinRiveNativePath>
+    <WinRiveNativePath Condition="'$(Platform)' == 'x64'">$(WinRiveRuntimePath)\win-x64\native</WinRiveNativePath>
+    <WinRiveNativePath Condition="'$(Platform)' == 'ARM64'">$(WinRiveRuntimePath)\win-arm64\native</WinRiveNativePath>
+    
+    <!-- Default to x64 if platform is not explicitly set -->
+    <WinRiveNativePath Condition="'$(WinRiveNativePath)' == ''">$(WinRiveRuntimePath)\win-x64\native</WinRiveNativePath>
+    
+    <!-- UWP WinRT metadata path -->
+    <WinRiveUWPWinMDPath>$(WinRiveLibPath)\uap10.0\WinRive.winmd</WinRiveUWPWinMDPath>
+    <ImplementationDllName>WinRiveProjection.dll</ImplementationDllName>
+    
+    <!-- C# projection assembly path -->
+    <WinRiveProjectionPath>$(WinRiveLibPath)\net9.0-windows10.0.26100.0\WinRiveProjection.dll</WinRiveProjectionPath>
+  </PropertyGroup>
+  
+  <!-- Reference WinRT metadata for UWP projects -->
+  <ItemGroup Condition="'$(TargetPlatformIdentifier)' == 'UAP'">
+    <Reference Include="$(WinRiveUWPWinMDPath)" Condition="Exists('$(WinRiveUWPWinMDPath)')">
+      <IsWinMDFile>true</IsWinMDFile>
+      <Implementation>WinRive.dll</Implementation>
+    </Reference>
+  </ItemGroup>
+  
+  <!-- Reference C# projection for .NET projects -->
+  <ItemGroup Condition="'$(MSBuildProjectExtension)' == '.csproj' and '$(TargetPlatformIdentifier)' != 'UAP'">
+    <Reference Include="$(WinRiveProjectionPath)" Condition="Exists('$(WinRiveProjectionPath)')">
+      <HintPath>$(WinRiveProjectionPath)</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  
+</Project>
