@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>WinRive</id>
-    <version>1.0.0</version>
+    <version>1.0.4</version>
     <title>WinRive - Rive Animation Runtime for Windows</title>
     <authors>WinRive Team</authors>
     <owners>WinRive Team</owners>
@@ -31,15 +31,20 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     
     <dependencies>
+      <group targetFramework="uap10.0">
+        <!-- No additional dependencies required for UWP -->
+      </group>
       <group targetFramework="net9.0-windows10.0.26100.0">
-        <dependency id="Microsoft.Windows.CsWinRT" version="2.2.0" />
-        <dependency id="Microsoft.Windows.SDK.BuildTools" version="10.0.26100.1" />
       </group>
     </dependencies>
   </metadata>
   
   <files>
-    <!-- C# Projection Assembly for .NET 9 - Using correct projection DLL -->
+    <!-- WinRT Metadata for UWP -->
+    <file src="x64\Debug\WinRive\WinRive.winmd"
+          target="lib\uap10.0\WinRive.winmd" />
+    
+    <!-- C# Projection Assembly for .NET -->
     <file src="WinRiveProjection\bin\x64\Debug\net9.0-windows10.0.26100.0\WinRiveProjection.dll"
           target="lib\net9.0-windows10.0.26100.0\WinRiveProjection.dll" />
     
@@ -47,7 +52,15 @@
     <file src="WinRiveProjection\bin\x64\Debug\net9.0-windows10.0.26100.0\WinRive.dll" 
           target="lib\net9.0-windows10.0.26100.0\WinRive.dll" />
     
+    <!-- Native Runtime Libraries -->
+    <file src="x64\Debug\WinRive\WinRive.dll" 
+          target="runtimes\win-x64\native\WinRive.dll" />
+    
     <!-- MSBuild Integration Files -->
+    <file src="build\uap10.0\WinRive.targets" 
+          target="build\uap10.0\WinRive.targets" />
+    <file src="build\WinRive.common.targets" 
+          target="build\WinRive.common.targets" />
     <file src="build\WinRive.props" 
           target="build\WinRive.props" />
     <file src="build\WinRive.targets" 
