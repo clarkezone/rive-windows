@@ -59,6 +59,8 @@
             <ComboBoxItem Content="Layout Test" Tag="layouttest.riv" />
             <ComboBoxItem Content="Google Ad" Tag="world_creator.riv" />
             <ComboBoxItem Content="Pointer Test" Tag="pointer_events.riv" />
+            <ComboBoxItem Content="Bento" Tag="interactive_bento_grid.riv" />
+            <ComboBoxItem Content="Coqui" Tag="the_sound_of_coqui.riv" />
         </ComboBox>
                 <TextBlock
                     Margin="0,0,0,15"

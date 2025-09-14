@@ -20,7 +20,7 @@
     
     <!-- UWP WinRT metadata path -->
     <WinRiveUWPWinMDPath>$(WinRiveLibPath)\uap10.0\WinRive.winmd</WinRiveUWPWinMDPath>
-    <ImplementationDllName>WinRiveProjection.dll</ImplementationDllName>
+    <ImplementationDllName>WinRive.dll</ImplementationDllName>
     
     <!-- C# projection assembly path -->
     <WinRiveProjectionPath>$(WinRiveLibPath)\net9.0-windows10.0.26100.0\WinRiveProjection.dll</WinRiveProjectionPath>

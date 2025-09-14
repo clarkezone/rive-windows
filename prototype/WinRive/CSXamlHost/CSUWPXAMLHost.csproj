@@ -36,6 +36,9 @@
     <Content Update="Assets\RiveAssets\morphon_icons_%28demo%29.riv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Update="Assets\RiveAssets\the_sound_of_coqui.riv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Update="Assets\RiveAssets\world_creator.riv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

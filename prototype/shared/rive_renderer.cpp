@@ -92,19 +92,15 @@ bool RiveRenderer::LoadRiveFile(const std::string& filePath)
             std::cout << "Failed to open Rive file: " << filePath << std::endl;
             return false;
         }
-        
-        // Read file data
-        file.seekg(0, std::ios::end);
-        size_t fileSize = file.tellg();
-        file.seekg(0, std::ios::beg);
-        
-        m_riveFileData.resize(fileSize);
-        file.read(reinterpret_cast<char*>(m_riveFileData.data()), fileSize);
-        file.close();
+
+        std::ifstream rivStream(filePath, std::ios::binary);
+        std::vector<uint8_t> rivBytes(std::istreambuf_iterator<char>(rivStream),
+            {});
+        m_riveFileData = rivBytes;
         
         m_riveFilePath = filePath;
-        
-        std::cout << "Loaded Rive file: " << filePath << " (" << fileSize << " bytes)" << std::endl;
+
+        rive::ViewModel vm;
         
         // Create Rive content
         CreateRiveContent();
