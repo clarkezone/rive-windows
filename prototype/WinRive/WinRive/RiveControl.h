@@ -96,6 +96,9 @@ namespace winrt::WinRive::implementation
         int32_t m_width{ 0 };
         int32_t m_height{ 0 };
 
+        // Bound ViewModel instance
+        winrt::WinRive::ViewModelInstance m_boundViewModelInstance{ nullptr };
+
         // Events
         winrt::event<Windows::Foundation::TypedEventHandler<winrt::WinRive::RiveControl, winrt::WinRive::ViewModelInstance>> m_viewModelInstanceBoundEvent;
         winrt::event<Windows::Foundation::TypedEventHandler<winrt::WinRive::RiveControl, winrt::WinRive::ViewModelInstanceProperty>> m_viewModelPropertyChangedEvent;

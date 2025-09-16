@@ -183,6 +183,43 @@ public:
     bool SetNumberInput(const std::string& name, double value);
     bool FireTrigger(const std::string& name);
 
+    // ViewModel management
+    struct ViewModelInfo {
+        std::string name;
+        int index;
+        int id;
+    };
+    
+    std::vector<ViewModelInfo> EnumerateViewModels();
+    ViewModelInfo GetDefaultViewModel();
+    int GetViewModelCount();
+    
+    // ViewModelInstance management
+    void* CreateViewModelInstance(); // Returns rive::ViewModelInstance*
+    void* CreateViewModelInstanceById(int viewModelId); // Returns rive::ViewModelInstance*
+    void* CreateViewModelInstanceByName(const std::string& viewModelName); // Returns rive::ViewModelInstance*
+    bool BindViewModelInstance(void* instance); // Takes rive::ViewModelInstance*
+    void* GetBoundViewModelInstance(); // Returns rive::ViewModelInstance*
+    
+    // Property access on bound instance
+    bool SetViewModelStringProperty(const std::string& propertyName, const std::string& value);
+    bool SetViewModelNumberProperty(const std::string& propertyName, double value);
+    bool SetViewModelBooleanProperty(const std::string& propertyName, bool value);
+    bool SetViewModelColorProperty(const std::string& propertyName, uint32_t color);
+    bool SetViewModelEnumProperty(const std::string& propertyName, int value);
+    bool FireViewModelTrigger(const std::string& triggerName);
+    
+    // Property enumeration and access
+    struct ViewModelPropertyInfo {
+        std::string name;
+        std::string type; // "String", "Number", "Boolean", "Color", "Enum", "Trigger"
+        int index;
+    };
+    
+    std::vector<ViewModelPropertyInfo> GetViewModelProperties(void* instance); // Takes rive::ViewModelInstance*
+    void* GetViewModelProperty(void* instance, const std::string& propertyName); // Returns rive::ViewModelInstanceValue*
+    void* GetViewModelPropertyAt(void* instance, int index); // Returns rive::ViewModelInstanceValue*
+
 private:
     // Composition setup
     void CreateCompositionSurface();

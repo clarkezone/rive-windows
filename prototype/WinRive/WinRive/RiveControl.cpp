@@ -300,100 +300,380 @@ namespace winrt::WinRive::implementation
     Windows::Foundation::Collections::IVectorView<winrt::WinRive::ViewModelInfo> RiveControl::GetViewModels()
     {
         std::vector<winrt::WinRive::ViewModelInfo> result;
-        // TODO: Implement when rive viewmodel API is available
+        
+        if (m_riveRenderer)
+        {
+            auto viewModels = m_riveRenderer->EnumerateViewModels();
+            for (const auto& vm : viewModels)
+            {
+                winrt::WinRive::ViewModelInfo info;
+                info.Name = winrt::to_hstring(vm.name);
+                info.Index = vm.index;
+                info.Id = vm.id;
+                result.push_back(info);
+            }
+        }
+        
         return winrt::single_threaded_vector<winrt::WinRive::ViewModelInfo>(std::move(result)).GetView();
     }
 
     winrt::WinRive::ViewModel RiveControl::GetViewModelByName(hstring const& name)
     {
-        (void)name;
+        if (!m_riveRenderer)
+        {
+            return nullptr;
+        }
+        
+        auto viewModels = m_riveRenderer->EnumerateViewModels();
+        std::string nameStr = winrt::to_string(name);
+        
+        for (const auto& vm : viewModels)
+        {
+            if (vm.name == nameStr)
+            {
+                // Create ViewModel wrapper
+                auto viewModelImpl = winrt::make<implementation::ViewModel>(
+                    winrt::to_hstring(vm.name),
+                    vm.index,
+                    vm.id
+                );
+                return viewModelImpl.as<winrt::WinRive::ViewModel>();
+            }
+        }
+        
         return nullptr;
     }
 
     winrt::WinRive::ViewModel RiveControl::GetViewModelAt(int32_t index)
     {
-        (void)index;
+        if (!m_riveRenderer)
+        {
+            return nullptr;
+        }
+        
+        auto viewModels = m_riveRenderer->EnumerateViewModels();
+        
+        for (const auto& vm : viewModels)
+        {
+            if (vm.index == index)
+            {
+                // Create ViewModel wrapper
+                auto viewModelImpl = winrt::make<implementation::ViewModel>(
+                    winrt::to_hstring(vm.name),
+                    vm.index,
+                    vm.id
+                );
+                return viewModelImpl.as<winrt::WinRive::ViewModel>();
+            }
+        }
+        
         return nullptr;
     }
 
     int32_t RiveControl::GetViewModelCount()
     {
+        if (m_riveRenderer)
+        {
+            return m_riveRenderer->GetViewModelCount();
+        }
         return 0;
     }
 
     winrt::WinRive::ViewModel RiveControl::GetDefaultViewModel()
     {
+        if (!m_riveRenderer)
+        {
+            return nullptr;
+        }
+        
+        auto defaultVM = m_riveRenderer->GetDefaultViewModel();
+        if (defaultVM.index >= 0)
+        {
+            // Create ViewModel wrapper
+            auto viewModelImpl = winrt::make<implementation::ViewModel>(
+                winrt::to_hstring(defaultVM.name),
+                defaultVM.index,
+                defaultVM.id
+            );
+            return viewModelImpl.as<winrt::WinRive::ViewModel>();
+        }
+        
         return nullptr;
     }
 
     // ViewModelInstance management
     winrt::WinRive::ViewModelInstance RiveControl::CreateViewModelInstance()
     {
-        return winrt::make<implementation::ViewModelInstance>();
+        if (!m_riveRenderer)
+        {
+            return nullptr;
+        }
+        
+        // Create instance using default ViewModel (first one or artboard's ViewModel)
+        void* nativeInstance = m_riveRenderer->CreateViewModelInstance();
+        if (nativeInstance)
+        {
+            // Get the default ViewModel to associate with the instance
+            auto defaultVM = GetDefaultViewModel();
+            if (defaultVM)
+            {
+                auto instanceImpl = winrt::make<implementation::ViewModelInstance>(defaultVM);
+                
+                // Set the native instance pointer
+#if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
+                instanceImpl.as<implementation::ViewModelInstance>()->m_nativeInstance = nativeInstance;
+#endif
+                
+                return instanceImpl.as<winrt::WinRive::ViewModelInstance>();
+            }
+        }
+        
+        return nullptr;
     }
 
     winrt::WinRive::ViewModelInstance RiveControl::CreateViewModelInstanceById(int32_t viewModelId)
     {
-        (void)viewModelId;
+        if (!m_riveRenderer)
+        {
+            return nullptr;
+        }
+        
+        void* nativeInstance = m_riveRenderer->CreateViewModelInstanceById(viewModelId);
+        if (nativeInstance)
+        {
+            // Find the ViewModel with this ID
+            auto viewModels = m_riveRenderer->EnumerateViewModels();
+            for (const auto& vm : viewModels)
+            {
+                if (vm.id == viewModelId)
+                {
+                    auto viewModelWrapper = winrt::make<implementation::ViewModel>(
+                        winrt::to_hstring(vm.name),
+                        vm.index,
+                        vm.id
+                    );
+                    
+                    auto instanceImpl = winrt::make<implementation::ViewModelInstance>(
+                        viewModelWrapper.as<winrt::WinRive::ViewModel>()
+                    );
+                    
+                    // Set the native instance pointer
+#if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
+                    instanceImpl.as<implementation::ViewModelInstance>()->m_nativeInstance = nativeInstance;
+#endif
+                    
+                    return instanceImpl.as<winrt::WinRive::ViewModelInstance>();
+                }
+            }
+        }
+        
         return nullptr;
     }
 
     winrt::WinRive::ViewModelInstance RiveControl::CreateViewModelInstanceByName(hstring const& viewModelName)
     {
-        (void)viewModelName;
+        if (!m_riveRenderer)
+        {
+            return nullptr;
+        }
+        
+        std::string nameStr = winrt::to_string(viewModelName);
+        void* nativeInstance = m_riveRenderer->CreateViewModelInstanceByName(nameStr);
+        if (nativeInstance)
+        {
+            // Find the ViewModel with this name
+            auto viewModels = m_riveRenderer->EnumerateViewModels();
+            for (const auto& vm : viewModels)
+            {
+                if (vm.name == nameStr)
+                {
+                    auto viewModelWrapper = winrt::make<implementation::ViewModel>(
+                        winrt::to_hstring(vm.name),
+                        vm.index,
+                        vm.id
+                    );
+                    
+                    auto instanceImpl = winrt::make<implementation::ViewModelInstance>(
+                        viewModelWrapper.as<winrt::WinRive::ViewModel>()
+                    );
+                    
+                    // Set the native instance pointer
+#if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
+                    instanceImpl.as<implementation::ViewModelInstance>()->m_nativeInstance = nativeInstance;
+#endif
+                    
+                    return instanceImpl.as<winrt::WinRive::ViewModelInstance>();
+                }
+            }
+        }
+        
         return nullptr;
     }
 
     bool RiveControl::BindViewModelInstance(winrt::WinRive::ViewModelInstance const& instance)
     {
-        (void)instance;
+        if (!m_riveRenderer || !instance)
+        {
+            return false;
+        }
+        
+        // Get the native instance pointer from the WinRT wrapper
+        auto instanceImpl = instance.as<implementation::ViewModelInstance>();
+        void* nativeInstance = instanceImpl->GetNativeInstance();
+        
+        if (nativeInstance)
+        {
+            bool success = m_riveRenderer->BindViewModelInstance(nativeInstance);
+            if (success)
+            {
+                m_boundViewModelInstance = instance;
+                
+                // Fire the bound event
+                m_viewModelInstanceBoundEvent(*this, instance);
+                
+                return true;
+            }
+        }
+        
         return false;
     }
 
     winrt::WinRive::ViewModelInstance RiveControl::GetBoundViewModelInstance()
     {
-        return nullptr;
+        return m_boundViewModelInstance;
     }
 
     // Direct property access (convenience methods)
     bool RiveControl::SetViewModelStringProperty(hstring const& propertyName, hstring const& value)
     {
-        (void)propertyName;
-        (void)value;
+        if (m_riveRenderer)
+        {
+            std::string propName = winrt::to_string(propertyName);
+            std::string propValue = winrt::to_string(value);
+            bool success = m_riveRenderer->SetViewModelStringProperty(propName, propValue);
+            
+            if (success && m_boundViewModelInstance)
+            {
+                // Fire property changed event if we have a bound instance
+                auto property = m_boundViewModelInstance.GetProperty(propertyName);
+                if (property)
+                {
+                    m_viewModelPropertyChangedEvent(*this, property);
+                }
+            }
+            
+            return success;
+        }
         return false;
     }
 
     bool RiveControl::SetViewModelNumberProperty(hstring const& propertyName, double value)
     {
-        (void)propertyName;
-        (void)value;
+        if (m_riveRenderer)
+        {
+            std::string propName = winrt::to_string(propertyName);
+            bool success = m_riveRenderer->SetViewModelNumberProperty(propName, value);
+            
+            if (success && m_boundViewModelInstance)
+            {
+                // Fire property changed event if we have a bound instance
+                auto property = m_boundViewModelInstance.GetProperty(propertyName);
+                if (property)
+                {
+                    m_viewModelPropertyChangedEvent(*this, property);
+                }
+            }
+            
+            return success;
+        }
         return false;
     }
 
     bool RiveControl::SetViewModelBooleanProperty(hstring const& propertyName, bool value)
     {
-        (void)propertyName;
-        (void)value;
+        if (m_riveRenderer)
+        {
+            std::string propName = winrt::to_string(propertyName);
+            bool success = m_riveRenderer->SetViewModelBooleanProperty(propName, value);
+            
+            if (success && m_boundViewModelInstance)
+            {
+                // Fire property changed event if we have a bound instance
+                auto property = m_boundViewModelInstance.GetProperty(propertyName);
+                if (property)
+                {
+                    m_viewModelPropertyChangedEvent(*this, property);
+                }
+            }
+            
+            return success;
+        }
         return false;
     }
 
     bool RiveControl::SetViewModelColorProperty(hstring const& propertyName, uint32_t color)
     {
-        (void)propertyName;
-        (void)color;
+        if (m_riveRenderer)
+        {
+            std::string propName = winrt::to_string(propertyName);
+            bool success = m_riveRenderer->SetViewModelColorProperty(propName, color);
+            
+            if (success && m_boundViewModelInstance)
+            {
+                // Fire property changed event if we have a bound instance
+                auto property = m_boundViewModelInstance.GetProperty(propertyName);
+                if (property)
+                {
+                    m_viewModelPropertyChangedEvent(*this, property);
+                }
+            }
+            
+            return success;
+        }
         return false;
     }
 
     bool RiveControl::SetViewModelEnumProperty(hstring const& propertyName, int32_t value)
     {
-        (void)propertyName;
-        (void)value;
+        if (m_riveRenderer)
+        {
+            std::string propName = winrt::to_string(propertyName);
+            bool success = m_riveRenderer->SetViewModelEnumProperty(propName, value);
+            
+            if (success && m_boundViewModelInstance)
+            {
+                // Fire property changed event if we have a bound instance
+                auto property = m_boundViewModelInstance.GetProperty(propertyName);
+                if (property)
+                {
+                    m_viewModelPropertyChangedEvent(*this, property);
+                }
+            }
+            
+            return success;
+        }
         return false;
     }
 
     bool RiveControl::FireViewModelTrigger(hstring const& triggerName)
     {
-        (void)triggerName;
+        if (m_riveRenderer)
+        {
+            std::string triggerNameStr = winrt::to_string(triggerName);
+            bool success = m_riveRenderer->FireViewModelTrigger(triggerNameStr);
+            
+            if (success && m_boundViewModelInstance)
+            {
+                // Fire property changed event if we have a bound instance
+                auto property = m_boundViewModelInstance.GetProperty(triggerName);
+                if (property)
+                {
+                    m_viewModelPropertyChangedEvent(*this, property);
+                }
+            }
+            
+            return success;
+        }
         return false;
     }
 

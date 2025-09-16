@@ -47,6 +47,345 @@ bool RiveRenderer::Initialize(const winrt::Windows::UI::Composition::Compositor&
     }
 }
 
+// ViewModel management implementation
+std::vector<RiveRenderer::ViewModelInfo> RiveRenderer::EnumerateViewModels()
+{
+    std::vector<ViewModelInfo> result;
+    
+#if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
+    if (m_riveFile) {
+        // Get ViewModels from the file
+        size_t viewModelCount = m_riveFile->viewModelCount();
+        for (size_t i = 0; i < viewModelCount; ++i) {
+            auto viewModel = m_riveFile->viewModelAt(i);
+            if (viewModel) {
+                ViewModelInfo info;
+                info.name = viewModel->name();
+                info.index = static_cast<int>(i);
+                info.id = viewModel->id();
+                result.push_back(info);
+            }
+        }
+    }
+#endif
+    
+    return result;
+}
+
+RiveRenderer::ViewModelInfo RiveRenderer::GetDefaultViewModel()
+{
+    ViewModelInfo defaultInfo;
+    defaultInfo.name = "";
+    defaultInfo.index = -1;
+    defaultInfo.id = -1;
+    
+#if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
+    if (m_riveFile && m_riveFile->viewModelCount() > 0) {
+        auto viewModel = m_riveFile->viewModelAt(0); // Use first as default
+        if (viewModel) {
+            defaultInfo.name = viewModel->name();
+            defaultInfo.index = 0;
+            defaultInfo.id = viewModel->id();
+        }
+    }
+#endif
+    
+    return defaultInfo;
+}
+
+int RiveRenderer::GetViewModelCount()
+{
+#if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
+    if (m_riveFile) {
+        return static_cast<int>(m_riveFile->viewModelCount());
+    }
+#endif
+    return 0;
+}
+
+// ViewModelInstance management implementation
+void* RiveRenderer::CreateViewModelInstance()
+{
+#if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
+    if (m_riveFile && m_artboard) {
+        auto instance = m_riveFile->createViewModelInstance(m_artboard.get());
+        if (instance) {
+            // Store the instance for lifetime management
+            m_viewModelInstances.push_back(instance);
+            return instance.get();
+        }
+    }
+#endif
+    return nullptr;
+}
+
+void* RiveRenderer::CreateViewModelInstanceById(int viewModelId)
+{
+#if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
+    if (m_riveFile && m_artboard) {
+        auto instance = m_riveFile->createViewModelInstance(viewModelId, 0);
+        if (instance) {
+            // Store the instance for lifetime management
+            m_viewModelInstances.push_back(instance);
+            return instance.get();
+        }
+    }
+#endif
+    return nullptr;
+}
+
+void* RiveRenderer::CreateViewModelInstanceByName(const std::string& viewModelName)
+{
+#if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
+    if (m_riveFile) {
+        // Find ViewModel by name first
+        for (size_t i = 0; i < m_riveFile->viewModelCount(); ++i) {
+            auto viewModel = m_riveFile->viewModelAt(i);
+            if (viewModel && viewModel->name() == viewModelName) {
+                return CreateViewModelInstanceById(viewModel->id());
+            }
+        }
+    }
+#endif
+    return nullptr;
+}
+
+bool RiveRenderer::BindViewModelInstance(void* instance)
+{
+#if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
+    if (!instance || !m_artboard || !m_scene) {
+        return false;
+    }
+    
+    auto riveInstance = static_cast<rive::ViewModelInstance*>(instance);
+    
+    // Bind to artboard
+    m_artboard->bindViewModelInstance(riveInstance);
+    
+    // Bind to scene
+    m_scene->bindViewModelInstance(riveInstance);
+    
+    // Update our current bound instance
+    m_viewModelInstance = riveInstance;
+    
+    return true;
+#endif
+    return false;
+}
+
+void* RiveRenderer::GetBoundViewModelInstance()
+{
+#if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
+    return m_viewModelInstance.get();
+#endif
+    return nullptr;
+}
+
+// Property access on bound instance
+bool RiveRenderer::SetViewModelStringProperty(const std::string& propertyName, const std::string& value)
+{
+#if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
+    if (!m_viewModelInstance) {
+        return false;
+    }
+    
+    auto property = m_viewModelInstance->propertyValue(propertyName);
+    if (property) {
+        auto stringProperty = static_cast<rive::ViewModelInstanceString*>(property);
+        if (stringProperty) {
+            stringProperty->propertyValue(value);
+            return true;
+        }
+    }
+#endif
+    return false;
+}
+
+bool RiveRenderer::SetViewModelNumberProperty(const std::string& propertyName, double value)
+{
+#if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
+    if (!m_viewModelInstance) {
+        return false;
+    }
+    
+    auto property = m_viewModelInstance->propertyValue(propertyName);
+    if (property) {
+        auto numberProperty = static_cast<rive::ViewModelInstanceNumber*>(property);
+        if (numberProperty) {
+            numberProperty->propertyValue(static_cast<float>(value));
+            return true;
+        }
+    }
+#endif
+    return false;
+}
+
+bool RiveRenderer::SetViewModelBooleanProperty(const std::string& propertyName, bool value)
+{
+#if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
+    if (!m_viewModelInstance) {
+        return false;
+    }
+    
+    auto property = m_viewModelInstance->propertyValue(propertyName);
+    if (property) {
+        auto boolProperty = static_cast<rive::ViewModelInstanceBoolean*>(property);
+        if (boolProperty) {
+            boolProperty->propertyValue(value);
+            return true;
+        }
+    }
+#endif
+    return false;
+}
+
+bool RiveRenderer::SetViewModelColorProperty(const std::string& propertyName, uint32_t color)
+{
+#if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
+    if (!m_viewModelInstance) {
+        return false;
+    }
+    
+    auto property = m_viewModelInstance->propertyValue(propertyName);
+    if (property) {
+        auto colorProperty = static_cast<rive::ViewModelInstanceColor*>(property);
+        if (colorProperty) {
+            colorProperty->propertyValue(color);
+            return true;
+        }
+    }
+#endif
+    return false;
+}
+
+bool RiveRenderer::SetViewModelEnumProperty(const std::string& propertyName, int value)
+{
+#if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
+    if (!m_viewModelInstance) {
+        return false;
+    }
+    
+    auto property = m_viewModelInstance->propertyValue(propertyName);
+    if (property) {
+        auto enumProperty = static_cast<rive::ViewModelInstanceEnum*>(property);
+        if (enumProperty) {
+            enumProperty->propertyValue(static_cast<uint32_t>(value));
+            return true;
+        }
+    }
+#endif
+    return false;
+}
+
+bool RiveRenderer::FireViewModelTrigger(const std::string& triggerName)
+{
+#if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
+    if (!m_viewModelInstance) {
+        return false;
+    }
+    
+    auto property = m_viewModelInstance->propertyValue(triggerName);
+    if (property) {
+        auto trigger = static_cast<rive::ViewModelInstanceTrigger*>(property);
+        if (trigger) {
+            trigger->fire();
+            return true;
+        }
+    }
+#endif
+    return false;
+}
+
+// Property enumeration and access
+std::vector<RiveRenderer::ViewModelPropertyInfo> RiveRenderer::GetViewModelProperties(void* instance)
+{
+    std::vector<ViewModelPropertyInfo> result;
+    
+#if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
+    if (!instance) {
+        return result;
+    }
+    
+    auto riveInstance = static_cast<rive::ViewModelInstance*>(instance);
+    if (riveInstance && riveInstance->viewModel()) {
+        auto viewModel = riveInstance->viewModel();
+        size_t propertyCount = viewModel->propertyCount();
+        
+        for (size_t i = 0; i < propertyCount; ++i) {
+            auto property = viewModel->propertyAt(i);
+            if (property) {
+                ViewModelPropertyInfo info;
+                info.name = property->name();
+                info.index = static_cast<int>(i);
+                
+                // Determine type string based on property type
+                switch (property->propertyType()) {
+                    case rive::ViewModelPropertyType::string:
+                        info.type = "String";
+                        break;
+                    case rive::ViewModelPropertyType::number:
+                        info.type = "Number";
+                        break;
+                    case rive::ViewModelPropertyType::boolean:
+                        info.type = "Boolean";
+                        break;
+                    case rive::ViewModelPropertyType::color:
+                        info.type = "Color";
+                        break;
+                    case rive::ViewModelPropertyType::enumType:
+                        info.type = "Enum";
+                        break;
+                    case rive::ViewModelPropertyType::trigger:
+                        info.type = "Trigger";
+                        break;
+                    default:
+                        info.type = "Unknown";
+                        break;
+                }
+                
+                result.push_back(info);
+            }
+        }
+    }
+#endif
+    
+    return result;
+}
+
+void* RiveRenderer::GetViewModelProperty(void* instance, const std::string& propertyName)
+{
+#if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
+    if (!instance) {
+        return nullptr;
+    }
+    
+    auto riveInstance = static_cast<rive::ViewModelInstance*>(instance);
+    return riveInstance->propertyValue(propertyName);
+#endif
+    return nullptr;
+}
+
+void* RiveRenderer::GetViewModelPropertyAt(void* instance, int index)
+{
+#if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
+    if (!instance) {
+        return nullptr;
+    }
+    
+    auto riveInstance = static_cast<rive::ViewModelInstance*>(instance);
+    if (riveInstance && riveInstance->viewModel()) {
+        auto viewModel = riveInstance->viewModel();
+        if (index >= 0 && index < static_cast<int>(viewModel->propertyCount())) {
+            auto property = viewModel->propertyAt(index);
+            if (property) {
+                return riveInstance->propertyValue(property->name());
+            }
+        }
+    }
+#endif
+    return nullptr;
+}
+
 void RiveRenderer::Shutdown()
 {
     StopRenderThread();
