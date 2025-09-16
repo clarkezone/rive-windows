@@ -21,6 +21,7 @@ namespace CSXamlHost.Controls
     {
         private readonly RiveFileService _riveFileService;
         private readonly FilePickerService _filePickerService;
+        private readonly RiveFileConfigurationService _configurationService;
         private RiveViewerControl? _riveViewer;
         private RiveFileSource? _selectedFile;
         private StateMachineModel? _selectedStateMachine;
@@ -36,7 +37,12 @@ namespace CSXamlHost.Controls
         public RiveStateMachinePanel()
         {
             this.InitializeComponent();
-            _riveFileService = new RiveFileService();
+            
+            // Initialize configuration service and load default configuration
+            _configurationService = new RiveFileConfigurationService();
+            _ = InitializeConfigurationAsync();
+            
+            _riveFileService = new RiveFileService(_configurationService);
             _filePickerService = new FilePickerService(_riveFileService);
             
             // Initialize collections
@@ -44,10 +50,32 @@ namespace CSXamlHost.Controls
             StateMachines = new ObservableCollection<StateMachineModel>();
             
             // Set initial status
-            UpdateStatus("Select a Rive file to begin");
+            UpdateStatus("Initializing configuration...");
             
             this.Loaded += RiveStateMachinePanel_Loaded;
             this.Unloaded += RiveStateMachinePanel_Unloaded;
+        }
+
+        private async Task InitializeConfigurationAsync()
+        {
+            try
+            {
+                // Try to load user configuration first, fallback to default
+                var userConfig = await _configurationService.LoadUserConfigurationAsync();
+                if (userConfig == null)
+                {
+                    await _configurationService.LoadDefaultConfigurationAsync();
+                }
+                
+                UpdateStatus("Configuration loaded successfully");
+            }
+            catch (Exception ex)
+            {
+                SetError($"Failed to initialize configuration: {ex.Message}");
+                
+                // Still create the services for fallback functionality
+                UpdateStatus("Using fallback configuration");
+            }
         }
 
         #region Dependency Properties
@@ -284,27 +312,34 @@ namespace CSXamlHost.Controls
         #region Public Methods
 
         /// <summary>
-        /// Loads the default files from the package
+        /// Loads the available files using the configuration system
         /// </summary>
         public async Task LoadDefaultFilesAsync()
         {
             try
             {
                 UpdateStatus("Loading available files...");
-                var packagedFiles = await _riveFileService.GetPackagedRiveFilesAsync();
+                var availableFiles = await _riveFileService.GetAvailableRiveFilesAsync();
                 
                 AvailableFiles.Clear();
-                foreach (var file in packagedFiles)
+                foreach (var file in availableFiles)
                 {
                     AvailableFiles.Add(file);
                 }
 
-                UpdateStatus($"Loaded {packagedFiles.Count} available files");
+                // Try to select the default file if available
+                var defaultFile = _riveFileService.GetDefaultFile();
+                if (defaultFile != null && AvailableFiles.Contains(defaultFile))
+                {
+                    SelectedFile = defaultFile;
+                }
+
+                UpdateStatus($"Loaded {availableFiles.Count} available files from configuration");
                 ClearError();
             }
             catch (Exception ex)
             {
-                SetError($"Failed to load default files: {ex.Message}");
+                SetError($"Failed to load files: {ex.Message}");
             }
         }
 

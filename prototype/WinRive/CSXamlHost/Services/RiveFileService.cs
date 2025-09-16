@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.Storage;
@@ -15,6 +16,32 @@ namespace CSXamlHost.Services
     {
         private static readonly string[] ValidRiveExtensions = { ".riv" };
         private const string RiveAssetsFolder = "Assets/RiveAssets";
+        private readonly RiveFileConfigurationService? _configurationService;
+
+        /// <summary>
+        /// Initializes a new instance of RiveFileService
+        /// </summary>
+        /// <param name="configurationService">Optional configuration service for loading file lists</param>
+        public RiveFileService(RiveFileConfigurationService? configurationService = null)
+        {
+            _configurationService = configurationService;
+        }
+
+        /// <summary>
+        /// Gets all available Rive files from configuration or package assets
+        /// </summary>
+        /// <returns>List of RiveFileSource objects</returns>
+        public async Task<List<RiveFileSource>> GetAvailableRiveFilesAsync()
+        {
+            // Try to get files from configuration service first
+            if (_configurationService?.CurrentConfiguration != null)
+            {
+                return _configurationService.GetAvailableFiles();
+            }
+
+            // Fallback to scanning package assets
+            return await GetPackagedRiveFilesAsync();
+        }
 
         /// <summary>
         /// Gets all packaged Rive files from the application assets
@@ -72,7 +99,7 @@ namespace CSXamlHost.Services
         }
 
         /// <summary>
-        /// Creates a RiveFileSource from an external file
+        /// Creates a RiveFileSource from an external file and adds it to recent files
         /// </summary>
         /// <param name="file">StorageFile representing the external Rive file</param>
         /// <returns>RiveFileSource for the external file</returns>
@@ -89,7 +116,41 @@ namespace CSXamlHost.Services
                 RiveFileSourceType.External
             );
 
+            // Add to recently used files if configuration service is available
+            _configurationService?.AddRecentlyUsedFile(riveFileSource);
+
             return riveFileSource;
+        }
+
+        /// <summary>
+        /// Gets recently used files from the configuration service
+        /// </summary>
+        /// <returns>List of recently used RiveFileSource objects</returns>
+        public List<RiveFileSource> GetRecentlyUsedFiles()
+        {
+            if (_configurationService?.RecentlyUsedFiles != null)
+            {
+                return _configurationService.RecentlyUsedFiles.ToList();
+            }
+            return new List<RiveFileSource>();
+        }
+
+        /// <summary>
+        /// Gets the default file from configuration or fallback
+        /// </summary>
+        /// <returns>Default RiveFileSource or null</returns>
+        public RiveFileSource? GetDefaultFile()
+        {
+            // Try configuration service first
+            var defaultFile = _configurationService?.GetDefaultFile();
+            if (defaultFile != null)
+            {
+                return defaultFile;
+            }
+
+            // Fallback to first file from default list
+            var defaultFiles = GetDefaultRiveFiles();
+            return defaultFiles.FirstOrDefault();
         }
 
         /// <summary>
