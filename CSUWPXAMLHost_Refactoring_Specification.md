@@ -268,38 +268,42 @@ event EventHandler<StatusChangedEventArgs> StatusChanged;
   - [x] UWP-compatible IValueConverter implementation
 
 ### Phase 5: Create RiveStateMachinePanel (UserControl)
-- [ ] **5.1** Create RiveStateMachinePanel.xaml:
-  - [ ] Layout with sections for:
-    - [ ] File selection (ComboBox + Load External button)
-    - [ ] State machine selection (ComboBox)
-    - [ ] State machine info display (TextBlock)
-    - [ ] Playback controls (Play/Pause/Reset buttons)
-    - [ ] Dynamic inputs panel (StackPanel)
-    - [ ] Status display (TextBlock)
-  - [ ] Responsive design for different window sizes
-  - [ ] UWP styling and visual guidelines compliance
+- [x] **5.1** Create RiveStateMachinePanel.xaml:
+  - [x] Layout with sections for:
+    - [x] File selection (ComboBox + Load External button)
+    - [x] State machine selection (ComboBox)
+    - [x] State machine info display (TextBlock)
+    - [x] Playback controls (Play/Pause/Reset buttons)
+    - [x] Dynamic inputs panel (StackPanel)
+    - [x] Status display (TextBlock)
+  - [x] Responsive design for different window sizes
+  - [x] UWP styling and visual guidelines compliance
 
-- [ ] **5.2** Create RiveStateMachinePanel.xaml.cs:
-  - [ ] Add dependency properties:
-    - [ ] `RiveViewer` (RiveViewerControl) - Target control
-    - [ ] `AvailableFiles` (ObservableCollection<RiveFileSource>)
-    - [ ] `AllowExternalFiles` (bool) - Enable file picker
-  - [ ] Add routed events:
-    - [ ] `FileSelected` - User selected different file
-    - [ ] `StateMachineSelected` - User selected different state machine
-    - [ ] `StatusChanged` - Status message updates
+- [x] **5.2** Create RiveStateMachinePanel.xaml.cs:
+  - [x] Add dependency properties:
+    - [x] `RiveViewer` (RiveViewerControl) - Target control
+    - [x] `AvailableFiles` (ObservableCollection<RiveFileSource>)
+    - [x] `AllowExternalFiles` (bool) - Enable file picker
+    - [x] `ShowStatus` (bool) - Show/hide status section
+  - [x] Add routed events:
+    - [x] `FileSelected` - User selected different file
+    - [x] `StateMachineSelected` - User selected different state machine
+    - [x] `StatusChanged` - Status message updates
 
-- [ ] **5.3** Implement RiveStateMachinePanel functionality:
-  - [ ] Wire up file selection ComboBox
-  - [ ] Implement Load External File button handler
-  - [ ] Create dynamic state machine selection
-  - [ ] Implement playback control handlers
-  - [ ] Add dynamic input control generation:
-    - [ ] Boolean inputs -> ToggleSwitch controls
-    - [ ] Number inputs -> NumberBox controls  
-    - [ ] Trigger inputs -> Button controls
-  - [ ] Add status message handling
-  - [ ] Implement error display and recovery
+- [x] **5.3** Implement RiveStateMachinePanel functionality:
+  - [x] Wire up file selection ComboBox
+  - [x] Implement Load External File button handler
+  - [x] Create dynamic state machine selection
+  - [x] Implement playbook control handlers (Play/Pause/Stop)
+  - [x] Add dynamic input control generation:
+    - [x] Boolean inputs -> ToggleSwitch controls
+    - [x] Number inputs -> Slider controls  
+    - [x] Trigger inputs -> Button controls
+  - [x] Add comprehensive status message handling
+  - [x] Implement error display and recovery
+  - [x] Add MVVM support with INotifyPropertyChanged
+  - [x] Implement bidirectional control communication
+  - [x] Add comprehensive event handling and cleanup
 
 ### Phase 6: Integration with RiveViewerControl
 - [ ] **6.1** Connect RiveStateMachinePanel to RiveViewerControl:
