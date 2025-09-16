@@ -173,89 +173,99 @@ event EventHandler<StatusChangedEventArgs> StatusChanged;
 ## Implementation Checklist
 
 ### Phase 1: Project Setup and Structure
-- [ ] **1.1** Create folder structure in CSUWPXAMLHost:
-  - [ ] Create `Controls/` folder
-  - [ ] Create `Models/` folder  
-  - [ ] Create `Services/` folder
-  - [ ] Create `Themes/` folder
+- [x] **1.1** Create folder structure in CSUWPXAMLHost:
+  - [x] Create `Controls/` folder
+  - [x] Create `Models/` folder  
+  - [x] Create `Services/` folder
+  - [x] Create `Themes/` folder
+  - [x] Create `Converters/` folder
 
-- [ ] **1.2** Add required NuGet packages to CSUWPXAMLHost.csproj:
-  - [ ] Verify Microsoft.Windows.CsWinRT reference exists
-  - [ ] Verify WinRive project reference exists
-  - [ ] Add any additional UWP-specific packages if needed
+- [x] **1.2** Add required NuGet packages to CSUWPXAMLHost.csproj:
+  - [x] Verify Microsoft.Windows.CsWinRT reference exists
+  - [x] Verify WinRive project reference exists
+  - [x] Add any additional UWP-specific packages if needed
 
 ### Phase 2: Create RiveViewerControl (Custom Control)
-- [ ] **2.1** Create RiveViewerControl.cs:
-  - [ ] Inherit from Microsoft.UI.Xaml.Controls.Control
-  - [ ] Add dependency properties:
-    - [ ] `RiveFileSource` (string) - Path to Rive file
-    - [ ] `AutoPlay` (bool) - Auto-start playback
-    - [ ] `SelectedStateMachine` (string) - State machine name
-    - [ ] `Width` and `Height` override handling
-  - [ ] Add routed events:
-    - [ ] `FileLoaded` - Fired when Rive file loads successfully
-    - [ ] `FileLoadError` - Fired when file loading fails
-    - [ ] `StateMachineChanged` - Fired when active state machine changes
-    - [ ] `RenderingStarted` - Fired when rendering begins
-    - [ ] `RenderingStopped` - Fired when rendering stops
+- [x] **2.1** Create RiveViewerControl.xaml (UserControl approach):
+  - [x] Comprehensive XAML layout with loading states, error handling, and status bar
+  - [x] Add dependency properties:
+    - [x] `FileSource` (RiveFileSource) - Rive file source configuration
+    - [x] `ShowStatusBar` (bool) - Show/hide status information
+    - [x] `ShowFpsCounter` (bool) - Show performance metrics
+    - [x] `PlaceholderText` (string) - Text when no content loaded
+    - [x] `AutoPlay` (bool) - Auto-start playback
+  - [x] Add routed events:
+    - [x] `FileLoaded` - Fired when Rive file loads successfully
+    - [x] `ErrorOccurred` - Fired when errors occur
 
-- [ ] **2.2** Implement RiveViewerControl functionality:
-  - [ ] Add private WinRive.RiveControl instance
-  - [ ] Implement OnApplyTemplate() override
-  - [ ] Add Initialize() method for composition setup
-  - [ ] Add LoadRiveFile() method with error handling
-  - [ ] Add SetSize() method for resize handling
-  - [ ] Add StartRendering()/StopRendering() methods
-  - [ ] Add Cleanup() method for proper disposal
-  - [ ] Implement input forwarding (pointer events)
-  - [ ] Add property change handlers for dependency properties
+- [x] **2.2** Implement RiveViewerControl functionality:
+  - [x] Add private WinRive.RiveControl instance
+  - [x] Implement MVVM support with INotifyPropertyChanged
+  - [x] Add InitializeRiveControl() method for composition setup
+  - [x] Add LoadFileAsync() method with comprehensive error handling
+  - [x] Add Play()/Pause()/Stop() methods for playback control
+  - [x] Add CleanupRiveControl() method for proper disposal
+  - [x] Implement size change handling and dimension updates
+  - [x] Add comprehensive status and error state management
+  - [x] Add loading states and user feedback
 
-- [ ] **2.3** Create control template in Themes/Generic.xaml:
-  - [ ] Add default template for RiveViewerControl
-  - [ ] Include placeholder Border for composition visual
-  - [ ] Add visual states for Loading, Error, Ready states
-  - [ ] Style template for UWP visual guidelines
+- [x] **2.3** Create control template in Themes/Generic.xaml:
+  - [x] Add default template for RiveViewerControl
+  - [x] Include placeholder Border for composition visual
+  - [x] Add visual states for Loading, Error, Ready states
+  - [x] Style template for UWP visual guidelines
+  - [x] Add comprehensive styling and visual feedback
 
-- [ ] **2.4** Add control registration:
-  - [ ] Register control in Generic.xaml resource dictionary
-  - [ ] Add proper xmlns declarations
-  - [ ] Test basic control instantiation
+- [x] **2.4** Add control registration:
+  - [x] Register control in Generic.xaml resource dictionary
+  - [x] Add proper xmlns declarations
+  - [x] Test basic control instantiation
+  - [x] Successful compilation verification
 
 ### Phase 3: Create Models and Data Structures
-- [ ] **3.1** Create Models/RiveFileSource.cs:
-  - [ ] `string FilePath` - Path to Rive file
-  - [ ] `string DisplayName` - User-friendly name
-  - [ ] `RiveFileSourceType SourceType` - Package/External/Embedded enum
-  - [ ] `bool IsValid` - Validation status
-  - [ ] Add validation methods
+- [x] **3.1** Create Models/RiveFileSource.cs:
+  - [x] `string FilePath` - Path to Rive file
+  - [x] `string DisplayName` - User-friendly name
+  - [x] `RiveFileSourceType SourceType` - Package/External/Embedded enum
+  - [x] `bool IsValid` - Validation status
+  - [x] Add validation methods
 
-- [ ] **3.2** Create Models/StateMachineInputModel.cs:
-  - [ ] Properties for input binding (Name, Type, Value)
-  - [ ] INotifyPropertyChanged implementation
-  - [ ] Type-specific value properties (BoolValue, NumberValue, etc.)
-  - [ ] Validation and conversion methods
+- [x] **3.2** Create Models/StateMachineInputModel.cs:
+  - [x] Properties for input binding (Name, Type, Value)
+  - [x] INotifyPropertyChanged implementation
+  - [x] Type-specific value properties (BoolValue, NumberValue, etc.)
+  - [x] Validation and conversion methods
 
-- [ ] **3.3** Create Models/StateMachineModel.cs:
-  - [ ] Properties for state machine info (Name, Index, IsDefault)
-  - [ ] Collection of input models
-  - [ ] Playback status properties
-  - [ ] Event handling for state changes
+- [x] **3.3** Create Models/StateMachineModel.cs:
+  - [x] Properties for state machine info (Name, Index, IsDefault)
+  - [x] Collection of input models
+  - [x] Playback status properties
+  - [x] Event handling for state changes
 
 ### Phase 4: Create Services Layer
-- [ ] **4.1** Create Services/RiveFileService.cs:
-  - [ ] Method to load Rive files from package assets
-  - [ ] Method to validate Rive file format
-  - [ ] Method to enumerate packaged Rive files
-  - [ ] Method to load external Rive files
-  - [ ] Error handling and logging
-  - [ ] Async file operations support
+- [x] **4.1** Create Services/RiveFileService.cs:
+  - [x] Method to load Rive files from package assets
+  - [x] Method to validate Rive file format
+  - [x] Method to enumerate packaged Rive files
+  - [x] Method to load external Rive files
+  - [x] Error handling and logging
+  - [x] Async file operations support
 
-- [ ] **4.2** Create Services/FilePickerService.cs:
-  - [ ] Wrapper around Windows.Storage.Pickers.FileOpenPicker
-  - [ ] UWP-specific file picker configuration
-  - [ ] File type filtering for .riv files
-  - [ ] Error handling for picker cancellation
-  - [ ] Result validation and processing
+- [x] **4.2** Create Services/FilePickerService.cs:
+  - [x] Wrapper around Windows.Storage.Pickers.FileOpenPicker
+  - [x] UWP-specific file picker configuration
+  - [x] File type filtering for .riv files
+  - [x] Error handling for picker cancellation
+  - [x] Result validation and processing
+
+### Phase 4.5: Create Value Converters
+- [x] **4.5.1** Create Converters/BooleanToVisibilityConverter.cs:
+  - [x] Convert boolean values to Visibility with invert support
+  - [x] UWP-compatible IValueConverter implementation
+
+- [x] **4.5.2** Create Converters/StringToVisibilityConverter.cs:
+  - [x] Convert string values to Visibility (visible if not null/empty)
+  - [x] UWP-compatible IValueConverter implementation
 
 ### Phase 5: Create RiveStateMachinePanel (UserControl)
 - [ ] **5.1** Create RiveStateMachinePanel.xaml:

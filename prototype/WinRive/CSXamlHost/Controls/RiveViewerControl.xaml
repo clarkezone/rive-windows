@@ -1,0 +1,168 @@
+<UserControl
+    x:Class="CSXamlHost.Controls.RiveViewerControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:CSXamlHost.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:winrive="using:WinRive"
+    xmlns:converters="using:CSXamlHost.Converters"
+    mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <!-- Converters -->
+        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
+        
+        <!-- Styles for the RiveViewer -->
+        <Style x:Key="RiveViewerBorderStyle" TargetType="Border">
+            <Setter Property="BorderBrush" Value="{ThemeResource SystemControlForegroundBaseMediumLowBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="Background" Value="{ThemeResource SystemControlBackgroundChromeMediumLowBrush}" />
+        </Style>
+
+        <Style x:Key="StatusTextStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Foreground" Value="{ThemeResource SystemControlForegroundBaseMediumBrush}" />
+            <Setter Property="Margin" Value="8,4" />
+        </Style>
+
+        <Style x:Key="ErrorTextStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Foreground" Value="{ThemeResource SystemErrorTextColor}" />
+            <Setter Property="Margin" Value="8,4" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+    </UserControl.Resources>
+
+    <Grid x:Name="RootGrid">
+        <Grid.RowDefinitions>
+            <!-- Main content area -->
+            <RowDefinition Height="*" />
+            <!-- Status bar -->
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Main Rive viewer area -->
+        <Border Grid.Row="0" 
+                x:Name="RiveViewerBorder"
+                Style="{StaticResource RiveViewerBorderStyle}">
+            
+            <Grid>
+                <!-- Background for when no content is loaded -->
+                <Border x:Name="PlaceholderArea"
+                        Background="{ThemeResource SystemControlBackgroundBaseLowBrush}"
+                        Visibility="{x:Bind IsContentLoaded, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Invert}">
+                    <StackPanel HorizontalAlignment="Center" 
+                                VerticalAlignment="Center"
+                                Spacing="8">
+                        <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" 
+                                  Glyph="&#xE91B;" 
+                                  FontSize="48"
+                                  Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}" />
+                        <TextBlock Text="{x:Bind PlaceholderText, Mode=OneWay}"
+                                   Style="{ThemeResource BodyTextBlockStyle}"
+                                   Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                                   HorizontalAlignment="Center" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Container for the actual WinRive control -->
+                <Border x:Name="RiveControlContainer"
+                        Visibility="{x:Bind IsContentLoaded, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        SizeChanged="RiveControlContainer_SizeChanged">
+                    <!-- The WinRive control will be hosted here programmatically -->
+                </Border>
+
+                <!-- Loading indicator -->
+                <Border x:Name="LoadingOverlay"
+                        Background="{ThemeResource SystemControlBackgroundBaseLowBrush}"
+                        Opacity="0.8"
+                        Visibility="{x:Bind IsLoading, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <StackPanel HorizontalAlignment="Center" 
+                                VerticalAlignment="Center"
+                                Spacing="8">
+                        <ProgressRing IsActive="{x:Bind IsLoading, Mode=OneWay}"
+                                      Width="32"
+                                      Height="32" />
+                        <TextBlock Text="Loading Rive animation..."
+                                   Style="{ThemeResource BodyTextBlockStyle}"
+                                   Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                                   HorizontalAlignment="Center" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Error overlay -->
+                <Border x:Name="ErrorOverlay"
+                        Background="{ThemeResource SystemErrorTextColor}"
+                        Opacity="0.1"
+                        Visibility="{x:Bind HasError, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <StackPanel HorizontalAlignment="Center" 
+                                VerticalAlignment="Center"
+                                Spacing="8"
+                                Margin="16">
+                        <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" 
+                                  Glyph="&#xE783;" 
+                                  FontSize="32"
+                                  Foreground="{ThemeResource SystemErrorTextColor}" />
+                        <TextBlock Text="Failed to load Rive animation"
+                                   Style="{ThemeResource SubtitleTextBlockStyle}"
+                                   Foreground="{ThemeResource SystemErrorTextColor}"
+                                   HorizontalAlignment="Center" />
+                        <TextBlock Text="{x:Bind ErrorMessage, Mode=OneWay}"
+                                   Style="{StaticResource ErrorTextStyle}"
+                                   HorizontalAlignment="Center"
+                                   MaxWidth="300" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- Status bar -->
+        <Border Grid.Row="1" 
+                x:Name="StatusBar"
+                Background="{ThemeResource SystemControlBackgroundBaseLowBrush}"
+                BorderBrush="{ThemeResource SystemControlForegroundBaseLowBrush}"
+                BorderThickness="0,1,0,0"
+                Visibility="{x:Bind ShowStatusBar, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+            
+            <Grid Margin="8,4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Status text -->
+                <TextBlock Grid.Column="0"
+                           Text="{x:Bind StatusText, Mode=OneWay}"
+                           Style="{StaticResource StatusTextStyle}"
+                           VerticalAlignment="Center" />
+
+                <!-- Additional info (file name, dimensions, etc.) -->
+                <StackPanel Grid.Column="1"
+                            Orientation="Horizontal"
+                            Spacing="16"
+                            VerticalAlignment="Center">
+                    
+                    <!-- File info -->
+                    <TextBlock Text="{x:Bind FileInfoText, Mode=OneWay}"
+                               Style="{StaticResource StatusTextStyle}"
+                               Visibility="{x:Bind FileInfoText, Mode=OneWay, Converter={StaticResource StringToVisibilityConverter}}" />
+
+                    <!-- Dimensions -->
+                    <TextBlock Text="{x:Bind DimensionsText, Mode=OneWay}"
+                               Style="{StaticResource StatusTextStyle}"
+                               Visibility="{x:Bind DimensionsText, Mode=OneWay, Converter={StaticResource StringToVisibilityConverter}}" />
+
+                    <!-- FPS counter (if enabled) -->
+                    <TextBlock Text="{x:Bind FpsText, Mode=OneWay}"
+                               Style="{StaticResource StatusTextStyle}"
+                               Visibility="{x:Bind ShowFpsCounter, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>
