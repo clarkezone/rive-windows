@@ -31,6 +31,7 @@ namespace CSXamlHost.Controls
         private string _stateMachineInfoText = string.Empty;
         private bool _hasError;
         private readonly Dictionary<string, FrameworkElement> _inputControls = new();
+        private bool _configurationInitialized = false;
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -38,10 +39,8 @@ namespace CSXamlHost.Controls
         {
             this.InitializeComponent();
             
-            // Initialize configuration service and load default configuration
+            // Initialize configuration service
             _configurationService = new RiveFileConfigurationService();
-            _ = InitializeConfigurationAsync();
-            
             _riveFileService = new RiveFileService(_configurationService);
             _filePickerService = new FilePickerService(_riveFileService);
             
@@ -50,7 +49,7 @@ namespace CSXamlHost.Controls
             StateMachines = new ObservableCollection<StateMachineModel>();
             
             // Set initial status
-            UpdateStatus("Initializing configuration...");
+            UpdateStatus("Ready");
             
             this.Loaded += RiveStateMachinePanel_Loaded;
             this.Unloaded += RiveStateMachinePanel_Unloaded;
@@ -60,6 +59,8 @@ namespace CSXamlHost.Controls
         {
             try
             {
+                UpdateStatus("Initializing configuration...");
+                
                 // Try to load user configuration first, fallback to default
                 var userConfig = await _configurationService.LoadUserConfigurationAsync();
                 if (userConfig == null)
@@ -67,13 +68,13 @@ namespace CSXamlHost.Controls
                     await _configurationService.LoadDefaultConfigurationAsync();
                 }
                 
+                _configurationInitialized = true;
                 UpdateStatus("Configuration loaded successfully");
             }
             catch (Exception ex)
             {
                 SetError($"Failed to initialize configuration: {ex.Message}");
-                
-                // Still create the services for fallback functionality
+                _configurationInitialized = true; // Set as initialized even with error for fallback
                 UpdateStatus("Using fallback configuration");
             }
         }
@@ -685,10 +686,16 @@ namespace CSXamlHost.Controls
 
         #region Event Handlers
 
-        private void RiveStateMachinePanel_Loaded(object sender, RoutedEventArgs e)
+        private async void RiveStateMachinePanel_Loaded(object sender, RoutedEventArgs e)
         {
+            // Initialize configuration first, then load files
+            if (!_configurationInitialized)
+            {
+                await InitializeConfigurationAsync();
+            }
+            
             // Load default files when control loads
-            _ = LoadDefaultFilesAsync();
+            await LoadDefaultFilesAsync();
         }
 
         private void RiveStateMachinePanel_Unloaded(object sender, RoutedEventArgs e)

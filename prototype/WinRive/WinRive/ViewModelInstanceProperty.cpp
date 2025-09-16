@@ -120,8 +120,23 @@ namespace winrt::WinRive::implementation
         if (!parent) return L"";
 
 #if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
-        // TODO: Implement when rive viewmodel API is available
-        // For now, return placeholder value
+        // Access the native instance through the implementation
+        auto parentImpl = winrt::get_self<winrt::WinRive::implementation::ViewModelInstance>(parent);
+        if (parentImpl) {
+            auto nativeInstance = parentImpl->GetNativeInstance();
+            if (nativeInstance) {
+                auto* riveInstance = static_cast<rive::ViewModelInstance*>(nativeInstance);
+                std::string propName = winrt::to_string(m_name);
+                
+                auto property = riveInstance->propertyValue(propName);
+                if (property) {
+                    auto stringProperty = static_cast<rive::ViewModelInstanceString*>(property);
+                    if (stringProperty) {
+                        return winrt::to_hstring(stringProperty->propertyValue());
+                    }
+                }
+            }
+        }
 #endif
 
         return L""; // Default value
@@ -148,8 +163,22 @@ namespace winrt::WinRive::implementation
         if (!parent) return 0.0;
 
 #if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
-        // TODO: Implement when rive viewmodel API is available
-        // For now, return placeholder value
+        auto parentImpl = winrt::get_self<winrt::WinRive::implementation::ViewModelInstance>(parent);
+        if (parentImpl) {
+            auto nativeInstance = parentImpl->GetNativeInstance();
+            if (nativeInstance) {
+                auto* riveInstance = static_cast<rive::ViewModelInstance*>(nativeInstance);
+                std::string propName = winrt::to_string(m_name);
+                
+                auto property = riveInstance->propertyValue(propName);
+                if (property) {
+                    auto numberProperty = static_cast<rive::ViewModelInstanceNumber*>(property);
+                    if (numberProperty) {
+                        return static_cast<double>(numberProperty->propertyValue());
+                    }
+                }
+            }
+        }
 #endif
 
         return 0.0; // Default value
@@ -176,8 +205,22 @@ namespace winrt::WinRive::implementation
         if (!parent) return false;
 
 #if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
-        // TODO: Implement when rive viewmodel API is available
-        // For now, return placeholder value
+        auto parentImpl = winrt::get_self<winrt::WinRive::implementation::ViewModelInstance>(parent);
+        if (parentImpl) {
+            auto nativeInstance = parentImpl->GetNativeInstance();
+            if (nativeInstance) {
+                auto* riveInstance = static_cast<rive::ViewModelInstance*>(nativeInstance);
+                std::string propName = winrt::to_string(m_name);
+                
+                auto property = riveInstance->propertyValue(propName);
+                if (property) {
+                    auto boolProperty = static_cast<rive::ViewModelInstanceBoolean*>(property);
+                    if (boolProperty) {
+                        return boolProperty->propertyValue();
+                    }
+                }
+            }
+        }
 #endif
 
         return false; // Default value
@@ -204,8 +247,22 @@ namespace winrt::WinRive::implementation
         if (!parent) return 0;
 
 #if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
-        // TODO: Implement when rive viewmodel API is available
-        // For now, return placeholder value
+        auto parentImpl = winrt::get_self<winrt::WinRive::implementation::ViewModelInstance>(parent);
+        if (parentImpl) {
+            auto nativeInstance = parentImpl->GetNativeInstance();
+            if (nativeInstance) {
+                auto* riveInstance = static_cast<rive::ViewModelInstance*>(nativeInstance);
+                std::string propName = winrt::to_string(m_name);
+                
+                auto property = riveInstance->propertyValue(propName);
+                if (property) {
+                    auto colorProperty = static_cast<rive::ViewModelInstanceColor*>(property);
+                    if (colorProperty) {
+                        return colorProperty->propertyValue();
+                    }
+                }
+            }
+        }
 #endif
 
         return 0; // Default value
@@ -232,8 +289,22 @@ namespace winrt::WinRive::implementation
         if (!parent) return 0;
 
 #if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
-        // TODO: Implement when rive viewmodel API is available
-        // For now, return placeholder value
+        auto parentImpl = winrt::get_self<winrt::WinRive::implementation::ViewModelInstance>(parent);
+        if (parentImpl) {
+            auto nativeInstance = parentImpl->GetNativeInstance();
+            if (nativeInstance) {
+                auto* riveInstance = static_cast<rive::ViewModelInstance*>(nativeInstance);
+                std::string propName = winrt::to_string(m_name);
+                
+                auto property = riveInstance->propertyValue(propName);
+                if (property) {
+                    auto enumProperty = static_cast<rive::ViewModelInstanceEnum*>(property);
+                    if (enumProperty) {
+                        return static_cast<int32_t>(enumProperty->propertyValue());
+                    }
+                }
+            }
+        }
 #endif
 
         return 0; // Default value

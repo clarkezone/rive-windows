@@ -1,0 +1,15 @@
+{
+  "version": "1.0",
+  "description": "Configuration file for available Rive animations in the CSUWPXAMLHost demo application",
+  "availableFiles": [
+    {
+      "displayName": "Data Test Animation",
+      "filePath": "datatest.riv",
+      "sourceType": "Package",
+      "isDefault": true,
+      "isEnabled": true,
+      "description": "Basic test animation demonstrating Rive integration",
+      "tags": ["demo", "test", "basic"]
+    }
+  ]
+}

@@ -15,7 +15,8 @@ namespace CSXamlHost.Services
     public class RiveFileService
     {
         private static readonly string[] ValidRiveExtensions = { ".riv" };
-        private const string RiveAssetsFolder = "Assets/RiveAssets";
+        //private const string RiveAssetsFolder = "Assets\\RiveAssets";
+        private const string RiveAssetsFolder = "";
         private readonly RiveFileConfigurationService? _configurationService;
 
         /// <summary>
@@ -77,7 +78,8 @@ namespace CSXamlHost.Services
                     if (IsValidRiveFile(file.Name))
                     {
                         var displayName = GetDisplayNameFromFilename(file.Name);
-                        var relativePath = $"Assets/RiveAssets/{file.Name}";
+                        //var relativePath = $"Assets\\RiveAssets\\{file.Name}";
+                        var relativePath = $"{file.Name}";
                         
                         var riveFileSource = new RiveFileSource(
                             relativePath,
@@ -254,20 +256,15 @@ namespace CSXamlHost.Services
         /// <summary>
         /// Creates a list of default/sample Rive file sources
         /// This can be used as fallback or for demo purposes
+        /// Only includes files that actually exist in the package
         /// </summary>
         /// <returns>List of sample RiveFileSource objects</returns>
         public List<RiveFileSource> GetDefaultRiveFiles()
         {
             return new List<RiveFileSource>
             {
-                new RiveFileSource("Assets/RiveAssets/vector_feathering__avatar.riv", "Vector Feathering Avatar", RiveFileSourceType.Package),
-                new RiveFileSource("Assets/RiveAssets/meeting_ui.riv", "Meeting UI", RiveFileSourceType.Package),
-                new RiveFileSource("Assets/RiveAssets/layouttest.riv", "Layout Test", RiveFileSourceType.Package),
-                new RiveFileSource("Assets/RiveAssets/world_creator.riv", "World Creator", RiveFileSourceType.Package),
-                new RiveFileSource("Assets/RiveAssets/pointer_events.riv", "Pointer Events", RiveFileSourceType.Package),
-                new RiveFileSource("Assets/RiveAssets/interactive_bento_grid.riv", "Interactive Bento Grid", RiveFileSourceType.Package),
-                new RiveFileSource("Assets/RiveAssets/the_sound_of_coqui.riv", "The Sound of Coqui", RiveFileSourceType.Package),
-                new RiveFileSource("Assets/RiveAssets/datatest.riv", "Data Test", RiveFileSourceType.Package)
+                //new RiveFileSource("/RiveAssets/datatest.riv", "Data Test", RiveFileSourceType.Package)
+                new RiveFileSource("datatest.riv", "Data Test", RiveFileSourceType.Package)
             };
         }
 

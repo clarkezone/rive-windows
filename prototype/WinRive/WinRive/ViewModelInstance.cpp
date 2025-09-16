@@ -69,13 +69,28 @@ namespace winrt::WinRive::implementation
     bool ViewModelInstance::SetStringProperty(hstring const& name, hstring const& value)
     {
 #if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
-        // TODO: Implement when rive viewmodel API is available
-        // For now, just fire property changed event for testing
-        auto prop = GetProperty(name);
-        if (prop)
-        {
-            m_propertyChangedEvent(*this, prop);
-            return true;
+        if (!m_nativeInstance) {
+            return false;
+        }
+        
+        auto* nativeInstance = static_cast<rive::ViewModelInstance*>(m_nativeInstance);
+        std::string propName = winrt::to_string(name);
+        std::string propValue = winrt::to_string(value);
+        
+        // Use the same pattern as RiveRenderer::SetViewModelStringProperty
+        auto property = nativeInstance->propertyValue(propName);
+        if (property) {
+            auto stringProperty = static_cast<rive::ViewModelInstanceString*>(property);
+            if (stringProperty) {
+                stringProperty->propertyValue(propValue);
+                
+                // Fire property changed event
+                auto prop = GetProperty(name);
+                if (prop) {
+                    m_propertyChangedEvent(*this, prop);
+                }
+                return true;
+            }
         }
 #else
         // Unused parameters
@@ -88,12 +103,26 @@ namespace winrt::WinRive::implementation
     bool ViewModelInstance::SetNumberProperty(hstring const& name, double value)
     {
 #if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
-        // TODO: Implement when rive viewmodel API is available
-        auto prop = GetProperty(name);
-        if (prop)
-        {
-            m_propertyChangedEvent(*this, prop);
-            return true;
+        if (!m_nativeInstance) {
+            return false;
+        }
+        
+        auto* nativeInstance = static_cast<rive::ViewModelInstance*>(m_nativeInstance);
+        std::string propName = winrt::to_string(name);
+        
+        auto property = nativeInstance->propertyValue(propName);
+        if (property) {
+            auto numberProperty = static_cast<rive::ViewModelInstanceNumber*>(property);
+            if (numberProperty) {
+                numberProperty->propertyValue(static_cast<float>(value));
+                
+                // Fire property changed event
+                auto prop = GetProperty(name);
+                if (prop) {
+                    m_propertyChangedEvent(*this, prop);
+                }
+                return true;
+            }
         }
 #else
         // Unused parameters
@@ -106,12 +135,26 @@ namespace winrt::WinRive::implementation
     bool ViewModelInstance::SetBooleanProperty(hstring const& name, bool value)
     {
 #if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
-        // TODO: Implement when rive viewmodel API is available
-        auto prop = GetProperty(name);
-        if (prop)
-        {
-            m_propertyChangedEvent(*this, prop);
-            return true;
+        if (!m_nativeInstance) {
+            return false;
+        }
+        
+        auto* nativeInstance = static_cast<rive::ViewModelInstance*>(m_nativeInstance);
+        std::string propName = winrt::to_string(name);
+        
+        auto property = nativeInstance->propertyValue(propName);
+        if (property) {
+            auto boolProperty = static_cast<rive::ViewModelInstanceBoolean*>(property);
+            if (boolProperty) {
+                boolProperty->propertyValue(value);
+                
+                // Fire property changed event
+                auto prop = GetProperty(name);
+                if (prop) {
+                    m_propertyChangedEvent(*this, prop);
+                }
+                return true;
+            }
         }
 #else
         // Unused parameters
@@ -124,12 +167,26 @@ namespace winrt::WinRive::implementation
     bool ViewModelInstance::SetColorProperty(hstring const& name, uint32_t color)
     {
 #if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
-        // TODO: Implement when rive viewmodel API is available
-        auto prop = GetProperty(name);
-        if (prop)
-        {
-            m_propertyChangedEvent(*this, prop);
-            return true;
+        if (!m_nativeInstance) {
+            return false;
+        }
+        
+        auto* nativeInstance = static_cast<rive::ViewModelInstance*>(m_nativeInstance);
+        std::string propName = winrt::to_string(name);
+        
+        auto property = nativeInstance->propertyValue(propName);
+        if (property) {
+            auto colorProperty = static_cast<rive::ViewModelInstanceColor*>(property);
+            if (colorProperty) {
+                colorProperty->propertyValue(color);
+                
+                // Fire property changed event
+                auto prop = GetProperty(name);
+                if (prop) {
+                    m_propertyChangedEvent(*this, prop);
+                }
+                return true;
+            }
         }
 #else
         // Unused parameters
@@ -142,12 +199,26 @@ namespace winrt::WinRive::implementation
     bool ViewModelInstance::SetEnumProperty(hstring const& name, int32_t value)
     {
 #if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
-        // TODO: Implement when rive viewmodel API is available
-        auto prop = GetProperty(name);
-        if (prop)
-        {
-            m_propertyChangedEvent(*this, prop);
-            return true;
+        if (!m_nativeInstance) {
+            return false;
+        }
+        
+        auto* nativeInstance = static_cast<rive::ViewModelInstance*>(m_nativeInstance);
+        std::string propName = winrt::to_string(name);
+        
+        auto property = nativeInstance->propertyValue(propName);
+        if (property) {
+            auto enumProperty = static_cast<rive::ViewModelInstanceEnum*>(property);
+            if (enumProperty) {
+                enumProperty->propertyValue(static_cast<uint32_t>(value));
+                
+                // Fire property changed event
+                auto prop = GetProperty(name);
+                if (prop) {
+                    m_propertyChangedEvent(*this, prop);
+                }
+                return true;
+            }
         }
 #else
         // Unused parameters
@@ -160,12 +231,26 @@ namespace winrt::WinRive::implementation
     bool ViewModelInstance::FireTrigger(hstring const& name)
     {
 #if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
-        // TODO: Implement when rive viewmodel API is available
-        auto prop = GetProperty(name);
-        if (prop)
-        {
-            m_propertyChangedEvent(*this, prop);
-            return true;
+        if (!m_nativeInstance) {
+            return false;
+        }
+        
+        auto* nativeInstance = static_cast<rive::ViewModelInstance*>(m_nativeInstance);
+        std::string propName = winrt::to_string(name);
+        
+        auto property = nativeInstance->propertyValue(propName);
+        if (property) {
+            auto trigger = static_cast<rive::ViewModelInstanceTrigger*>(property);
+            if (trigger) {
+                trigger->trigger();
+                
+                // Fire property changed event
+                auto prop = GetProperty(name);
+                if (prop) {
+                    m_propertyChangedEvent(*this, prop);
+                }
+                return true;
+            }
         }
 #else
         // Unused parameters
