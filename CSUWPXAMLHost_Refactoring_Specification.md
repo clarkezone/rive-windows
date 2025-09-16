@@ -45,7 +45,7 @@ An LLM implementing this specification has succeeded when:
 - [ ] No business logic is embedded in XAML files
 
 #### ✅ **Functional Success** 
-- [ ] All CSWinUI3XAMLHost functionality works in new CSUWPXAMLHost implementation
+- [ ] All CSUWPXAMLHost functionality works in new CSUWPXAMLHost implementation
 - [ ] File picker successfully loads external .riv files
 - [ ] State machine inputs dynamically generate appropriate UI controls
 - [ ] Playback controls (play/pause/reset) function correctly
@@ -71,17 +71,15 @@ An LLM implementing this specification has succeeded when:
   - Complete API for: file loading, state machines, input handling, ViewModels
   - **Status**: ✅ Complete and functional - DO NOT MODIFY
 
-- **CSWinUI3XAMLHost** (`prototype/WinRive/CSXamlHost/`):
-  - `MainWindow.xaml/.cs`: Working XAML Page demo with comprehensive UI implementation
-  - Features: File selection, state machine controls, input manipulation, status display
-  - **Status**: ✅ Reference implementation - USE AS TEMPLATE FOR UI LOGIC
-
 - **CSXamlHost** (`prototype/WinRive/CSXamlHost/`):
   - `App.xaml`: Basic UWP application definition
   - `Assets/RiveAssets/`: Contains sample Rive files (datatest.riv, etc.)
   - `CSUWPXAMLHost.csproj`: Valid project file with correct references
+  - `MainPage.xaml`: existing UI
+  - `MainPage.xaml.cs`: existing code behind for the UI
   - `Package.appxmanifest`: UWP manifest with identity and capabilities
-  - **Status**: ⚠️ Has project structure but MISSING all UI implementation files
+  - **Status**: ✅ Reference implementation
+
 
 ### Key Architectural Insights from Analysis
 1. **WinRive.RiveControl** provides complete C++ API - wrapper needed, not re-implementation
@@ -413,14 +411,14 @@ CSUWPXAMLHost/
 - [ ] RiveViewerControl can be used standalone for simple Rive playback
 - [ ] RiveStateMachinePanel can be used with any RiveViewerControl
 - [ ] External file loading works via UWP file picker
-- [ ] All existing functionality from CSWinUI3XAMLHost is preserved
+- [ ] All existing functionality from CSUWPXAMLHost is preserved
 - [ ] Controls are reusable across different UWP applications
 - [ ] Proper error handling and user feedback
 - [ ] Clean separation of concerns between rendering and UI
 - [ ] Comprehensive documentation and examples
 
 ## Migration Notes
-- Existing CSWinUI3XAMLHost code serves as reference implementation
+- Existing CSUWPXAMLHost code serves as reference implementation
 - WinRive C++ component remains unchanged
 - New architecture allows for future extensibility
 - Controls can be packaged as separate NuGet package if desired
