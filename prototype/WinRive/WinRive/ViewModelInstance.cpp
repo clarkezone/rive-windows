@@ -202,6 +202,17 @@ namespace winrt::WinRive::implementation
 #endif
     }
 
+    void ViewModelInstance::SetNativeInstance(void* nativeInstance)
+    {
+#if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
+        m_nativeInstance = nativeInstance;
+        InvalidatePropertyCache(); // Force re-cache of properties when native instance changes
+#else
+        // Unused when rive headers not available
+        (void)nativeInstance;
+#endif
+    }
+
     void ViewModelInstance::InvalidatePropertyCache()
     {
         m_propertiesCached = false;

@@ -420,9 +420,7 @@ namespace winrt::WinRive::implementation
                 auto instanceImpl = winrt::make<implementation::ViewModelInstance>(defaultVM);
                 
                 // Set the native instance pointer
-#if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
-                instanceImpl.as<implementation::ViewModelInstance>()->m_nativeInstance = nativeInstance;
-#endif
+                instanceImpl.as<implementation::ViewModelInstance>()->SetNativeInstance(nativeInstance);
                 
                 return instanceImpl.as<winrt::WinRive::ViewModelInstance>();
             }
@@ -458,9 +456,7 @@ namespace winrt::WinRive::implementation
                     );
                     
                     // Set the native instance pointer
-#if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
-                    instanceImpl.as<implementation::ViewModelInstance>()->m_nativeInstance = nativeInstance;
-#endif
+                    instanceImpl.as<implementation::ViewModelInstance>()->SetNativeInstance(nativeInstance);
                     
                     return instanceImpl.as<winrt::WinRive::ViewModelInstance>();
                 }
@@ -498,9 +494,7 @@ namespace winrt::WinRive::implementation
                     );
                     
                     // Set the native instance pointer
-#if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
-                    instanceImpl.as<implementation::ViewModelInstance>()->m_nativeInstance = nativeInstance;
-#endif
+                    instanceImpl.as<implementation::ViewModelInstance>()->SetNativeInstance(nativeInstance);
                     
                     return instanceImpl.as<winrt::WinRive::ViewModelInstance>();
                 }

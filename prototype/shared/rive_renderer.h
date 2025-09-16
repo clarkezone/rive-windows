@@ -43,6 +43,7 @@
 #include "rive/animation/state_machine_instance.hpp"
 #include "rive/static_scene.hpp"
 
+#include "rive/viewmodel/viewmodel.hpp"
 #include "rive/viewmodel/viewmodel_instance.hpp"
 #include "rive/viewmodel/viewmodel_instance_value.hpp"
 #include "rive/viewmodel/viewmodel_instance_string.hpp"

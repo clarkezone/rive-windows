@@ -39,6 +39,7 @@ namespace winrt::WinRive::implementation
 
         // Internal methods
         void* GetNativeInstance() const;
+        void SetNativeInstance(void* nativeInstance);
         void InvalidatePropertyCache();
 
     private:
