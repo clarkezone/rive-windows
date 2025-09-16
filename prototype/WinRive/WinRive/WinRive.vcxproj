@@ -160,6 +160,15 @@
     <ClInclude Include="RiveControl.h">
       <DependentUpon>RiveControl.idl</DependentUpon>
     </ClInclude>
+    <ClInclude Include="ViewModel.h">
+      <DependentUpon>RiveControl.idl</DependentUpon>
+    </ClInclude>
+    <ClInclude Include="ViewModelInstance.h">
+      <DependentUpon>RiveControl.idl</DependentUpon>
+    </ClInclude>
+    <ClInclude Include="ViewModelInstanceProperty.h">
+      <DependentUpon>RiveControl.idl</DependentUpon>
+    </ClInclude>
     <ClInclude Include="InputProvider.h" />
     <ClInclude Include="..\..\shared\rive_renderer.h" />
     <ClInclude Include="..\..\shared\dx_renderer.h" />
@@ -172,6 +181,15 @@
       <DependentUpon>Class.idl</DependentUpon>
     </ClCompile>
     <ClCompile Include="RiveControl.cpp">
+      <DependentUpon>RiveControl.idl</DependentUpon>
+    </ClCompile>
+    <ClCompile Include="ViewModel.cpp">
+      <DependentUpon>RiveControl.idl</DependentUpon>
+    </ClCompile>
+    <ClCompile Include="ViewModelInstance.cpp">
+      <DependentUpon>RiveControl.idl</DependentUpon>
+    </ClCompile>
+    <ClCompile Include="ViewModelInstanceProperty.cpp">
       <DependentUpon>RiveControl.idl</DependentUpon>
     </ClCompile>
     <ClCompile Include="InputProvider.cpp" />

@@ -15,6 +15,108 @@ namespace WinRive
         Double NumberValue;
     };
 
+    struct ViewModelInfo
+    {
+        String Name;
+        Int32 Index;
+        Int32 Id;
+    };
+
+    enum ViewModelPropertyType
+    {
+        String,
+        Number,
+        Boolean,
+        Color,
+        Enum,
+        Trigger
+    };
+
+    struct ViewModelPropertyInfo
+    {
+        String Name;
+        ViewModelPropertyType Type;
+        Int32 Index;
+    };
+
+    [default_interface]
+    runtimeclass ViewModel
+    {
+        ViewModel();
+        
+        // Basic info
+        String Name { get; };
+        Int32 Index { get; };
+        Int32 Id { get; };
+        
+        // Property enumeration
+        Windows.Foundation.Collections.IVectorView<ViewModelPropertyInfo> GetProperties();
+        Int32 GetPropertyCount();
+        ViewModelPropertyInfo GetPropertyAt(Int32 index);
+        ViewModelPropertyInfo GetPropertyByName(String name);
+    }
+
+    runtimeclass ViewModelInstanceProperty;
+
+    [default_interface]
+    runtimeclass ViewModelInstance
+    {
+        ViewModelInstance();
+        
+        // Associated view model
+        ViewModel ViewModel { get; };
+        
+        // Property access
+        Windows.Foundation.Collections.IVectorView<ViewModelInstanceProperty> GetProperties();
+        ViewModelInstanceProperty GetProperty(String name);
+        ViewModelInstanceProperty GetPropertyAt(Int32 index);
+        Int32 GetPropertyCount();
+        
+        // Bulk operations
+        Boolean SetStringProperty(String name, String value);
+        Boolean SetNumberProperty(String name, Double value);
+        Boolean SetBooleanProperty(String name, Boolean value);
+        Boolean SetColorProperty(String name, UInt32 color);
+        Boolean SetEnumProperty(String name, Int32 value);
+        Boolean FireTrigger(String name);
+        
+        // Validation
+        Boolean IsValid();
+        
+        // Events
+        event Windows.Foundation.TypedEventHandler<ViewModelInstance, ViewModelInstanceProperty> PropertyChanged;
+    }
+
+    [default_interface]
+    runtimeclass ViewModelInstanceProperty
+    {
+        ViewModelInstanceProperty();
+        
+        // Basic info
+        String Name { get; };
+        ViewModelPropertyType Type { get; };
+        Int32 Index { get; };
+        
+        // Value access - use Object to support different types
+        Object Value { get; set; };
+        
+        // Type-safe accessors
+        String StringValue { get; set; };
+        Double NumberValue { get; set; };
+        Boolean BooleanValue { get; set; };
+        UInt32 ColorValue { get; set; };
+        Int32 EnumValue { get; set; };
+        
+        // Trigger support
+        void Fire();
+        
+        // Validation
+        Boolean IsValid();
+        
+        // Events
+        event Windows.Foundation.TypedEventHandler<ViewModelInstanceProperty, Object> ValueChanged;
+    }
+
     [default_interface]
     runtimeclass RiveControl
     {
@@ -70,5 +172,31 @@ namespace WinRive
         void QueuePointerMove(Single x, Single y);
         void QueuePointerPress(Single x, Single y);
         void QueuePointerRelease(Single x, Single y);
+
+        // View model enumeration
+        Windows.Foundation.Collections.IVectorView<ViewModelInfo> GetViewModels();
+        Int32 GetViewModelCount();
+        ViewModel GetViewModelAt(Int32 index);
+        ViewModel GetViewModelByName(String name);
+        ViewModel GetDefaultViewModel();
+        
+        // View model instance management
+        ViewModelInstance CreateViewModelInstance();
+        ViewModelInstance CreateViewModelInstanceById(Int32 viewModelId);
+        ViewModelInstance CreateViewModelInstanceByName(String viewModelName);
+        Boolean BindViewModelInstance(ViewModelInstance instance);
+        ViewModelInstance GetBoundViewModelInstance();
+        
+        // Direct property access (convenience methods)
+        Boolean SetViewModelStringProperty(String propertyName, String value);
+        Boolean SetViewModelNumberProperty(String propertyName, Double value);
+        Boolean SetViewModelBooleanProperty(String propertyName, Boolean value);
+        Boolean SetViewModelColorProperty(String propertyName, UInt32 color);
+        Boolean SetViewModelEnumProperty(String propertyName, Int32 value);
+        Boolean FireViewModelTrigger(String triggerName);
+        
+        // Events
+        event Windows.Foundation.TypedEventHandler<RiveControl, ViewModelInstance> ViewModelInstanceBound;
+        event Windows.Foundation.TypedEventHandler<RiveControl, ViewModelInstanceProperty> ViewModelPropertyChanged;
     }
 }

@@ -1,0 +1,33 @@
+namespace WinRive
+{
+    runtimeclass ViewModelInstanceProperty;
+
+    [default_interface]
+    runtimeclass ViewModelInstance
+    {
+        ViewModelInstance();
+        
+        // Associated view model
+        ViewModel ViewModel { get; };
+        
+        // Property access
+        Windows.Foundation.Collections.IVectorView<ViewModelInstanceProperty> GetProperties();
+        ViewModelInstanceProperty GetProperty(String name);
+        ViewModelInstanceProperty GetPropertyAt(Int32 index);
+        Int32 GetPropertyCount();
+        
+        // Bulk operations
+        Boolean SetStringProperty(String name, String value);
+        Boolean SetNumberProperty(String name, Double value);
+        Boolean SetBooleanProperty(String name, Boolean value);
+        Boolean SetColorProperty(String name, UInt32 color);
+        Boolean SetEnumProperty(String name, Int32 value);
+        Boolean FireTrigger(String name);
+        
+        // Validation
+        Boolean IsValid();
+        
+        // Events
+        event Windows.Foundation.TypedEventHandler<ViewModelInstance, ViewModelInstanceProperty> PropertyChanged;
+    }
+}

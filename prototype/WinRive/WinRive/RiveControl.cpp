@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "RiveControl.h"
 #include "RiveControl.g.cpp"
+#include "ViewModelInstance.h"
 
 namespace winrt::WinRive::implementation
 {
@@ -293,5 +294,127 @@ namespace winrt::WinRive::implementation
             return m_riveRenderer->FireTrigger(winrt::to_string(inputName));
         }
         return false;
+    }
+
+    // ViewModel support - matching IDL
+    Windows::Foundation::Collections::IVectorView<winrt::WinRive::ViewModelInfo> RiveControl::GetViewModels()
+    {
+        std::vector<winrt::WinRive::ViewModelInfo> result;
+        // TODO: Implement when rive viewmodel API is available
+        return winrt::single_threaded_vector<winrt::WinRive::ViewModelInfo>(std::move(result)).GetView();
+    }
+
+    winrt::WinRive::ViewModel RiveControl::GetViewModelByName(hstring const& name)
+    {
+        (void)name;
+        return nullptr;
+    }
+
+    winrt::WinRive::ViewModel RiveControl::GetViewModelAt(int32_t index)
+    {
+        (void)index;
+        return nullptr;
+    }
+
+    int32_t RiveControl::GetViewModelCount()
+    {
+        return 0;
+    }
+
+    winrt::WinRive::ViewModel RiveControl::GetDefaultViewModel()
+    {
+        return nullptr;
+    }
+
+    // ViewModelInstance management
+    winrt::WinRive::ViewModelInstance RiveControl::CreateViewModelInstance()
+    {
+        return winrt::make<implementation::ViewModelInstance>();
+    }
+
+    winrt::WinRive::ViewModelInstance RiveControl::CreateViewModelInstanceById(int32_t viewModelId)
+    {
+        (void)viewModelId;
+        return nullptr;
+    }
+
+    winrt::WinRive::ViewModelInstance RiveControl::CreateViewModelInstanceByName(hstring const& viewModelName)
+    {
+        (void)viewModelName;
+        return nullptr;
+    }
+
+    bool RiveControl::BindViewModelInstance(winrt::WinRive::ViewModelInstance const& instance)
+    {
+        (void)instance;
+        return false;
+    }
+
+    winrt::WinRive::ViewModelInstance RiveControl::GetBoundViewModelInstance()
+    {
+        return nullptr;
+    }
+
+    // Direct property access (convenience methods)
+    bool RiveControl::SetViewModelStringProperty(hstring const& propertyName, hstring const& value)
+    {
+        (void)propertyName;
+        (void)value;
+        return false;
+    }
+
+    bool RiveControl::SetViewModelNumberProperty(hstring const& propertyName, double value)
+    {
+        (void)propertyName;
+        (void)value;
+        return false;
+    }
+
+    bool RiveControl::SetViewModelBooleanProperty(hstring const& propertyName, bool value)
+    {
+        (void)propertyName;
+        (void)value;
+        return false;
+    }
+
+    bool RiveControl::SetViewModelColorProperty(hstring const& propertyName, uint32_t color)
+    {
+        (void)propertyName;
+        (void)color;
+        return false;
+    }
+
+    bool RiveControl::SetViewModelEnumProperty(hstring const& propertyName, int32_t value)
+    {
+        (void)propertyName;
+        (void)value;
+        return false;
+    }
+
+    bool RiveControl::FireViewModelTrigger(hstring const& triggerName)
+    {
+        (void)triggerName;
+        return false;
+    }
+
+    // Events
+    winrt::event_token RiveControl::ViewModelInstanceBound(Windows::Foundation::TypedEventHandler<winrt::WinRive::RiveControl, winrt::WinRive::ViewModelInstance> const& handler)
+    {
+        return m_viewModelInstanceBoundEvent.add(handler);
+    }
+
+    void RiveControl::ViewModelInstanceBound(winrt::event_token const& token) noexcept
+    {
+        m_viewModelInstanceBoundEvent.remove(token);
+    }
+
+    winrt::event_token RiveControl::ViewModelPropertyChanged(Windows::Foundation::TypedEventHandler<winrt::WinRive::RiveControl, winrt::WinRive::ViewModelInstanceProperty> const& handler)
+    {
+        return m_viewModelPropertyChangedEvent.add(handler);
+    }
+
+    void RiveControl::ViewModelPropertyChanged(winrt::event_token const& token) noexcept
+    {
+        m_viewModelPropertyChangedEvent.remove(token);
     }
 }

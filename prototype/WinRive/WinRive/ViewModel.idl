@@ -1,0 +1,19 @@
+namespace WinRive
+{
+    [default_interface]
+    runtimeclass ViewModel
+    {
+        ViewModel();
+        
+        // Basic info
+        String Name { get; };
+        Int32 Index { get; };
+        Int32 Id { get; };
+        
+        // Property enumeration
+        Windows.Foundation.Collections.IVectorView<ViewModelPropertyInfo> GetProperties();
+        Int32 GetPropertyCount();
+        ViewModelPropertyInfo GetPropertyAt(Int32 index);
+        ViewModelPropertyInfo GetPropertyByName(String name);
+    }
+}

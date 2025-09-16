@@ -60,6 +60,34 @@ namespace winrt::WinRive::implementation
         void QueuePointerPress(float x, float y);
         void QueuePointerRelease(float x, float y);
 
+        // ViewModel support - matching IDL
+        Windows::Foundation::Collections::IVectorView<winrt::WinRive::ViewModelInfo> GetViewModels();
+        winrt::WinRive::ViewModel GetViewModelByName(hstring const& name);
+        winrt::WinRive::ViewModel GetViewModelAt(int32_t index);
+        int32_t GetViewModelCount();
+        winrt::WinRive::ViewModel GetDefaultViewModel();
+        
+        // ViewModelInstance management
+        winrt::WinRive::ViewModelInstance CreateViewModelInstance();
+        winrt::WinRive::ViewModelInstance CreateViewModelInstanceById(int32_t viewModelId);
+        winrt::WinRive::ViewModelInstance CreateViewModelInstanceByName(hstring const& viewModelName);
+        bool BindViewModelInstance(winrt::WinRive::ViewModelInstance const& instance);
+        winrt::WinRive::ViewModelInstance GetBoundViewModelInstance();
+
+        // Direct property access (convenience methods)
+        bool SetViewModelStringProperty(hstring const& propertyName, hstring const& value);
+        bool SetViewModelNumberProperty(hstring const& propertyName, double value);
+        bool SetViewModelBooleanProperty(hstring const& propertyName, bool value);
+        bool SetViewModelColorProperty(hstring const& propertyName, uint32_t color);
+        bool SetViewModelEnumProperty(hstring const& propertyName, int32_t value);
+        bool FireViewModelTrigger(hstring const& triggerName);
+
+        // Events
+        winrt::event_token ViewModelInstanceBound(Windows::Foundation::TypedEventHandler<winrt::WinRive::RiveControl, winrt::WinRive::ViewModelInstance> const& handler);
+        void ViewModelInstanceBound(winrt::event_token const& token) noexcept;
+        winrt::event_token ViewModelPropertyChanged(Windows::Foundation::TypedEventHandler<winrt::WinRive::RiveControl, winrt::WinRive::ViewModelInstanceProperty> const& handler);
+        void ViewModelPropertyChanged(winrt::event_token const& token) noexcept;
+
     private:
         // The Rive renderer instance
         std::unique_ptr<RiveRenderer> m_riveRenderer;
@@ -67,6 +95,10 @@ namespace winrt::WinRive::implementation
         // Visual bounds
         int32_t m_width{ 0 };
         int32_t m_height{ 0 };
+
+        // Events
+        winrt::event<Windows::Foundation::TypedEventHandler<winrt::WinRive::RiveControl, winrt::WinRive::ViewModelInstance>> m_viewModelInstanceBoundEvent;
+        winrt::event<Windows::Foundation::TypedEventHandler<winrt::WinRive::RiveControl, winrt::WinRive::ViewModelInstanceProperty>> m_viewModelPropertyChangedEvent;
     };
 }
 
