@@ -1,0 +1,9 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:CSXamlHost.Controls">
+
+    <!-- Placeholder for future control templates -->
+    <!-- RiveViewerControl template will be added in Phase 4 -->
+
+</ResourceDictionary>
