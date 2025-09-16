@@ -70,53 +70,10 @@
 
                 <!-- Container for the actual WinRive control -->
                 <Border x:Name="RiveControlContainer"
-                        Visibility="{x:Bind IsContentLoaded, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Stretch"
                         SizeChanged="RiveControlContainer_SizeChanged">
                     <!-- The WinRive control will be hosted here programmatically -->
-                </Border>
-
-                <!-- Loading indicator -->
-                <Border x:Name="LoadingOverlay"
-                        Background="{ThemeResource SystemControlBackgroundBaseLowBrush}"
-                        Opacity="0.8"
-                        Visibility="{x:Bind IsLoading, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
-                    <StackPanel HorizontalAlignment="Center" 
-                                VerticalAlignment="Center"
-                                Spacing="8">
-                        <ProgressRing IsActive="{x:Bind IsLoading, Mode=OneWay}"
-                                      Width="32"
-                                      Height="32" />
-                        <TextBlock Text="Loading Rive animation..."
-                                   Style="{ThemeResource BodyTextBlockStyle}"
-                                   Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
-                                   HorizontalAlignment="Center" />
-                    </StackPanel>
-                </Border>
-
-                <!-- Error overlay -->
-                <Border x:Name="ErrorOverlay"
-                        Background="{ThemeResource SystemErrorTextColor}"
-                        Opacity="0.1"
-                        Visibility="{x:Bind HasError, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
-                    <StackPanel HorizontalAlignment="Center" 
-                                VerticalAlignment="Center"
-                                Spacing="8"
-                                Margin="16">
-                        <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" 
-                                  Glyph="&#xE783;" 
-                                  FontSize="32"
-                                  Foreground="{ThemeResource SystemErrorTextColor}" />
-                        <TextBlock Text="Failed to load Rive animation"
-                                   Style="{ThemeResource SubtitleTextBlockStyle}"
-                                   Foreground="{ThemeResource SystemErrorTextColor}"
-                                   HorizontalAlignment="Center" />
-                        <TextBlock Text="{x:Bind ErrorMessage, Mode=OneWay}"
-                                   Style="{StaticResource ErrorTextStyle}"
-                                   HorizontalAlignment="Center"
-                                   MaxWidth="300" />
-                    </StackPanel>
                 </Border>
             </Grid>
         </Border>

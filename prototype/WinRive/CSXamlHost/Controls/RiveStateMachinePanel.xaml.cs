@@ -614,19 +614,84 @@ namespace CSXamlHost.Controls
             {
                 StateMachines.Clear();
                 
-                // For now, create a demo state machine since the RiveControl API
-                // for querying state machines is not yet available
-                // TODO: Integrate with actual RiveControl state machine discovery when API is available
-                CreateDemoStateMachine();
+                // Get the RiveControl instance from the connected viewer
+                var riveControl = RiveViewer?.GetRiveControl();
+                if (riveControl == null)
+                {
+                    UpdateStatus("No RiveControl available - cannot load state machines");
+                    return;
+                }
+
+                // Use the real RiveControl API to get state machines
+                var stateMachinesInfo = riveControl.GetStateMachines();
+                foreach (var smInfo in stateMachinesInfo)
+                {
+                    var stateMachine = new StateMachineModel(smInfo.Name, smInfo.Index, smInfo.IsDefault);
+                    
+                    // Get inputs for this state machine by setting it active temporarily
+                    var previousActiveIndex = riveControl.GetActiveStateMachineIndex();
+                    riveControl.SetActiveStateMachine(smInfo.Index);
+                    
+                    var inputs = riveControl.GetStateMachineInputs();
+                    foreach (var input in inputs)
+                    {
+                        StateMachineInputType inputType;
+                        switch (input.Type.ToLowerInvariant())
+                        {
+                            case "boolean":
+                                inputType = StateMachineInputType.Boolean;
+                                break;
+                            case "number":
+                                inputType = StateMachineInputType.Number;
+                                break;
+                            case "trigger":
+                                inputType = StateMachineInputType.Trigger;
+                                break;
+                            default:
+                                continue; // Skip unknown types
+                        }
+                        
+                        object? initialValue = inputType switch
+                        {
+                            StateMachineInputType.Boolean => input.BooleanValue,
+                            StateMachineInputType.Number => input.NumberValue,
+                            StateMachineInputType.Trigger => null,
+                            _ => null
+                        };
+                        
+                        var inputModel = new StateMachineInputModel(
+                            input.Name,
+                            inputType,
+                            stateMachine.Inputs.Count, // Use count as index
+                            initialValue
+                        );
+                        
+                        stateMachine.Inputs.Add(inputModel);
+                    }
+                    
+                    // Restore previous active state machine
+                    if (previousActiveIndex >= 0)
+                    {
+                        riveControl.SetActiveStateMachine(previousActiveIndex);
+                    }
+                    
+                    StateMachines.Add(stateMachine);
+                }
                 
-                // Select the first available state machine
+                // Select the default state machine, or first available
                 if (StateMachines.Count > 0)
                 {
                     SelectedStateMachine = StateMachines.FirstOrDefault(sm => sm.IsDefault) ?? StateMachines[0];
+                    
+                    // Set the selected state machine as active in RiveControl
+                    if (SelectedStateMachine != null)
+                    {
+                        riveControl.SetActiveStateMachine(SelectedStateMachine.Index);
+                    }
                 }
 
                 OnPropertyChanged(nameof(HasStateMachines));
-                UpdateStatus($"Loaded {StateMachines.Count} state machine{(StateMachines.Count != 1 ? "s" : "")} (demo for UI testing)");
+                UpdateStatus($"Loaded {StateMachines.Count} state machine{(StateMachines.Count != 1 ? "s" : "")} from RiveControl");
             }
             catch (Exception ex)
             {
@@ -634,33 +699,6 @@ namespace CSXamlHost.Controls
             }
         }
 
-        private void CreateDemoStateMachine()
-        {
-            var demoStateMachine = new StateMachineModel("Demo State Machine", 0, true);
-
-            // Add demo inputs for testing the UI
-            demoStateMachine.Inputs.Add(new StateMachineInputModel(
-                "isPlaying",
-                StateMachineInputType.Boolean,
-                0,
-                false
-            ));
-
-            demoStateMachine.Inputs.Add(new StateMachineInputModel(
-                "speed",
-                StateMachineInputType.Number,
-                1,
-                1.0
-            ));
-
-            demoStateMachine.Inputs.Add(new StateMachineInputModel(
-                "reset",
-                StateMachineInputType.Trigger,
-                2
-            ));
-
-            StateMachines.Add(demoStateMachine);
-        }
 
         private void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string? propertyName = null)
         {
