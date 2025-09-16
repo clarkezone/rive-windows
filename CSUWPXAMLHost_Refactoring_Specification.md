@@ -2,12 +2,14 @@
 
 ## Mission Statement
 Transform the CSUWPXAMLHost project from a minimal UWP host into a well-architected application with reusable Rive controls that separate rendering concerns from UI manipulation concerns.
+The project directory is here:
+C:\Users\jeclarke\src\github.com\clarkezone\rive-windows\prototype\WinRive\CSXamlHost
 
 The souce files are here:
 C:\Users\jeclarke\src\github.com\clarkezone\rive-windows\prototype\WinRive\CSXamlHost\MainPage.xaml
 C:\Users\jeclarke\src\github.com\clarkezone\rive-windows\prototype\WinRive\CSXamlHost\MainPage.xaml.cs
 
-DO NOT LOOK FOR OTHER c# or XAML files.
+DO NOT LOOK at files outside of the project directory.
 
 ## Problem Statement
 Currently, the Rive functionality is either:
