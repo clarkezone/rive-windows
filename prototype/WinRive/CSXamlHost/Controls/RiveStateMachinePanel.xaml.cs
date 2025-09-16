@@ -55,30 +55,6 @@ namespace CSXamlHost.Controls
             this.Unloaded += RiveStateMachinePanel_Unloaded;
         }
 
-        private async Task InitializeConfigurationAsync()
-        {
-            try
-            {
-                UpdateStatus("Initializing configuration...");
-                
-                // Try to load user configuration first, fallback to default
-                var userConfig = await _configurationService.LoadUserConfigurationAsync();
-                if (userConfig == null)
-                {
-                    await _configurationService.LoadDefaultConfigurationAsync();
-                }
-                
-                _configurationInitialized = true;
-                UpdateStatus("Configuration loaded successfully");
-            }
-            catch (Exception ex)
-            {
-                SetError($"Failed to initialize configuration: {ex.Message}");
-                _configurationInitialized = true; // Set as initialized even with error for fallback
-                UpdateStatus("Using fallback configuration");
-            }
-        }
-
         #region Dependency Properties
 
         /// <summary>
@@ -726,12 +702,6 @@ namespace CSXamlHost.Controls
 
         private async void RiveStateMachinePanel_Loaded(object sender, RoutedEventArgs e)
         {
-            // Initialize configuration first, then load files
-            if (!_configurationInitialized)
-            {
-                await InitializeConfigurationAsync();
-            }
-            
             // Load default files when control loads
             await LoadDefaultFilesAsync();
         }
