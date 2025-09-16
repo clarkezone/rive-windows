@@ -61,6 +61,7 @@
             <ComboBoxItem Content="Pointer Test" Tag="pointer_events.riv" />
             <ComboBoxItem Content="Bento" Tag="interactive_bento_grid.riv" />
             <ComboBoxItem Content="Coqui" Tag="the_sound_of_coqui.riv" />
+            <ComboBoxItem Content="DataTest" Tag="datatest.riv" />
         </ComboBox>
                 <TextBlock
                     Margin="0,0,0,15"

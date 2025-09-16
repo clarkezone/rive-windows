@@ -99,8 +99,6 @@ bool RiveRenderer::LoadRiveFile(const std::string& filePath)
         m_riveFileData = rivBytes;
         
         m_riveFilePath = filePath;
-
-        rive::ViewModel vm;
         
         // Create Rive content
         CreateRiveContent();
@@ -678,6 +676,32 @@ void RiveRenderer::EnumerateAndInitializeStateMachines()
         if (!m_stateMachines.empty() && m_defaultStateMachineIndex >= 0) {
             SetActiveStateMachine(m_defaultStateMachineIndex);
         }
+
+        int viewModelId = m_artboard.get()->viewModelId();
+        m_viewModelInstances.push_back(
+            viewModelId == -1
+            ? m_riveFile->createViewModelInstance(m_artboard.get())
+            : m_riveFile->createViewModelInstance(viewModelId, 0));
+        m_artboard->bindViewModelInstance(m_viewModelInstances.back());
+        if (m_viewModelInstances.back() != nullptr)
+        {
+            m_scene->bindViewModelInstance(m_viewModelInstances.back());
+        }
+
+		m_viewModelInstance = m_viewModelInstances.back();
+        if (m_viewModelInstance != nullptr)
+        {
+			auto thing = m_viewModelInstance->propertyValue("MyName");
+            
+            auto* stringProperty = static_cast<rive::ViewModelInstanceString*>(thing);
+            //if (stringProperty) {
+            //    stringProperty->propertyValue("Hello World");
+            //}
+
+		}
+
+		//auto property = m_viewModelInstance->addValue("isPressed", rive::SymbolType::Bool);
+
         
     } catch (const std::exception& e) {
         std::cout << "Error enumerating state machines: " << e.what() << std::endl;

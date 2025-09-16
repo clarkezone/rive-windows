@@ -42,6 +42,15 @@
 #include "rive/animation/linear_animation_instance.hpp"
 #include "rive/animation/state_machine_instance.hpp"
 #include "rive/static_scene.hpp"
+
+#include "rive/viewmodel/viewmodel_instance.hpp"
+#include "rive/viewmodel/viewmodel_instance_value.hpp"
+#include "rive/viewmodel/viewmodel_instance_string.hpp"
+#include "rive/viewmodel/viewmodel_instance_number.hpp"
+#include "rive/viewmodel/viewmodel_instance_boolean.hpp"
+#include "rive/viewmodel/viewmodel_instance_color.hpp"
+#include "rive/viewmodel/viewmodel_instance_enum.hpp"
+#include "rive/viewmodel/viewmodel_instance_trigger.hpp"
 #endif
 
 // Input event structure for thread-safe input handling
@@ -83,6 +92,7 @@ private:
     // State machine management
     std::vector<std::unique_ptr<rive::StateMachineInstance>> m_stateMachines;
     rive::StateMachineInstance* m_activeStateMachine = nullptr;
+    std::vector<rive::rcp<rive::ViewModelInstance>> m_viewModelInstances;
     int m_activeStateMachineIndex = -1;
     int m_defaultStateMachineIndex = -1;
     bool m_stateMachineActive = false;
