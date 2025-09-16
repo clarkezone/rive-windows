@@ -140,13 +140,38 @@ namespace CSXamlHost.Models
         /// <summary>
         /// Adds an input to this state machine
         /// </summary>
-        /// <param name="input">Input to add</param>
+        /// <param name="input">The input to add</param>
         public void AddInput(StateMachineInputModel input)
         {
-            if (input == null)
-                throw new ArgumentNullException(nameof(input));
+            if (input != null)
+            {
+                Inputs.Add(input);
+            }
+        }
 
-            Inputs.Add(input);
+        /// <summary>
+        /// Creates a StateMachineModel from WinRive state machine info
+        /// </summary>
+        /// <param name="info">The WinRive state machine info</param>
+        /// <returns>A new StateMachineModel instance</returns>
+        public static StateMachineModel FromWinRiveInfo(dynamic info)
+        {
+            try
+            {
+                // Extract properties from WinRive state machine info
+                string name = info?.Name ?? "Unknown";
+                int index = info?.Index ?? 0;
+                bool isDefault = info?.IsDefault ?? false;
+
+                return new StateMachineModel(name, index, isDefault);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Failed to create StateMachineModel from WinRive info: {ex.Message}");
+                
+                // Return a fallback state machine
+                return new StateMachineModel("Unknown State Machine", 0, true);
+            }
         }
 
         /// <summary>

@@ -134,6 +134,39 @@ namespace CSXamlHost.Models
         }
 
         /// <summary>
+        /// Creates a StateMachineInputModel from dynamic WinRive input object
+        /// </summary>
+        /// <param name="input">Dynamic WinRive input object</param>
+        /// <param name="index">Index of the input</param>
+        /// <returns>New StateMachineInputModel</returns>
+        public static StateMachineInputModel FromWinRiveInput(dynamic input, int index)
+        {
+            try
+            {
+                string name = input?.Name ?? "Unknown";
+                string typeString = input?.Type ?? "unknown";
+                var type = ParseInputType(typeString);
+                
+                object? value = type switch
+                {
+                    StateMachineInputType.Boolean => input?.BooleanValue ?? false,
+                    StateMachineInputType.Number => input?.NumberValue ?? 0.0,
+                    StateMachineInputType.Trigger => null,
+                    _ => null
+                };
+
+                return new StateMachineInputModel(name, type, index, value);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Failed to create StateMachineInputModel from dynamic input: {ex.Message}");
+                
+                // Return a fallback input
+                return new StateMachineInputModel("Unknown Input", StateMachineInputType.Boolean, index, false);
+            }
+        }
+
+        /// <summary>
         /// Triggers the input (for trigger-type inputs)
         /// </summary>
         public void FireTrigger()

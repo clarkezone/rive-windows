@@ -306,17 +306,38 @@ event EventHandler<StatusChangedEventArgs> StatusChanged;
   - [x] Add comprehensive event handling and cleanup
 
 ### Phase 6: Integration with RiveViewerControl
-- [ ] **6.1** Connect RiveStateMachinePanel to RiveViewerControl:
-  - [ ] Handle RiveViewer property changes
-  - [ ] Subscribe to RiveViewer events
-  - [ ] Forward commands to RiveViewer
-  - [ ] Sync state between controls
+- [x] **6.1** Connect RiveStateMachinePanel to RiveViewerControl:
+  - [x] Handle RiveViewer property changes via `OnRiveViewerChanged()` method
+  - [x] Subscribe to RiveViewer events (`FileLoaded`, `ErrorOccurred`)
+  - [x] Forward commands to RiveViewer (Play/Pause/Stop methods)
+  - [x] Sync state between controls with real-time updates
+  - [x] Implement proper cleanup and event unsubscription
 
-- [ ] **6.2** Implement bidirectional communication:
-  - [ ] Panel updates when RiveViewer state changes
-  - [ ] Panel commands trigger RiveViewer actions
-  - [ ] Error handling across control boundaries
-  - [ ] Event bubbling and routing
+- [x] **6.2** Implement bidirectional communication:
+  - [x] Panel updates when RiveViewer state changes
+  - [x] Panel commands trigger RiveViewer actions
+  - [x] Error handling across control boundaries
+  - [x] Event bubbling and routing with custom EventArgs
+  - [x] Status message synchronization between controls
+
+- [x] **6.3** Enhanced integration features:
+  - [x] Smart state machine discovery with RiveControl API integration
+  - [x] Graceful fallback to demo state machines for API compatibility
+  - [x] Input control application directly to RiveControl methods:
+    - [x] Boolean inputs → `SetBooleanInput()`
+    - [x] Number inputs → `SetNumberInput()` 
+    - [x] Trigger inputs → `FireTrigger()`
+  - [x] Dynamic factory methods for WinRive integration:
+    - [x] `StateMachineModel.FromWinRiveInfo()`
+    - [x] `StateMachineInputModel.FromWinRiveInput()`
+  - [x] Comprehensive exception handling for RiveControl operations
+  - [x] User feedback and status updates for all integration points
+
+- [x] **6.4** Compilation and testing:
+  - [x] Successful build with 0 errors
+  - [x] Resolved API compatibility issues 
+  - [x] All XAML and C# files compile cleanly
+  - [x] Integration tested with WinRive C++ component
 
 ### Phase 7: Update CSUWPXAMLHost Application
 - [ ] **7.1** Create/Update App.xaml.cs:

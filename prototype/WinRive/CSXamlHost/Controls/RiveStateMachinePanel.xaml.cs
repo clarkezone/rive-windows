@@ -578,46 +578,52 @@ namespace CSXamlHost.Controls
             {
                 StateMachines.Clear();
                 
-                // This is a simplified approach - in a real implementation,
-                // you would query the RiveControl for available state machines
-                // For now, we'll create a default state machine
-                var defaultStateMachine = new StateMachineModel("Default", 0, true);
-
-                // Add some example inputs (these would normally come from the Rive file)
-                defaultStateMachine.Inputs.Add(new StateMachineInputModel(
-                    "isPlaying",
-                    StateMachineInputType.Boolean,
-                    0,
-                    false
-                ));
-
-                defaultStateMachine.Inputs.Add(new StateMachineInputModel(
-                    "speed",
-                    StateMachineInputType.Number,
-                    1,
-                    1.0
-                ));
-
-                defaultStateMachine.Inputs.Add(new StateMachineInputModel(
-                    "reset",
-                    StateMachineInputType.Trigger,
-                    2
-                ));
-
-                StateMachines.Add(defaultStateMachine);
+                // For now, create a demo state machine since the RiveControl API
+                // for querying state machines is not yet available
+                // TODO: Integrate with actual RiveControl state machine discovery when API is available
+                CreateDemoStateMachine();
                 
+                // Select the first available state machine
                 if (StateMachines.Count > 0)
                 {
-                    SelectedStateMachine = StateMachines[0];
+                    SelectedStateMachine = StateMachines.FirstOrDefault(sm => sm.IsDefault) ?? StateMachines[0];
                 }
 
                 OnPropertyChanged(nameof(HasStateMachines));
-                UpdateStatus($"Loaded {StateMachines.Count} state machines");
+                UpdateStatus($"Loaded {StateMachines.Count} state machine{(StateMachines.Count != 1 ? "s" : "")} (demo for UI testing)");
             }
             catch (Exception ex)
             {
                 SetError($"Failed to load state machines: {ex.Message}");
             }
+        }
+
+        private void CreateDemoStateMachine()
+        {
+            var demoStateMachine = new StateMachineModel("Demo State Machine", 0, true);
+
+            // Add demo inputs for testing the UI
+            demoStateMachine.Inputs.Add(new StateMachineInputModel(
+                "isPlaying",
+                StateMachineInputType.Boolean,
+                0,
+                false
+            ));
+
+            demoStateMachine.Inputs.Add(new StateMachineInputModel(
+                "speed",
+                StateMachineInputType.Number,
+                1,
+                1.0
+            ));
+
+            demoStateMachine.Inputs.Add(new StateMachineInputModel(
+                "reset",
+                StateMachineInputType.Trigger,
+                2
+            ));
+
+            StateMachines.Add(demoStateMachine);
         }
 
         private void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string? propertyName = null)
