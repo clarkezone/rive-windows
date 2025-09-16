@@ -69,23 +69,30 @@ namespace CSXamlHost.Services
         };
 
         private readonly List<RiveFileSource> _recentlyUsedFiles = new();
+        private readonly RiveFileConfiguration _currentConfiguration;
+
+        public RiveFileConfigurationService()
+        {
+            // Initialize the configuration with our hard-coded files
+            _currentConfiguration = new RiveFileConfiguration
+            {
+                Version = "1.0",
+                Description = "Hard-coded configuration",
+                AvailableFiles = _availableFiles.Select(f => new RiveFileConfigurationEntry
+                {
+                    DisplayName = f.DisplayName,
+                    FilePath = f.FilePath,
+                    SourceType = f.SourceType,
+                    IsDefault = f == _availableFiles.FirstOrDefault(),
+                    IsEnabled = true
+                }).ToList()
+            };
+        }
 
         /// <summary>
         /// Gets the current configuration (always returns a valid configuration with our hard-coded files)
         /// </summary>
-        public RiveFileConfiguration? CurrentConfiguration => new RiveFileConfiguration
-        {
-            Version = "1.0",
-            Description = "Hard-coded configuration",
-            AvailableFiles = _availableFiles.Select(f => new RiveFileConfigurationEntry
-            {
-                DisplayName = f.DisplayName,
-                FilePath = f.FilePath,
-                SourceType = f.SourceType,
-                IsDefault = f == _availableFiles.FirstOrDefault(),
-                IsEnabled = true
-            }).ToList()
-        };
+        public RiveFileConfiguration? CurrentConfiguration => _currentConfiguration;
 
         /// <summary>
         /// Gets the list of recently used files

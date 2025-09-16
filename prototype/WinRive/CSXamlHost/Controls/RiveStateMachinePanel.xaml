@@ -85,11 +85,16 @@
                                   Grid.Row="1" Grid.Column="0"
                                   ItemsSource="{x:Bind AvailableFiles, Mode=OneWay}"
                                   SelectedItem="{x:Bind SelectedFile, Mode=TwoWay}"
-                                  DisplayMemberPath="DisplayName"
                                   PlaceholderText="Choose a Rive file..."
                                   HorizontalAlignment="Stretch"
                                   Margin="0,0,8,0"
-                                  SelectionChanged="FileSelectionComboBox_SelectionChanged" />
+                                  SelectionChanged="FileSelectionComboBox_SelectionChanged">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate x:DataType="models:RiveFileSource">
+                                    <TextBlock Text="{x:Bind DisplayName}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
 
                         <Button x:Name="LoadExternalFileButton"
                                 Grid.Row="1" Grid.Column="1"
@@ -133,10 +138,15 @@
                         <ComboBox x:Name="StateMachineComboBox"
                                   ItemsSource="{x:Bind StateMachines, Mode=OneWay}"
                                   SelectedItem="{x:Bind SelectedStateMachine, Mode=TwoWay}"
-                                  DisplayMemberPath="Name"
                                   PlaceholderText="Choose a state machine..."
                                   HorizontalAlignment="Stretch"
-                                  SelectionChanged="StateMachineComboBox_SelectionChanged" />
+                                  SelectionChanged="StateMachineComboBox_SelectionChanged">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate x:DataType="models:StateMachineModel">
+                                    <TextBlock Text="{x:Bind Name}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
                     </StackPanel>
 
                     <!-- State Machine Info -->
