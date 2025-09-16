@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="using:CSXamlHost"
+    xmlns:controls="using:CSXamlHost.Controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     mc:Ignorable="d">
@@ -11,133 +12,42 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="300" />
+            <ColumnDefinition Width="350" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
+        <!-- Header -->
         <TextBlock
             Grid.Row="0"
             Grid.Column="0"
-            Margin="20,10,0,10"
+            Grid.ColumnSpan="2"
+            Margin="20,10,20,10"
+            HorizontalAlignment="Center"
             Style="{StaticResource HeaderTextBlockStyle}"
-            Text=".NET9 UWP XAML Rive Animation Demo" />
+            Text=".NET9 UWP XAML Rive Animation Demo - Refactored Architecture" />
 
-        <!--  Container for the Rive animation  -->
-        <Border
-            x:Name="RiveContainer"
+        <!-- Rive Viewer Control -->
+        <controls:RiveViewerControl
+            x:Name="RiveViewer"
             Grid.Row="1"
             Grid.Column="0"
             Margin="20"
-            Background="#333333"
-            BorderBrush="DarkGray"
-            BorderThickness="1"
-            CornerRadius="8" />
+            AutoPlay="True"
+            ShowStatusBar="True"
+            ShowFpsCounter="False"
+            PlaceholderText="Select a Rive file to begin..." />
 
-
-        <!-- State Machine Controls Panel -->
-        <ScrollViewer
-            Grid.Row="0"
-            Grid.RowSpan="2"
+        <!-- State Machine Panel -->
+        <controls:RiveStateMachinePanel
+            x:Name="StateMachinePanel"
+            Grid.Row="1"
             Grid.Column="1"
             Margin="10"
-            Background="#F5F5F5"
-            VerticalScrollBarVisibility="Auto">
-            <StackPanel Margin="15">
-        <ComboBox
-            Grid.Row="0"
-            Grid.Column="0"
-            Margin="10"
-            HorizontalAlignment="Right"
-            VerticalAlignment="Center"
-            SelectedIndex="0"
-            SelectionChanged="ComboBox_SelectionChanged">
-            <ComboBoxItem Content="Vector Feathering Avatar" Tag="vector_feathering__avatar.riv" />
-            <ComboBoxItem Content="Meeting UI" Tag="meeting_ui.riv" />
-            <ComboBoxItem Content="Layout Test" Tag="layouttest.riv" />
-            <ComboBoxItem Content="Google Ad" Tag="world_creator.riv" />
-            <ComboBoxItem Content="Pointer Test" Tag="pointer_events.riv" />
-            <ComboBoxItem Content="Bento" Tag="interactive_bento_grid.riv" />
-            <ComboBoxItem Content="Coqui" Tag="the_sound_of_coqui.riv" />
-            <ComboBoxItem Content="DataTest" Tag="datatest.riv" />
-        </ComboBox>
-                <TextBlock
-                    Margin="0,0,0,15"
-                    FontSize="16"
-                    FontWeight="Bold"
-                    Text="State Machine Controls" />
-
-                <!-- State Machine Selection -->
-                <TextBlock
-                    Margin="0,0,0,5"
-                    FontWeight="SemiBold"
-                    Text="Available State Machines:" />
-                <ComboBox
-                    x:Name="StateMachineComboBox"
-                    Margin="0,0,0,15"
-                    HorizontalAlignment="Stretch"
-                    SelectionChanged="StateMachineComboBox_SelectionChanged" />
-
-                <!-- State Machine Info -->
-                <TextBlock
-                    x:Name="StateMachineInfoText"
-                    Margin="0,0,0,15"
-                    FontSize="12"
-                    Foreground="Gray"
-                    Text="No state machine selected"
-                    TextWrapping="Wrap" />
-
-                <!-- Playback Controls -->
-                <TextBlock
-                    Margin="0,0,0,5"
-                    FontWeight="SemiBold"
-                    Text="Playback Controls:" />
-                <StackPanel Margin="0,0,0,15" Orientation="Horizontal">
-                    <Button
-                        x:Name="PlayButton"
-                        Margin="0,0,5,0"
-                        Click="PlayButton_Click"
-                        Content="Play"
-                        IsEnabled="False" />
-                    <Button
-                        x:Name="PauseButton"
-                        Margin="0,0,5,0"
-                        Click="PauseButton_Click"
-                        Content="Pause"
-                        IsEnabled="False" />
-                    <Button
-                        x:Name="ResetButton"
-                        Click="ResetButton_Click"
-                        Content="Reset"
-                        IsEnabled="False" />
-                </StackPanel>
-
-                <!-- State Machine Inputs -->
-                <TextBlock
-                    Margin="0,0,0,5"
-                    FontWeight="SemiBold"
-                    Text="State Machine Inputs:" />
-                <StackPanel x:Name="InputsPanel" Margin="0,0,0,15" />
-
-                <!-- Refresh Button -->
-                <Button
-                    x:Name="RefreshButton"
-                    Margin="0,10,0,0"
-                    HorizontalAlignment="Stretch"
-                    Click="RefreshButton_Click"
-                    Content="Refresh State Machines" />
-
-                <!-- Status Text -->
-                <TextBlock
-                    x:Name="StatusText"
-                    Margin="0,15,0,0"
-                    FontSize="12"
-                    Foreground="DarkBlue"
-                    Text="Ready"
-                    TextWrapping="Wrap" />
-            </StackPanel>
-        </ScrollViewer>
+            RiveViewer="{x:Bind RiveViewer}"
+            AllowExternalFiles="True"
+            ShowStatus="True" />
     </Grid>
 </Page>
