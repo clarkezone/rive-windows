@@ -71,8 +71,8 @@ An LLM implementing this specification has succeeded when:
   - Complete API for: file loading, state machines, input handling, ViewModels
   - **Status**: ✅ Complete and functional - DO NOT MODIFY
 
-- **CSWinUI3XAMLHost** (`prototype/WinRive/CSWinUI3XAMLHost/`):
-  - `MainWindow.xaml/.cs`: Working WinUI3 demo with comprehensive UI implementation
+- **CSWinUI3XAMLHost** (`prototype/WinRive/CSXamlHost/`):
+  - `MainWindow.xaml/.cs`: Working XAML Page demo with comprehensive UI implementation
   - Features: File selection, state machine controls, input manipulation, status display
   - **Status**: ✅ Reference implementation - USE AS TEMPLATE FOR UI LOGIC
 
