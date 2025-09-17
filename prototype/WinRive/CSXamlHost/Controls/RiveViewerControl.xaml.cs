@@ -443,6 +443,7 @@ namespace CSXamlHost.Controls
                 if (_riveControl == null)
                     throw new InvalidOperationException("RiveControl not initialized");
 
+                _riveControl.StopRenderLoop();
                 bool loadResult = false;
                 switch (fileSource.SourceType)
                 {

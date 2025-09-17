@@ -32,6 +32,7 @@ namespace CSXamlHost.Controls
         private bool _hasError;
         private readonly Dictionary<string, FrameworkElement> _inputControls = new();
         private bool _configurationInitialized = false;
+        private StateMachineModel? _currentlyLoadedStateMachine = null;
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -584,11 +585,16 @@ namespace CSXamlHost.Controls
             }
         }
 
-        private async void LoadStateMachinesFromFile(RiveFileSource fileSource)
+        /// <summary>
+        /// Loads state machines from file - ONLY enumerates state machines, no input loading
+        /// Inputs are loaded on-demand when a state machine is selected
+        /// </summary>
+        private void LoadStateMachinesFromFile(RiveFileSource fileSource)
         {
             try
             {
                 StateMachines.Clear();
+                _currentlyLoadedStateMachine = null;
                 
                 // Get the RiveControl instance from the connected viewer
                 var riveControl = RiveViewer?.GetRiveControl();
@@ -598,80 +604,118 @@ namespace CSXamlHost.Controls
                     return;
                 }
 
-                // Use the real RiveControl API to get state machines
+                // Use the real RiveControl API to get state machines - NO INPUT LOADING
                 var stateMachinesInfo = riveControl.GetStateMachines();
                 foreach (var smInfo in stateMachinesInfo)
                 {
+                    // Create state machine with EMPTY inputs collection
                     var stateMachine = new StateMachineModel(smInfo.Name, smInfo.Index, smInfo.IsDefault);
-                    
-                    // Get inputs for this state machine by setting it active temporarily
-                    var previousActiveIndex = riveControl.GetActiveStateMachineIndex();
-                    riveControl.SetActiveStateMachine(smInfo.Index);
-                    
-                    var inputs = riveControl.GetStateMachineInputs();
-                    foreach (var input in inputs)
-                    {
-                        StateMachineInputType inputType;
-                        switch (input.Type.ToLowerInvariant())
-                        {
-                            case "boolean":
-                                inputType = StateMachineInputType.Boolean;
-                                break;
-                            case "number":
-                                inputType = StateMachineInputType.Number;
-                                break;
-                            case "trigger":
-                                inputType = StateMachineInputType.Trigger;
-                                break;
-                            default:
-                                continue; // Skip unknown types
-                        }
-                        
-                        object? initialValue = inputType switch
-                        {
-                            StateMachineInputType.Boolean => input.BooleanValue,
-                            StateMachineInputType.Number => input.NumberValue,
-                            StateMachineInputType.Trigger => null,
-                            _ => null
-                        };
-                        
-                        var inputModel = new StateMachineInputModel(
-                            input.Name,
-                            inputType,
-                            stateMachine.Inputs.Count, // Use count as index
-                            initialValue
-                        );
-                        
-                        stateMachine.Inputs.Add(inputModel);
-                    }
-                    
-                    // Restore previous active state machine
-                    if (previousActiveIndex >= 0)
-                    {
-                        riveControl.SetActiveStateMachine(previousActiveIndex);
-                    }
-                    
                     StateMachines.Add(stateMachine);
                 }
                 
                 // Select the default state machine, or first available
                 if (StateMachines.Count > 0)
                 {
-                    SelectedStateMachine = StateMachines.FirstOrDefault(sm => sm.IsDefault) ?? StateMachines[0];
-                    
-                    // Set the selected state machine as active in RiveControl
-                    if (SelectedStateMachine != null)
-                    {
-                        riveControl.SetActiveStateMachine(SelectedStateMachine.Index);
-                    }
+                    var defaultStateMachine = StateMachines.FirstOrDefault(sm => sm.IsDefault) ?? StateMachines[0];
+                    SelectedStateMachine = defaultStateMachine;
                 }
 
                 OnPropertyChanged(nameof(HasStateMachines));
-                UpdateStatus($"Loaded {StateMachines.Count} state machine{(StateMachines.Count != 1 ? "s" : "")} from RiveControl");
+                UpdateStatus($"Loaded {StateMachines.Count} state machine{(StateMachines.Count != 1 ? "s" : "")} - inputs will load on selection");
+                ClearError();
             }
             catch (Exception ex)
             {
                 SetError($"Failed to load state machines: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Loads inputs for the currently selected state machine on-demand
+        /// This replaces the problematic upfront loading of all inputs
+        /// </summary>
+        private void LoadInputsForCurrentStateMachine()
+        {
+            try
+            {
+                if (SelectedStateMachine == null)
+                    return;
+
+                var riveControl = RiveViewer?.GetRiveControl();
+                if (riveControl == null)
+                {
+                    UpdateStatus("No RiveControl available - cannot load inputs");
+                    return;
+                }
+
+                // Clear inputs from previously loaded state machine
+                if (_currentlyLoadedStateMachine != null && _currentlyLoadedStateMachine != SelectedStateMachine)
+                {
+                    _currentlyLoadedStateMachine.ClearInputs();
+                }
+
+                // Skip if this state machine already has inputs loaded
+                if (_currentlyLoadedStateMachine == SelectedStateMachine && SelectedStateMachine.Inputs.Count > 0)
+                {
+                    return;
+                }
+
+                // Set the selected state machine as active (single state change)
+                //riveControl.SetActiveStateMachine(SelectedStateMachine.Index);
+
+                // Clear existing inputs for this state machine
+                SelectedStateMachine.ClearInputs();
+                
+                // Load inputs for the active state machine
+                var inputs = riveControl.GetStateMachineInputs();
+                foreach (var input in inputs)
+                {
+                    StateMachineInputType inputType;
+                    switch (input.Type.ToLowerInvariant())
+                    {
+                        case "boolean":
+                            inputType = StateMachineInputType.Boolean;
+                            break;
+                        case "number":
+                            inputType = StateMachineInputType.Number;
+                            break;
+                        case "trigger":
+                            inputType = StateMachineInputType.Trigger;
+                            break;
+                        default:
+                            continue; // Skip unknown types
+                    }
+                    
+                    object? initialValue = inputType switch
+                    {
+                        StateMachineInputType.Boolean => input.BooleanValue,
+                        StateMachineInputType.Number => input.NumberValue,
+                        StateMachineInputType.Trigger => null,
+                        _ => null
+                    };
+                    
+                    var inputModel = new StateMachineInputModel(
+                        input.Name,
+                        inputType,
+                        SelectedStateMachine.Inputs.Count, // Use count as index
+                        initialValue
+                    );
+                    
+                    SelectedStateMachine.Inputs.Add(inputModel);
+                }
+
+                // Update tracking
+                _currentlyLoadedStateMachine = SelectedStateMachine;
+
+                UpdateStatus($"Loaded {SelectedStateMachine.Inputs.Count} inputs for '{SelectedStateMachine.Name}'");
+                
+                // Update UI properties
+                OnPropertyChanged(nameof(HasInputs));
+                UpdateStateMachineInfo();
+            }
+            catch (Exception ex)
+            {
+                SetError($"Failed to load inputs for state machine '{SelectedStateMachine?.Name}': {ex.Message}");
             }
         }
 
@@ -742,6 +786,9 @@ namespace CSXamlHost.Controls
         {
             if (e.AddedItems.FirstOrDefault() is StateMachineModel selectedStateMachine)
             {
+                // Load inputs on-demand for the selected state machine
+                LoadInputsForCurrentStateMachine();
+                
                 OnStateMachineSelected(selectedStateMachine);
             }
         }

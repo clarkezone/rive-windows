@@ -611,6 +611,10 @@ void RiveRenderer::ClearScene()
     m_artboard = nullptr;
     m_scene = nullptr; 
     m_viewModelInstance = nullptr;
+	m_activeStateMachine = nullptr;
+	m_stateMachineActive = false;
+	m_defaultStateMachineIndex = -1;
+	m_stateMachines.clear();
 #endif
 }
 

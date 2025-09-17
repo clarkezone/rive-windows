@@ -65,6 +65,12 @@ namespace CSXamlHost.Services
                 DisplayName = "Data Test",
                 FilePath = "datatest.riv",
                 SourceType = RiveFileSourceType.Package
+            },
+            new RiveFileSource
+            {
+                DisplayName = "Hunter X",
+                FilePath = "hunter_x_demo.riv",
+                SourceType = RiveFileSourceType.Package
             }
         };
 
