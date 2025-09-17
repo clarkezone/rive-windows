@@ -4,6 +4,10 @@
 
 This document outlines the implementation plan for adding ViewModel and ViewModelInstance support to the Rive Windows application. The implementation will create a new `RiveViewModelPanel` control that allows users to select ViewModels, create instances, and manipulate properties through a dynamic UI.
 
+All work should take place in and only in this location: C:\Users\jeclarke\src\github.com\clarkezone\rive-windows\prototype\WinRive\CSXamlHost
+
+All files refered to below are located in that directory or a descendant.
+
 ## Architecture Analysis
 
 ### Existing Infrastructure
