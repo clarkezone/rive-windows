@@ -1,0 +1,272 @@
+<UserControl
+    x:Class="CSXamlHost.Controls.RiveViewModelPanel"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:CSXamlHost.Controls"
+    xmlns:models="using:CSXamlHost.Models"
+    xmlns:converters="using:CSXamlHost.Converters"
+    xmlns:winrive="using:WinRive"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <!-- Converters -->
+        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
+        
+        <!-- Styles -->
+        <Style x:Key="SectionHeaderStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="{ThemeResource SystemControlForegroundBaseHighBrush}" />
+            <Setter Property="Margin" Value="0,16,0,8" />
+        </Style>
+
+        <Style x:Key="StatusTextStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Foreground" Value="{ThemeResource SystemControlForegroundBaseMediumBrush}" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="Margin" Value="0,4" />
+        </Style>
+
+        <Style x:Key="ControlButtonStyle" TargetType="Button">
+            <Setter Property="MinWidth" Value="80" />
+            <Setter Property="Height" Value="32" />
+            <Setter Property="Margin" Value="4,2" />
+        </Style>
+
+        <Style x:Key="InputControlStyle" TargetType="FrameworkElement">
+            <Setter Property="Margin" Value="0,4" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+        </Style>
+    </UserControl.Resources>
+
+    <ScrollViewer x:Name="MainScrollViewer" 
+                  VerticalScrollMode="Auto" 
+                  VerticalScrollBarVisibility="Auto"
+                  HorizontalScrollMode="Disabled"
+                  HorizontalScrollBarVisibility="Disabled">
+        
+        <StackPanel x:Name="RootPanel" 
+                    Orientation="Vertical" 
+                    Spacing="8"
+                    Margin="16">
+
+            <!-- File Selection Section -->
+            <Border x:Name="FileSelectionBorder"
+                    Background="{ThemeResource SystemControlBackgroundChromeMediumLowBrush}"
+                    BorderBrush="{ThemeResource SystemControlForegroundBaseLowBrush}"
+                    BorderThickness="1"
+                    CornerRadius="4"
+                    Padding="12"
+                    Visibility="{x:Bind AllowExternalFiles, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                
+                <StackPanel Orientation="Vertical" Spacing="8">
+                    <TextBlock Text="File Selection" 
+                               Style="{StaticResource SectionHeaderStyle}" 
+                               Margin="0,0,0,8" />
+                    
+                    <!-- Available Files ComboBox -->
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.ColumnSpan="2"
+                                   Text="Select Rive File:"
+                                   Style="{ThemeResource BodyTextBlockStyle}"
+                                   Margin="0,0,0,4" />
+
+                        <ComboBox x:Name="FileSelectionComboBox"
+                                  Grid.Row="1" Grid.Column="0"
+                                  ItemsSource="{x:Bind AvailableFiles, Mode=OneWay}"
+                                  SelectedItem="{x:Bind SelectedFile, Mode=TwoWay}"
+                                  PlaceholderText="Choose a Rive file..."
+                                  HorizontalAlignment="Stretch"
+                                  Margin="0,0,8,0"
+                                  SelectionChanged="FileSelectionComboBox_SelectionChanged">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate x:DataType="models:RiveFileSource">
+                                    <TextBlock Text="{x:Bind DisplayName}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+
+                        <Button x:Name="LoadExternalFileButton"
+                                Grid.Row="1" Grid.Column="1"
+                                Content="Browse..."
+                                Style="{StaticResource ControlButtonStyle}"
+                                IsEnabled="{x:Bind AllowExternalFiles, Mode=OneWay}"
+                                Click="LoadExternalFileButton_Click"
+                                ToolTipService.ToolTip="Load external .riv file" />
+                    </Grid>
+
+                    <!-- File Info Display -->
+                    <StackPanel x:Name="FileInfoPanel"
+                                Orientation="Vertical"
+                                Spacing="4"
+                                Visibility="{x:Bind FileInfoText, Mode=OneWay, Converter={StaticResource StringToVisibilityConverter}}">
+                        <TextBlock Text="{x:Bind FileInfoText, Mode=OneWay}"
+                                   Style="{StaticResource StatusTextStyle}" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- ViewModel Selection Section -->
+            <Border x:Name="ViewModelSelectionBorder"
+                    Background="{ThemeResource SystemControlBackgroundChromeMediumLowBrush}"
+                    BorderBrush="{ThemeResource SystemControlForegroundBaseLowBrush}"
+                    BorderThickness="1"
+                    CornerRadius="4"
+                    Padding="12"
+                    Visibility="{x:Bind HasViewModels, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                
+                <StackPanel Orientation="Vertical" Spacing="8">
+                    <TextBlock Text="View Model" 
+                               Style="{StaticResource SectionHeaderStyle}" 
+                               Margin="0,0,0,8" />
+
+                    <!-- ViewModel ComboBox -->
+                    <StackPanel Orientation="Vertical" Spacing="4">
+                        <TextBlock Text="Select View Model:"
+                                   Style="{ThemeResource BodyTextBlockStyle}" />
+                        
+                        <ComboBox x:Name="ViewModelComboBox"
+                                  ItemsSource="{x:Bind ViewModels, Mode=OneWay}"
+                                  SelectedItem="{x:Bind SelectedViewModel, Mode=TwoWay}"
+                                  PlaceholderText="Choose a view model..."
+                                  HorizontalAlignment="Stretch"
+                                  SelectionChanged="ViewModelComboBox_SelectionChanged">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate x:DataType="winrive:ViewModel">
+                                    <TextBlock Text="{x:Bind Name}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+
+                    <!-- ViewModel Info -->
+                    <StackPanel x:Name="ViewModelInfoPanel"
+                                Orientation="Vertical"
+                                Spacing="4"
+                                Visibility="{x:Bind ViewModelInfoText, Mode=OneWay, Converter={StaticResource StringToVisibilityConverter}}">
+                        <TextBlock Text="{x:Bind ViewModelInfoText, Mode=OneWay}"
+                                   Style="{StaticResource StatusTextStyle}" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- ViewModel Instance Management Section -->
+            <Border x:Name="InstanceManagementBorder"
+                    Background="{ThemeResource SystemControlBackgroundChromeMediumLowBrush}"
+                    BorderBrush="{ThemeResource SystemControlForegroundBaseLowBrush}"
+                    BorderThickness="1"
+                    CornerRadius="4"
+                    Padding="12"
+                    Visibility="{x:Bind HasSelectedViewModel, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                
+                <StackPanel Orientation="Vertical" Spacing="8">
+                    <TextBlock Text="Instance Management" 
+                               Style="{StaticResource SectionHeaderStyle}" 
+                               Margin="0,0,0,8" />
+
+                    <!-- Instance Control Buttons -->
+                    <StackPanel Orientation="Horizontal" 
+                                Spacing="8"
+                                HorizontalAlignment="Left">
+                        <Button x:Name="CreateInstanceButton"
+                                Content="Create Instance"
+                                Style="{StaticResource ControlButtonStyle}"
+                                Click="CreateInstanceButton_Click"
+                                IsEnabled="{x:Bind CanCreateInstance, Mode=OneWay}" />
+
+                        <Button x:Name="BindInstanceButton"
+                                Content="Bind Instance"
+                                Style="{StaticResource ControlButtonStyle}"
+                                Click="BindInstanceButton_Click"
+                                IsEnabled="{x:Bind CanBindInstance, Mode=OneWay}" />
+
+                        <Button x:Name="ClearInstanceButton"
+                                Content="Clear"
+                                Style="{StaticResource ControlButtonStyle}"
+                                Click="ClearInstanceButton_Click"
+                                IsEnabled="{x:Bind HasInstance, Mode=OneWay}" />
+                    </StackPanel>
+
+                    <!-- Instance Status -->
+                    <StackPanel x:Name="InstanceStatusPanel"
+                                Orientation="Vertical"
+                                Spacing="4"
+                                Visibility="{x:Bind InstanceStatusText, Mode=OneWay, Converter={StaticResource StringToVisibilityConverter}}">
+                        <TextBlock Text="{x:Bind InstanceStatusText, Mode=OneWay}"
+                                   Style="{StaticResource StatusTextStyle}" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- ViewModel Properties Section -->
+            <Border x:Name="PropertiesBorder"
+                    Background="{ThemeResource SystemControlBackgroundChromeMediumLowBrush}"
+                    BorderBrush="{ThemeResource SystemControlForegroundBaseLowBrush}"
+                    BorderThickness="1"
+                    CornerRadius="4"
+                    Padding="12"
+                    Visibility="{x:Bind HasProperties, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                
+                <StackPanel Orientation="Vertical" Spacing="8">
+                    <TextBlock Text="View Model Properties" 
+                               Style="{StaticResource SectionHeaderStyle}" 
+                               Margin="0,0,0,8" />
+
+                    <!-- Dynamic Properties Panel - Controls will be generated programmatically -->
+                    <StackPanel x:Name="DynamicPropertiesPanel"
+                                Orientation="Vertical"
+                                Spacing="8">
+                        <!-- Property controls will be added here dynamically -->
+                    </StackPanel>
+
+                    <!-- No Properties Message -->
+                    <TextBlock x:Name="NoPropertiesMessage"
+                               Text="No properties available for the bound view model instance."
+                               Style="{StaticResource StatusTextStyle}"
+                               HorizontalAlignment="Center"
+                               Visibility="{x:Bind HasProperties, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Invert}" />
+                </StackPanel>
+            </Border>
+
+            <!-- Status Section -->
+            <Border x:Name="StatusBorder"
+                    Background="{ThemeResource SystemControlBackgroundChromeMediumLowBrush}"
+                    BorderBrush="{ThemeResource SystemControlForegroundBaseLowBrush}"
+                    BorderThickness="1"
+                    CornerRadius="4"
+                    Padding="12"
+                    Visibility="{x:Bind ShowStatus, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                
+                <StackPanel Orientation="Vertical" Spacing="4">
+                    <TextBlock Text="Status" 
+                               Style="{StaticResource SectionHeaderStyle}" 
+                               Margin="0,0,0,4" />
+
+                    <TextBlock x:Name="StatusTextBlock"
+                               Text="{x:Bind StatusText, Mode=OneWay}"
+                               Style="{StaticResource StatusTextStyle}" />
+
+                    <!-- Error Message -->
+                    <TextBlock x:Name="ErrorTextBlock"
+                               Text="{x:Bind ErrorMessage, Mode=OneWay}"
+                               Foreground="{ThemeResource SystemErrorTextColor}"
+                               Style="{StaticResource StatusTextStyle}"
+                               Visibility="{x:Bind HasError, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

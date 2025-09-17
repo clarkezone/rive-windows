@@ -40,14 +40,30 @@
             ShowFpsCounter="False"
             PlaceholderText="Select a Rive file to begin..." />
 
-        <!-- State Machine Panel -->
-        <controls:RiveStateMachinePanel
-            x:Name="StateMachinePanel"
+        <!-- Control Panels Pivot -->
+        <Pivot
+            x:Name="ControlPivot"
             Grid.Row="1"
             Grid.Column="1"
-            Margin="10"
-            RiveViewer="{x:Bind RiveViewer}"
-            AllowExternalFiles="True"
-            ShowStatus="True" />
+            Margin="10">
+            
+            <!-- State Machines Tab -->
+            <PivotItem Header="State Machines" x:Name="StateMachinesTab">
+                <controls:RiveStateMachinePanel
+                    x:Name="StateMachinePanel"
+                    RiveViewer="{x:Bind RiveViewer}"
+                    AllowExternalFiles="True"
+                    ShowStatus="True" />
+            </PivotItem>
+            
+            <!-- View Models Tab -->
+            <PivotItem Header="View Models" x:Name="ViewModelsTab">
+                <controls:RiveViewModelPanel
+                    x:Name="ViewModelPanel"
+                    RiveViewer="{x:Bind RiveViewer}"
+                    AllowExternalFiles="True"
+                    ShowStatus="True" />
+            </PivotItem>
+        </Pivot>
     </Grid>
 </Page>
