@@ -41,19 +41,19 @@
   
   <files>
     <!-- WinRT Metadata for UWP -->
-    <file src="x64\Debug\WinRive\WinRive.winmd"
+    <file src="x64\Release\WinRive\WinRive.winmd"
           target="lib\uap10.0\WinRive.winmd" />
     
     <!-- C# Projection Assembly for .NET -->
-    <file src="WinRiveProjection\bin\x64\Debug\net9.0-windows10.0.26100.0\WinRiveProjection.dll"
+    <file src="WinRiveProjection\bin\x64\Release\net9.0-windows10.0.26100.0\WinRiveProjection.dll"
           target="lib\net9.0-windows10.0.26100.0\WinRiveProjection.dll" />
     
     <!-- C# Projection Dependency - WinRT generated assembly -->
-    <file src="WinRiveProjection\bin\x64\Debug\net9.0-windows10.0.26100.0\WinRive.dll" 
+    <file src="WinRiveProjection\bin\x64\Release\net9.0-windows10.0.26100.0\WinRive.dll" 
           target="lib\net9.0-windows10.0.26100.0\WinRive.dll" />
     
-    <!-- Native Runtime Libraries -->
-    <file src="x64\Debug\WinRive\WinRive.dll" 
+    <!-- Native Runtime Libraries - x64 only (other platforms can be added when built) -->
+    <file src="x64\Release\WinRive\WinRive.dll" 
           target="runtimes\win-x64\native\WinRive.dll" />
     
     <!-- MSBuild Integration Files -->
@@ -67,9 +67,9 @@
           target="build\WinRive.targets" />
     
     <!-- Content and Documentation -->
-    <file src="README.md" 
+    <!-- <file src="README.md" 
           target="README.md" />
     <file src="LICENSE" 
-          target="LICENSE" />
+          target="LICENSE" /> -->
   </files>
 </package>
