@@ -4,6 +4,7 @@
 #if defined(WITH_RIVE_TEXT) && defined(RIVE_HEADERS_AVAILABLE)
 #include "rive/file.hpp"
 #include "rive/viewmodel/viewmodel.hpp"
+#include "rive/viewmodel/viewmodel_property_string.hpp"
 #endif
 
 namespace winrt::WinRive::implementation

@@ -189,6 +189,7 @@ public:
         std::string name;
         int index;
         int id;
+        void* nativeViewModel = nullptr;
     };
     
     std::vector<ViewModelInfo> EnumerateViewModels();

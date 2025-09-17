@@ -314,6 +314,8 @@ namespace winrt::WinRive::implementation
             return;
         }
 
+        
+
         // Get properties from the view model definition
         auto viewModelProperties = m_viewModel.GetProperties();
         for (uint32_t i = 0; i < viewModelProperties.Size(); ++i)

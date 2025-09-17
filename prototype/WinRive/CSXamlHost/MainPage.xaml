@@ -25,9 +25,9 @@
             Grid.Column="0"
             Grid.ColumnSpan="2"
             Margin="20,10,20,10"
-            HorizontalAlignment="Center"
+            HorizontalAlignment="Left"
             Style="{StaticResource HeaderTextBlockStyle}"
-            Text=".NET9 UWP XAML Rive Animation Demo - Refactored Architecture" />
+            Text=".NET10 UWP XAML Rive Animation Demo" />
 
         <!-- Rive Viewer Control -->
         <controls:RiveViewerControl

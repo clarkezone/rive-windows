@@ -63,6 +63,7 @@ std::vector<RiveRenderer::ViewModelInfo> RiveRenderer::EnumerateViewModels()
                 info.name = viewModel->name();
                 info.index = static_cast<int>(i);
                 info.id = static_cast<int>(i); // Use index as ID since ViewModel doesn't have id() method
+                info.nativeViewModel = viewModel;
                 result.push_back(info);
             }
         }

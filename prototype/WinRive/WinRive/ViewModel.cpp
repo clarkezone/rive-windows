@@ -68,10 +68,11 @@ namespace winrt::WinRive::implementation
 
     WinRive::ViewModelPropertyInfo ViewModel::GetPropertyByName(hstring const& name)
     {
-        if (!m_propertiesCached)
+        // Hack commenting this out
+    /*    if (!m_propertiesCached)
         {
             CacheProperties();
-        }
+        }*/
 
         for (const auto& prop : m_properties)
         {
@@ -117,30 +118,26 @@ namespace winrt::WinRive::implementation
         if (m_nativeViewModel)
         {
             auto* nativeVM = static_cast<rive::ViewModel*>(m_nativeViewModel);
-            if (nativeVM)
-            {
-                // Use the pattern from RiveRenderer - access properties through viewModel()->propertyAt()
-                // For now, we'll use a placeholder since we don't have direct property enumeration
-                // This matches the RiveRenderer pattern where properties are accessed by name
-                WinRive::ViewModelPropertyInfo defaultProp{};
-                defaultProp.Name = L"MyName"; // This matches the test property in RiveRenderer
-                defaultProp.Type = WinRive::ViewModelPropertyType::String;
-                defaultProp.Index = 0;
-                m_properties.push_back(defaultProp);
+            auto properties = nativeVM->properties();
+
+            for (size_t i = 0; i < properties.size(); ++i) {
+                auto property = properties[i];
+                if (property) {
+
+
+                    WinRive::ViewModelPropertyInfo info{};
+                    info.Name = winrt::to_hstring(property->name());
+                    info.Index = static_cast<int>(i);
+                    auto stringProperty = static_cast<rive::ViewModelPropertyString*>(property);
+                    if (stringProperty) {
+                        info.Type = WinRive::ViewModelPropertyType::String;
+                    }
+                    //info.Type = MapNativePropertyType(property->type());
+                    m_properties.push_back(info);
+                }
             }
         }
 #endif
-
-        // If no native properties available, create a placeholder for testing
-        if (m_properties.empty())
-        {
-            WinRive::ViewModelPropertyInfo testProp{};
-            testProp.Name = L"TestProperty";
-            testProp.Type = WinRive::ViewModelPropertyType::String;
-            testProp.Index = 0;
-            m_properties.push_back(testProp);
-        }
-
         m_propertiesCached = true;
     }
 

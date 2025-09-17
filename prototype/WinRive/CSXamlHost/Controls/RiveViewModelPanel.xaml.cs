@@ -671,40 +671,95 @@ namespace CSXamlHost.Controls
             return null;
         }
 
-        private TextBox CreateStringPropertyControl(ViewModelInstanceProperty property)
+        private StackPanel CreateStringPropertyControl(ViewModelInstanceProperty property)
         {
+            var container = new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                Spacing = 8
+            };
+
             var textBox = new TextBox
             {
                 Text = property.StringValue ?? string.Empty,
-                HorizontalAlignment = HorizontalAlignment.Stretch
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                Width = 200
             };
 
+            // Remove real-time update - only update on button click
             textBox.TextChanged += (s, e) =>
+            {
+                property.StringValue = textBox.Text;
+                // Don't call ApplyPropertyToRiveControl here anymore
+            };
+
+            var updateButton = new Button
+            {
+                Content = "Update",
+                VerticalAlignment = VerticalAlignment.Center
+            };
+
+            updateButton.Click += (s, e) =>
             {
                 property.StringValue = textBox.Text;
                 ApplyPropertyToRiveControl(property);
             };
 
-            return textBox;
+            container.Children.Add(textBox);
+            container.Children.Add(updateButton);
+
+            return container;
         }
 
-        private Slider CreateNumberPropertyControl(ViewModelInstanceProperty property)
+        private StackPanel CreateNumberPropertyControl(ViewModelInstanceProperty property)
         {
+            var container = new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                Spacing = 8
+            };
+
             var slider = new Slider
             {
                 Minimum = 0,
                 Maximum = 100,
                 Value = property.NumberValue,
-                HorizontalAlignment = HorizontalAlignment.Stretch
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                Width = 200
             };
 
+            var valueLabel = new TextBlock
+            {
+                Text = slider.Value.ToString("F2"),
+                VerticalAlignment = VerticalAlignment.Center,
+                Width = 50
+            };
+
+            // Remove real-time update - only update property value, not RiveControl
             slider.ValueChanged += (s, e) =>
+            {
+                property.NumberValue = slider.Value;
+                valueLabel.Text = slider.Value.ToString("F2");
+                // Don't call ApplyPropertyToRiveControl here anymore
+            };
+
+            var updateButton = new Button
+            {
+                Content = "Update",
+                VerticalAlignment = VerticalAlignment.Center
+            };
+
+            updateButton.Click += (s, e) =>
             {
                 property.NumberValue = slider.Value;
                 ApplyPropertyToRiveControl(property);
             };
 
-            return slider;
+            container.Children.Add(slider);
+            container.Children.Add(valueLabel);
+            container.Children.Add(updateButton);
+
+            return container;
         }
 
         private ToggleSwitch CreateBooleanPropertyControl(ViewModelInstanceProperty property)
@@ -724,18 +779,39 @@ namespace CSXamlHost.Controls
             return toggle;
         }
 
-        private TextBox CreateColorPropertyControl(ViewModelInstanceProperty property)
+        private StackPanel CreateColorPropertyControl(ViewModelInstanceProperty property)
         {
-            // For now, use a TextBox for color input (hex format)
-            // TODO: Use ColorPicker when available
+            var container = new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                Spacing = 8
+            };
+
             var textBox = new TextBox
             {
                 Text = $"#{property.ColorValue:X8}",
                 HorizontalAlignment = HorizontalAlignment.Stretch,
-                PlaceholderText = "#AARRGGBB"
+                PlaceholderText = "#AARRGGBB",
+                Width = 200
             };
 
+            // Remove real-time update - only update on button click
             textBox.TextChanged += (s, e) =>
+            {
+                if (uint.TryParse(textBox.Text.Replace("#", ""), System.Globalization.NumberStyles.HexNumber, null, out uint colorValue))
+                {
+                    property.ColorValue = colorValue;
+                    // Don't call ApplyPropertyToRiveControl here anymore
+                }
+            };
+
+            var updateButton = new Button
+            {
+                Content = "Update",
+                VerticalAlignment = VerticalAlignment.Center
+            };
+
+            updateButton.Click += (s, e) =>
             {
                 if (uint.TryParse(textBox.Text.Replace("#", ""), System.Globalization.NumberStyles.HexNumber, null, out uint colorValue))
                 {
@@ -744,16 +820,26 @@ namespace CSXamlHost.Controls
                 }
             };
 
-            return textBox;
+            container.Children.Add(textBox);
+            container.Children.Add(updateButton);
+
+            return container;
         }
 
-        private ComboBox CreateEnumPropertyControl(ViewModelInstanceProperty property)
+        private StackPanel CreateEnumPropertyControl(ViewModelInstanceProperty property)
         {
+            var container = new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                Spacing = 8
+            };
+
             // For now, create a simple numeric ComboBox
             // TODO: Get actual enum values from ViewModel API
             var comboBox = new ComboBox
             {
-                HorizontalAlignment = HorizontalAlignment.Stretch
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                Width = 200
             };
 
             // Add some placeholder enum values
@@ -764,13 +850,29 @@ namespace CSXamlHost.Controls
 
             comboBox.SelectedIndex = Math.Max(0, Math.Min(property.EnumValue, comboBox.Items.Count - 1));
 
+            // Remove real-time update - only update on button click
             comboBox.SelectionChanged += (s, e) =>
+            {
+                property.EnumValue = comboBox.SelectedIndex;
+                // Don't call ApplyPropertyToRiveControl here anymore
+            };
+
+            var updateButton = new Button
+            {
+                Content = "Update",
+                VerticalAlignment = VerticalAlignment.Center
+            };
+
+            updateButton.Click += (s, e) =>
             {
                 property.EnumValue = comboBox.SelectedIndex;
                 ApplyPropertyToRiveControl(property);
             };
 
-            return comboBox;
+            container.Children.Add(comboBox);
+            container.Children.Add(updateButton);
+
+            return container;
         }
 
         private Button CreateTriggerPropertyControl(ViewModelInstanceProperty property)
