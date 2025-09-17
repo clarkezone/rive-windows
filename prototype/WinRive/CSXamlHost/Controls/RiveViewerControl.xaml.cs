@@ -6,6 +6,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Hosting;
 using Windows.UI.Composition;
+using Windows.Graphics.Display;
 using CSXamlHost.Models;
 using CSXamlHost.Services;
 using WinRive;
@@ -548,6 +549,102 @@ namespace CSXamlHost.Controls
             ErrorOccurred?.Invoke(this, new RiveErrorEventArgs(errorMessage));
         }
 
+        /// <summary>
+        /// Transforms XAML coordinates to physical pixels for the Rive renderer
+        /// </summary>
+        /// <param name="xamlPosition">The position from XAML pointer events</param>
+        /// <param name="physicalX">Output physical X coordinate</param>
+        /// <param name="physicalY">Output physical Y coordinate</param>
+        /// <returns>True if transformation was successful</returns>
+        private bool TransformToPhysicalCoordinates(Windows.Foundation.Point xamlPosition, out float physicalX, out float physicalY)
+        {
+            physicalX = 0f;
+            physicalY = 0f;
+
+            try
+            {
+                // Get DPI scale factor
+                var displayInfo = DisplayInformation.GetForCurrentView();
+                double dpiScale = displayInfo.RawPixelsPerViewPixel;
+
+                // Get detailed layout information for debugging
+                double containerWidth = RiveControlContainer.ActualWidth;
+                double containerHeight = RiveControlContainer.ActualHeight;
+                
+                // Get RiveViewerBorder dimensions and offsets
+                double borderWidth = RiveViewerBorder.ActualWidth;
+                double borderHeight = RiveViewerBorder.ActualHeight;
+                var borderThickness = RiveViewerBorder.BorderThickness;
+                var borderPadding = RiveViewerBorder.Padding;
+                
+                // Get RootGrid dimensions  
+                double rootWidth = RootGrid.ActualWidth;
+                double rootHeight = RootGrid.ActualHeight;
+                
+                // Log comprehensive layout information
+                System.Diagnostics.Debug.WriteLine($"=== LAYOUT DEBUG ===");
+                System.Diagnostics.Debug.WriteLine($"RootGrid: {rootWidth:F2} x {rootHeight:F2}");
+                System.Diagnostics.Debug.WriteLine($"RiveViewerBorder: {borderWidth:F2} x {borderHeight:F2}");
+                System.Diagnostics.Debug.WriteLine($"BorderThickness: L={borderThickness.Left}, T={borderThickness.Top}, R={borderThickness.Right}, B={borderThickness.Bottom}");
+                System.Diagnostics.Debug.WriteLine($"BorderPadding: L={borderPadding.Left}, T={borderPadding.Top}, R={borderPadding.Right}, B={borderPadding.Bottom}");
+                System.Diagnostics.Debug.WriteLine($"RiveControlContainer: {containerWidth:F2} x {containerHeight:F2}");
+
+                // Calculate total offset from borders and padding
+                double leftOffset = borderThickness.Left + borderPadding.Left;
+                double topOffset = borderThickness.Top + borderPadding.Top;
+                
+                // The coordinates should already be relative to RiveControlContainer
+                // But let's check if we need to account for any visual positioning
+                double adjustedX = xamlPosition.X;
+                double adjustedY = xamlPosition.Y;
+                
+                System.Diagnostics.Debug.WriteLine($"Border/Padding Offsets: Left={leftOffset:F2}, Top={topOffset:F2}");
+                
+                // Check if RiveControl visual has any transform or offset
+                if (_riveControl != null)
+                {
+                    var visual = _riveControl.GetVisual();
+                    if (visual != null)
+                    {
+                        var offset = visual.Offset;
+                        var size = visual.Size;
+                        var scale = visual.Scale;
+                        System.Diagnostics.Debug.WriteLine($"RiveVisual - Offset=({offset.X:F2}, {offset.Y:F2}), Size=({size.X:F2} x {size.Y:F2}), Scale=({scale.X:F2}, {scale.Y:F2})");
+                        
+                        // If there's a visual offset, we might need to account for it
+                        // Note: The visual offset might be the issue!
+                    }
+                }
+
+                // Validate input coordinates are within bounds
+                if (xamlPosition.X < 0 || xamlPosition.X > containerWidth ||
+                    xamlPosition.Y < 0 || xamlPosition.Y > containerHeight)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Coordinates out of bounds: ({xamlPosition.X:F2}, {xamlPosition.Y:F2}) vs container ({containerWidth:F2}x{containerHeight:F2})");
+                    return false;
+                }
+
+                // CRITICAL FIX: The coordinates should be in renderer space, NOT physical pixels
+                // The Rive renderer expects coordinates matching its internal coordinate system
+                // which is the same as the XAML container size, NOT physical pixels
+                
+                // Use XAML coordinates directly - they match the renderer's coordinate system
+                physicalX = (float)adjustedX;
+                physicalY = (float)adjustedY;
+
+                // Log final transformation
+                System.Diagnostics.Debug.WriteLine($"CORRECTED Transform: XAML({xamlPosition.X:F2}, {xamlPosition.Y:F2}) -> Adjusted({adjustedX:F2}, {adjustedY:F2}) -> RendererSpace({physicalX:F2}, {physicalY:F2}) [DPI={dpiScale:F2}] - Using XAML coordinates directly");
+                System.Diagnostics.Debug.WriteLine($"==================");
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error transforming coordinates: {ex.Message}");
+                return false;
+            }
+        }
+
         #endregion
 
         #region Event Handlers
@@ -572,7 +669,17 @@ namespace CSXamlHost.Controls
             // Update RiveControl size if initialized
             if (_riveControl != null && e.NewSize.Width > 0 && e.NewSize.Height > 0)
             {
-                _riveControl.SetSize((int)e.NewSize.Width, (int)e.NewSize.Height);
+                // Get DPI scale factor for physical dimensions
+                var displayInfo = DisplayInformation.GetForCurrentView();
+                double dpiScale = displayInfo.RawPixelsPerViewPixel;
+                
+                // Convert to physical pixels
+                int physicalWidth = (int)(e.NewSize.Width * dpiScale);
+                int physicalHeight = (int)(e.NewSize.Height * dpiScale);
+                
+                System.Diagnostics.Debug.WriteLine($"Resizing RiveControl: XAML size ({e.NewSize.Width:F2}x{e.NewSize.Height:F2}) -> Physical size ({physicalWidth}x{physicalHeight}) [DPI={dpiScale:F2}]");
+                
+                _riveControl.SetSize(physicalWidth, physicalHeight);
             }
         }
 
@@ -583,9 +690,22 @@ namespace CSXamlHost.Controls
             {
                 if (_riveControl != null && IsContentLoaded)
                 {
+                    // Get position relative to the RiveControlContainer element itself
                     var position = e.GetCurrentPoint(RiveControlContainer);
-                    System.Diagnostics.Debug.WriteLine($"Pointer moved to: {position.Position.X}, {position.Position.Y}");
-                    _riveControl.QueuePointerMove((float)position.Position.X, (float)position.Position.Y);
+                    
+                    // Also get position relative to the root for comparison
+                    var rootPosition = e.GetCurrentPoint(this);
+                    
+                    System.Diagnostics.Debug.WriteLine($"Raw positions: Container=({position.Position.X:F2}, {position.Position.Y:F2}), Root=({rootPosition.Position.X:F2}, {rootPosition.Position.Y:F2})");
+                    
+                    if (TransformToPhysicalCoordinates(position.Position, out float physicalX, out float physicalY))
+                    {
+                        _riveControl.QueuePointerMove(physicalX, physicalY);
+                    }
+                    else
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Failed to transform pointer move coordinates");
+                    }
                 }
                 else
                 {
@@ -606,11 +726,18 @@ namespace CSXamlHost.Controls
                 if (_riveControl != null && IsContentLoaded)
                 {
                     var position = e.GetCurrentPoint(RiveControlContainer);
-                    System.Diagnostics.Debug.WriteLine($"Pointer pressed at: {position.Position.X}, {position.Position.Y}");
-                    _riveControl.QueuePointerPress((float)position.Position.X, (float)position.Position.Y);
                     
-                    // Capture pointer for proper tracking
-                    RiveControlContainer.CapturePointer(e.Pointer);
+                    if (TransformToPhysicalCoordinates(position.Position, out float physicalX, out float physicalY))
+                    {
+                        _riveControl.QueuePointerPress(physicalX, physicalY);
+                        
+                        // Capture pointer for proper tracking
+                        RiveControlContainer.CapturePointer(e.Pointer);
+                    }
+                    else
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Failed to transform pointer press coordinates");
+                    }
                 }
                 else
                 {
@@ -631,11 +758,18 @@ namespace CSXamlHost.Controls
                 if (_riveControl != null && IsContentLoaded)
                 {
                     var position = e.GetCurrentPoint(RiveControlContainer);
-                    System.Diagnostics.Debug.WriteLine($"Pointer released at: {position.Position.X}, {position.Position.Y}");
-                    _riveControl.QueuePointerRelease((float)position.Position.X, (float)position.Position.Y);
                     
-                    // Release pointer capture
-                    RiveControlContainer.ReleasePointerCapture(e.Pointer);
+                    if (TransformToPhysicalCoordinates(position.Position, out float physicalX, out float physicalY))
+                    {
+                        _riveControl.QueuePointerRelease(physicalX, physicalY);
+                        
+                        // Release pointer capture
+                        RiveControlContainer.ReleasePointerCapture(e.Pointer);
+                    }
+                    else
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Failed to transform pointer release coordinates");
+                    }
                 }
                 else
                 {
@@ -656,7 +790,11 @@ namespace CSXamlHost.Controls
                 {
                     // Send a pointer release at the last known position to clean up state
                     var position = e.GetCurrentPoint(RiveControlContainer);
-                    _riveControl.QueuePointerRelease((float)position.Position.X, (float)position.Position.Y);
+                    
+                    if (TransformToPhysicalCoordinates(position.Position, out float physicalX, out float physicalY))
+                    {
+                        _riveControl.QueuePointerRelease(physicalX, physicalY);
+                    }
                 }
             }
             catch (Exception ex)
@@ -676,12 +814,22 @@ namespace CSXamlHost.Controls
                 // Create and initialize the RiveControl
                 _riveControl = new RiveControl();
                 
-                // Initialize with compositor and initial size
+                // Initialize with compositor and DPI-aware size
                 double containerWidth = RiveControlContainer.ActualWidth;
                 double containerHeight = RiveControlContainer.ActualHeight;
                 if (containerWidth > 0 && containerHeight > 0)
                 {
-                    bool initResult = _riveControl.Initialize(_compositor, (int)containerWidth, (int)containerHeight);
+                    // Get DPI scale factor for physical dimensions
+                    var displayInfo = DisplayInformation.GetForCurrentView();
+                    double dpiScale = displayInfo.RawPixelsPerViewPixel;
+                    
+                    // Convert to physical pixels
+                    int physicalWidth = (int)(containerWidth * dpiScale);
+                    int physicalHeight = (int)(containerHeight * dpiScale);
+                    
+                    System.Diagnostics.Debug.WriteLine($"Initializing RiveControl: XAML size ({containerWidth:F2}x{containerHeight:F2}) -> Physical size ({physicalWidth}x{physicalHeight}) [DPI={dpiScale:F2}]");
+                    
+                    bool initResult = _riveControl.Initialize(_compositor, physicalWidth, physicalHeight);
                     if (!initResult)
                     {
                         throw new InvalidOperationException("Failed to initialize RiveControl");
