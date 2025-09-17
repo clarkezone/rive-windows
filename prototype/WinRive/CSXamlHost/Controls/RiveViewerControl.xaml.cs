@@ -35,7 +35,8 @@ namespace CSXamlHost.Controls
         public RiveViewerControl()
         {
             this.InitializeComponent();
-            _riveFileService = new RiveFileService();
+            var configurationService = new RiveFileConfigurationService();
+            _riveFileService = new RiveFileService(configurationService);
             
             // Initialize status
             UpdateStatus("Ready to load Rive animation");
@@ -572,6 +573,95 @@ namespace CSXamlHost.Controls
             if (_riveControl != null && e.NewSize.Width > 0 && e.NewSize.Height > 0)
             {
                 _riveControl.SetSize((int)e.NewSize.Width, (int)e.NewSize.Height);
+            }
+        }
+
+        private void RiveControlContainer_PointerMoved(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
+        {
+            System.Diagnostics.Debug.WriteLine("PointerMoved event triggered");
+            try
+            {
+                if (_riveControl != null && IsContentLoaded)
+                {
+                    var position = e.GetCurrentPoint(RiveControlContainer);
+                    System.Diagnostics.Debug.WriteLine($"Pointer moved to: {position.Position.X}, {position.Position.Y}");
+                    _riveControl.QueuePointerMove((float)position.Position.X, (float)position.Position.Y);
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine($"Pointer moved but conditions not met: _riveControl={_riveControl}, IsContentLoaded={IsContentLoaded}");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error in pointer moved: {ex.Message}");
+            }
+        }
+
+        private void RiveControlContainer_PointerPressed(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
+        {
+            System.Diagnostics.Debug.WriteLine("PointerPressed event triggered");
+            try
+            {
+                if (_riveControl != null && IsContentLoaded)
+                {
+                    var position = e.GetCurrentPoint(RiveControlContainer);
+                    System.Diagnostics.Debug.WriteLine($"Pointer pressed at: {position.Position.X}, {position.Position.Y}");
+                    _riveControl.QueuePointerPress((float)position.Position.X, (float)position.Position.Y);
+                    
+                    // Capture pointer for proper tracking
+                    RiveControlContainer.CapturePointer(e.Pointer);
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine($"Pointer pressed but conditions not met: _riveControl={_riveControl}, IsContentLoaded={IsContentLoaded}");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error in pointer pressed: {ex.Message}");
+            }
+        }
+
+        private void RiveControlContainer_PointerReleased(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
+        {
+            System.Diagnostics.Debug.WriteLine("PointerReleased event triggered");
+            try
+            {
+                if (_riveControl != null && IsContentLoaded)
+                {
+                    var position = e.GetCurrentPoint(RiveControlContainer);
+                    System.Diagnostics.Debug.WriteLine($"Pointer released at: {position.Position.X}, {position.Position.Y}");
+                    _riveControl.QueuePointerRelease((float)position.Position.X, (float)position.Position.Y);
+                    
+                    // Release pointer capture
+                    RiveControlContainer.ReleasePointerCapture(e.Pointer);
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine($"Pointer released but conditions not met: _riveControl={_riveControl}, IsContentLoaded={IsContentLoaded}");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error in pointer released: {ex.Message}");
+            }
+        }
+
+        private void RiveControlContainer_PointerCaptureLost(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
+        {
+            try
+            {
+                if (_riveControl != null && IsContentLoaded)
+                {
+                    // Send a pointer release at the last known position to clean up state
+                    var position = e.GetCurrentPoint(RiveControlContainer);
+                    _riveControl.QueuePointerRelease((float)position.Position.X, (float)position.Position.Y);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error in pointer capture lost: {ex.Message}");
             }
         }
 

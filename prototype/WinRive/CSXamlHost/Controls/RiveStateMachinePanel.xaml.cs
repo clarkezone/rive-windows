@@ -661,7 +661,7 @@ namespace CSXamlHost.Controls
                 }
 
                 // Set the selected state machine as active (single state change)
-                //riveControl.SetActiveStateMachine(SelectedStateMachine.Index);
+                riveControl.SetActiveStateMachine(SelectedStateMachine.Index);
 
                 // Clear existing inputs for this state machine
                 SelectedStateMachine.ClearInputs();
@@ -786,10 +786,30 @@ namespace CSXamlHost.Controls
         {
             if (e.AddedItems.FirstOrDefault() is StateMachineModel selectedStateMachine)
             {
-                // Load inputs on-demand for the selected state machine
-                LoadInputsForCurrentStateMachine();
-                
-                OnStateMachineSelected(selectedStateMachine);
+                try
+                {
+                    // Switch to the selected state machine immediately
+                    var riveControl = RiveViewer?.GetRiveControl();
+                    if (riveControl != null)
+                    {
+                        bool switchResult = riveControl.SetActiveStateMachine(selectedStateMachine.Index);
+                        if (!switchResult)
+                        {
+                            SetError($"Failed to switch to state machine '{selectedStateMachine.Name}'");
+                            return;
+                        }
+                        UpdateStatus($"Switched to state machine: {selectedStateMachine.Name}");
+                    }
+                    
+                    // Load inputs on-demand for the selected state machine
+                    LoadInputsForCurrentStateMachine();
+                    
+                    OnStateMachineSelected(selectedStateMachine);
+                }
+                catch (Exception ex)
+                {
+                    SetError($"Error switching state machine: {ex.Message}");
+                }
             }
         }
 

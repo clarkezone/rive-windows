@@ -38,6 +38,9 @@
     <Content Update="Assets\RiveAssets\datatest.riv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Update="Assets\RiveAssets\dress_up.riv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Update="Assets\RiveAssets\hunter_x_demo.riv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

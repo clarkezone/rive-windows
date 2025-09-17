@@ -20,6 +20,12 @@ namespace CSXamlHost.Services
             },
             new RiveFileSource
             {
+                DisplayName = "Dress up",
+                FilePath = "dress_up.riv",
+                SourceType = RiveFileSourceType.Package
+            },
+            new RiveFileSource
+            {
                 DisplayName = "Layout Test",
                 FilePath = "layouttest.riv",
                 SourceType = RiveFileSourceType.Package

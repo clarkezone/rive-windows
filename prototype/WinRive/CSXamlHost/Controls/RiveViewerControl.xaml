@@ -72,7 +72,12 @@
                 <Border x:Name="RiveControlContainer"
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Stretch"
-                        SizeChanged="RiveControlContainer_SizeChanged">
+                        Background="Transparent"
+                        SizeChanged="RiveControlContainer_SizeChanged"
+                        PointerMoved="RiveControlContainer_PointerMoved"
+                        PointerPressed="RiveControlContainer_PointerPressed"
+                        PointerReleased="RiveControlContainer_PointerReleased"
+                        PointerCaptureLost="RiveControlContainer_PointerCaptureLost">
                     <!-- The WinRive control will be hosted here programmatically -->
                 </Border>
             </Grid>
