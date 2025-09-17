@@ -787,36 +787,72 @@ namespace CSXamlHost.Controls
 
                 // Use the real RiveControl API to get view models
                 var viewModelsInfo = riveControl.GetViewModels();
+                if (viewModelsInfo == null || viewModelsInfo.Count == 0)
+                {
+                    UpdateStatus("No view models found in the loaded Rive file");
+                    OnPropertyChanged(nameof(HasViewModels));
+                    return;
+                }
+
+                // Load each view model using the API
                 foreach (var vmInfo in viewModelsInfo)
                 {
-                    var viewModel = riveControl.GetViewModelByName(vmInfo.Name);
-                    if (viewModel != null)
+                    try
                     {
-                        ViewModels.Add(viewModel);
+                        var viewModel = riveControl.GetViewModelByName(vmInfo.Name);
+                        if (viewModel != null)
+                        {
+                            ViewModels.Add(viewModel);
+                        }
+                        else
+                        {
+                            // Try by index if name lookup fails
+                            viewModel = riveControl.GetViewModelAt(vmInfo.Index);
+                            if (viewModel != null)
+                            {
+                                ViewModels.Add(viewModel);
+                            }
+                        }
+                    }
+                    catch (Exception vmEx)
+                    {
+                        // Log but don't fail the entire operation for one view model
+                        System.Diagnostics.Debug.WriteLine($"Failed to load view model '{vmInfo.Name}': {vmEx.Message}");
                     }
                 }
                 
                 // Select the default view model, or first available
                 if (ViewModels.Count > 0)
                 {
-                    var defaultViewModel = riveControl.GetDefaultViewModel();
-                    if (defaultViewModel != null && ViewModels.Any(vm => vm.Name == defaultViewModel.Name))
+                    try
                     {
-                        SelectedViewModel = ViewModels.First(vm => vm.Name == defaultViewModel.Name);
+                        var defaultViewModel = riveControl.GetDefaultViewModel();
+                        if (defaultViewModel != null && ViewModels.Any(vm => vm.Name == defaultViewModel.Name))
+                        {
+                            SelectedViewModel = ViewModels.First(vm => vm.Name == defaultViewModel.Name);
+                        }
+                        else
+                        {
+                            // Select the first available view model
+                            SelectedViewModel = ViewModels[0];
+                        }
                     }
-                    else
+                    catch (Exception defaultEx)
                     {
+                        // If we can't get default, just select the first one
+                        System.Diagnostics.Debug.WriteLine($"Failed to select default view model: {defaultEx.Message}");
                         SelectedViewModel = ViewModels[0];
                     }
                 }
 
                 OnPropertyChanged(nameof(HasViewModels));
-                UpdateStatus($"Loaded {ViewModels.Count} view model{(ViewModels.Count != 1 ? "s" : "")}");
+                UpdateStatus($"Loaded {ViewModels.Count} view model{(ViewModels.Count != 1 ? "s" : "")} from {fileSource.DisplayName}");
                 ClearError();
             }
             catch (Exception ex)
             {
                 SetError($"Failed to load view models: {ex.Message}");
+                OnPropertyChanged(nameof(HasViewModels));
             }
         }
 
