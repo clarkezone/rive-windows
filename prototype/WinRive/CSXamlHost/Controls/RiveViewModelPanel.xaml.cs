@@ -164,6 +164,7 @@ namespace CSXamlHost.Controls
                     OnPropertyChanged(nameof(HasSelectedViewModel));
                     OnPropertyChanged(nameof(CanCreateInstance));
                     UpdateViewModelInfo();
+                    
                     ClearCurrentInstance();
                 }
             }
@@ -432,11 +433,26 @@ namespace CSXamlHost.Controls
 
         private void OnRiveViewerChanged(RiveViewerControl? oldViewer, RiveViewerControl? newViewer)
         {
-            // Unsubscribe from old viewer
+            // Unsubscribe from old viewer and its RiveControl events
             if (oldViewer != null)
             {
                 oldViewer.FileLoaded -= RiveViewer_FileLoaded;
                 oldViewer.ErrorOccurred -= RiveViewer_ErrorOccurred;
+                
+                // Unsubscribe from RiveControl events if available
+                var oldRiveControl = oldViewer.GetRiveControl();
+                if (oldRiveControl != null)
+                {
+                    try
+                    {
+                        oldRiveControl.ViewModelInstanceBound -= RiveControl_ViewModelInstanceBound;
+                        oldRiveControl.ViewModelPropertyChanged -= RiveControl_ViewModelPropertyChanged;
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Error unsubscribing from RiveControl events: {ex.Message}");
+                    }
+                }
             }
 
             // Subscribe to new viewer
@@ -444,6 +460,21 @@ namespace CSXamlHost.Controls
             {
                 newViewer.FileLoaded += RiveViewer_FileLoaded;
                 newViewer.ErrorOccurred += RiveViewer_ErrorOccurred;
+                
+                // Subscribe to RiveControl events if available
+                var newRiveControl = newViewer.GetRiveControl();
+                if (newRiveControl != null)
+                {
+                    try
+                    {
+                        newRiveControl.ViewModelInstanceBound += RiveControl_ViewModelInstanceBound;
+                        newRiveControl.ViewModelPropertyChanged += RiveControl_ViewModelPropertyChanged;
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Error subscribing to RiveControl events: {ex.Message}");
+                    }
+                }
             }
 
             _riveViewer = newViewer;
@@ -520,9 +551,11 @@ namespace CSXamlHost.Controls
         private void GeneratePropertyControls()
         {
             ClearPropertyControls();
+            UpdateStatus("Generating property controls...");
 
             if (!_isInstanceBound || CurrentViewModelInstance == null)
             {
+                UpdateStatus("No bound instance - cannot generate property controls");
                 OnPropertyChanged(nameof(HasProperties));
                 return;
             }
@@ -530,21 +563,48 @@ namespace CSXamlHost.Controls
             try
             {
                 // Get properties from the view model instance
+                UpdateStatus("Getting properties from ViewModelInstance...");
                 var properties = CurrentViewModelInstance.GetProperties();
+                
+                if (properties == null)
+                {
+                    UpdateStatus("GetProperties() returned null");
+                    OnPropertyChanged(nameof(HasProperties));
+                    return;
+                }
+
+                UpdateStatus($"Found {properties.Count} properties");
+
                 foreach (var property in properties)
                 {
-                    var controlContainer = CreatePropertyControl(property);
-                    if (controlContainer != null)
+                    try
                     {
-                        DynamicPropertiesPanel.Children.Add(controlContainer);
+                        UpdateStatus($"Creating control for property: {property.Name} (Type: {property.Type})");
+                        var controlContainer = CreatePropertyControl(property);
+                        if (controlContainer != null)
+                        {
+                            DynamicPropertiesPanel.Children.Add(controlContainer);
+                            UpdateStatus($"Added control for property: {property.Name}");
+                        }
+                        else
+                        {
+                            UpdateStatus($"Failed to create control for property: {property.Name}");
+                        }
+                    }
+                    catch (Exception propEx)
+                    {
+                        UpdateStatus($"Error creating control for property '{property.Name}': {propEx.Message}");
+                        System.Diagnostics.Debug.WriteLine($"Property control creation error: {propEx}");
                     }
                 }
 
                 OnPropertyChanged(nameof(HasProperties));
+                UpdateStatus($"Generated {DynamicPropertiesPanel.Children.Count} property controls successfully");
             }
             catch (Exception ex)
             {
                 SetError($"Failed to generate property controls: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"GeneratePropertyControls error: {ex}");
             }
         }
 
@@ -829,7 +889,8 @@ namespace CSXamlHost.Controls
                         var defaultViewModel = riveControl.GetDefaultViewModel();
                         if (defaultViewModel != null && ViewModels.Any(vm => vm.Name == defaultViewModel.Name))
                         {
-                            SelectedViewModel = ViewModels.First(vm => vm.Name == defaultViewModel.Name);
+                            SelectedViewModel = defaultViewModel;
+                            //SelectedViewModel = ViewModels.First(vm => vm.Name == defaultViewModel.Name);
                         }
                         else
                         {
@@ -1032,6 +1093,120 @@ namespace CSXamlHost.Controls
         private void RiveViewer_ErrorOccurred(object sender, RiveErrorEventArgs e)
         {
             SetError($"RiveViewer error: {e.ErrorMessage}");
+        }
+
+        private void RiveControl_ViewModelInstanceBound(object sender, ViewModelInstance e)
+        {
+            try
+            {
+                // This event is fired when a ViewModelInstance is successfully bound
+                // Update our state to reflect the binding
+                if (CurrentViewModelInstance != null && CurrentViewModelInstance == e)
+                {
+                    _isInstanceBound = true;
+                    OnPropertyChanged(nameof(CanBindInstance));
+                    OnPropertyChanged(nameof(HasProperties));
+                    UpdateInstanceStatus();
+                    GeneratePropertyControls();
+                    UpdateStatus($"ViewModelInstance bound successfully via event: {e.ViewModel?.Name}");
+                }
+            }
+            catch (Exception ex)
+            {
+                SetError($"Error handling ViewModelInstanceBound event: {ex.Message}");
+            }
+        }
+
+        private void RiveControl_ViewModelPropertyChanged(object sender, ViewModelInstanceProperty e)
+        {
+            try
+            {
+                // This event is fired when a ViewModel property changes externally
+                // Update the corresponding UI control if it exists
+                if (_propertyControls.TryGetValue(e.Name, out var control))
+                {
+                    // Update the control value based on property type
+                    // This prevents infinite loops by temporarily removing event handlers
+                    UpdateControlFromProperty(control, e);
+                }
+
+                UpdateStatus($"Property '{e.Name}' changed externally");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error handling ViewModelPropertyChanged event: {ex.Message}");
+            }
+        }
+
+        private void UpdateControlFromProperty(FrameworkElement control, ViewModelInstanceProperty property)
+        {
+            try
+            {
+                switch (property.Type)
+                {
+                    case ViewModelPropertyType.String when control is TextBox textBox:
+                        textBox.TextChanged -= null; // Remove handler temporarily
+                        textBox.Text = property.StringValue ?? string.Empty;
+                        textBox.TextChanged += (s, e) =>
+                        {
+                            property.StringValue = textBox.Text;
+                            ApplyPropertyToRiveControl(property);
+                        };
+                        break;
+
+                    case ViewModelPropertyType.Number when control is Slider slider:
+                        slider.ValueChanged -= null; // Remove handler temporarily
+                        slider.Value = property.NumberValue;
+                        slider.ValueChanged += (s, e) =>
+                        {
+                            property.NumberValue = slider.Value;
+                            ApplyPropertyToRiveControl(property);
+                        };
+                        break;
+
+                    case ViewModelPropertyType.Boolean when control is ToggleSwitch toggle:
+                        toggle.Toggled -= null; // Remove handler temporarily
+                        toggle.IsOn = property.BooleanValue;
+                        toggle.Toggled += (s, e) =>
+                        {
+                            property.BooleanValue = toggle.IsOn;
+                            ApplyPropertyToRiveControl(property);
+                        };
+                        break;
+
+                    case ViewModelPropertyType.Color when control is TextBox colorBox:
+                        colorBox.TextChanged -= null; // Remove handler temporarily
+                        colorBox.Text = $"#{property.ColorValue:X8}";
+                        colorBox.TextChanged += (s, e) =>
+                        {
+                            if (uint.TryParse(colorBox.Text.Replace("#", ""), System.Globalization.NumberStyles.HexNumber, null, out uint colorValue))
+                            {
+                                property.ColorValue = colorValue;
+                                ApplyPropertyToRiveControl(property);
+                            }
+                        };
+                        break;
+
+                    case ViewModelPropertyType.Enum when control is ComboBox comboBox:
+                        comboBox.SelectionChanged -= null; // Remove handler temporarily
+                        comboBox.SelectedIndex = Math.Max(0, Math.Min(property.EnumValue, comboBox.Items.Count - 1));
+                        comboBox.SelectionChanged += (s, e) =>
+                        {
+                            property.EnumValue = comboBox.SelectedIndex;
+                            ApplyPropertyToRiveControl(property);
+                        };
+                        break;
+
+                    // Trigger properties don't need external updates
+                    case ViewModelPropertyType.Trigger:
+                        // No update needed for trigger controls
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error updating control from property '{property.Name}': {ex.Message}");
+            }
         }
 
         #endregion

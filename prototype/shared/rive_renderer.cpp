@@ -641,14 +641,14 @@ void RiveRenderer::MakeScene()
         scene = std::make_unique<rive::StaticScene>(artboard.get());
     }
 
-    int viewModelId = artboard->viewModelId();
-    m_viewModelInstance = viewModelId == -1 
-        ? m_riveFile->createViewModelInstance(artboard.get())
-        : m_riveFile->createViewModelInstance(viewModelId, 0);
-    artboard->bindViewModelInstance(m_viewModelInstance);
-    if (m_viewModelInstance != nullptr) {
-        scene->bindViewModelInstance(m_viewModelInstance);
-    }
+    //int viewModelId = artboard->viewModelId();
+    //m_viewModelInstance = viewModelId == -1 
+    //    ? m_riveFile->createViewModelInstance(artboard.get())
+    //    : m_riveFile->createViewModelInstance(viewModelId, 0);
+    //artboard->bindViewModelInstance(m_viewModelInstance);
+    //if (m_viewModelInstance != nullptr) {
+    //    scene->bindViewModelInstance(m_viewModelInstance);
+    //}
 
     // Set initial animation state (path_fiddle uses scene->durationSeconds() * i / count, we use 0)
     scene->advanceAndApply(0.0f);

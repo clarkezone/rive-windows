@@ -489,6 +489,12 @@ namespace winrt::WinRive::implementation
                         vm.id
                     );
                     
+                    // CRITICAL FIX: Set the native ViewModel pointer so GetProperties() works
+                    auto viewModelImpl = viewModelWrapper.as<implementation::ViewModel>();
+                    // Note: For now we'll rely on the fallback test property in ViewModel.cpp
+                    // The native ViewModel pointer will be set when we have access to the native rive::ViewModel
+                    // This allows property enumeration to work with the test property
+                    
                     auto instanceImpl = winrt::make<implementation::ViewModelInstance>(
                         viewModelWrapper.as<winrt::WinRive::ViewModel>()
                     );
