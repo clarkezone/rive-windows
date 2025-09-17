@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>WinRive</id>
-    <version>1.0.6</version>
+    <version>1.0.7</version>
     <title>WinRive - Rive Animation Runtime for Windows</title>
     <authors>WinRive Team</authors>
     <owners>WinRive Team</owners>
@@ -47,10 +47,6 @@
     <!-- C# Projection Assembly for .NET -->
     <file src="WinRiveProjection\bin\x64\Release\net9.0-windows10.0.26100.0\WinRiveProjection.dll"
           target="lib\net9.0-windows10.0.26100.0\WinRiveProjection.dll" />
-    
-    <!-- C# Projection Dependency - WinRT generated assembly -->
-    <file src="WinRiveProjection\bin\x64\Release\net9.0-windows10.0.26100.0\WinRive.dll" 
-          target="lib\net9.0-windows10.0.26100.0\WinRive.dll" />
     
     <!-- Native Runtime Libraries - x64 only (other platforms can be added when built) -->
     <file src="x64\Release\WinRive\WinRive.dll" 
