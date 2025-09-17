@@ -74,10 +74,17 @@ namespace CSXamlHost.Services
             },
             new RiveFileSource
             {
+                DisplayName = "Menus",
+                FilePath = "menus.riv",
+                SourceType = RiveFileSourceType.Package
+            },
+            new RiveFileSource
+            {
                 DisplayName = "Hunter X",
                 FilePath = "hunter_x_demo.riv",
                 SourceType = RiveFileSourceType.Package
             }
+
         };
 
         private readonly List<RiveFileSource> _recentlyUsedFiles = new();

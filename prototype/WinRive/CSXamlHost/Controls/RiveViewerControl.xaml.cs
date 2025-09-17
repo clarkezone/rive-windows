@@ -821,13 +821,15 @@ namespace CSXamlHost.Controls
                 {
                     // Get DPI scale factor for physical dimensions
                     var displayInfo = DisplayInformation.GetForCurrentView();
-                    double dpiScale = displayInfo.RawPixelsPerViewPixel;
+                    //double dpiScale = displayInfo.RawPixelsPerViewPixel;
                     
                     // Convert to physical pixels
-                    int physicalWidth = (int)(containerWidth * dpiScale);
-                    int physicalHeight = (int)(containerHeight * dpiScale);
+                    int physicalWidth = (int)(containerWidth );
+                    int physicalHeight = (int)(containerHeight );
+                    ////int physicalWidth = (int)(containerWidth * dpiScale);
+                    //int physicalHeight = (int)(containerHeight * dpiScale);
                     
-                    System.Diagnostics.Debug.WriteLine($"Initializing RiveControl: XAML size ({containerWidth:F2}x{containerHeight:F2}) -> Physical size ({physicalWidth}x{physicalHeight}) [DPI={dpiScale:F2}]");
+                    //System.Diagnostics.Debug.WriteLine($"Initializing RiveControl: XAML size ({containerWidth:F2}x{containerHeight:F2}) -> Physical size ({physicalWidth}x{physicalHeight}) [DPI={dpiScale:F2}]");
                     
                     bool initResult = _riveControl.Initialize(_compositor, physicalWidth, physicalHeight);
                     if (!initResult)
