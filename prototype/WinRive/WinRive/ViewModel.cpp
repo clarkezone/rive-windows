@@ -68,7 +68,7 @@ namespace winrt::WinRive::implementation
 
     WinRive::ViewModelPropertyInfo ViewModel::GetPropertyByName(hstring const& name)
     {
-        // Hack commenting this out
+        // TODO Hack commenting this out
     /*    if (!m_propertiesCached)
         {
             CacheProperties();
@@ -132,7 +132,13 @@ namespace winrt::WinRive::implementation
                     if (stringProperty) {
                         info.Type = WinRive::ViewModelPropertyType::String;
                     }
-                    //info.Type = MapNativePropertyType(property->type());
+                    //auto listProperty = static_cast<rive::ViewModelPropertyList*>(property);
+                    //if (listProperty) {
+                    //    info.Type = WinRive::ViewModelPropertyType::List;
+                    //}
+                    
+                    //TODO: make this work
+                   // MapNativePropertyType(info.Name);
                     m_properties.push_back(info);
                 }
             }
@@ -141,19 +147,22 @@ namespace winrt::WinRive::implementation
         m_propertiesCached = true;
     }
 
-    WinRive::ViewModelPropertyType ViewModel::MapNativePropertyType(int nativeType) const
+    WinRive::ViewModelPropertyType ViewModel::MapNativePropertyType(winrt::hstring typename) const
     {
         // Use runtime property type detection instead of compile-time constants
         // This avoids compilation errors with unknown enum values
-        switch (nativeType)
-        {
-        case 0: return WinRive::ViewModelPropertyType::String;
-        case 1: return WinRive::ViewModelPropertyType::Number;
-        case 2: return WinRive::ViewModelPropertyType::Boolean;
-        case 3: return WinRive::ViewModelPropertyType::Color;
-        case 4: return WinRive::ViewModelPropertyType::Enum;
-        case 5: return WinRive::ViewModelPropertyType::Trigger;
-        default: return WinRive::ViewModelPropertyType::String;
-        }
+
+		return WinRive::ViewModelPropertyType::String; // Temporary stub to avoid compile errors
+
+        //switch (typename)
+        //{
+        //case 0: return WinRive::ViewModelPropertyType::String;
+        //case 1: return WinRive::ViewModelPropertyType::Number;
+        //case 2: return WinRive::ViewModelPropertyType::Boolean;
+        //case 3: return WinRive::ViewModelPropertyType::Color;
+        //case 4: return WinRive::ViewModelPropertyType::Enum;
+        //case 5: return WinRive::ViewModelPropertyType::Trigger;
+        //default: return WinRive::ViewModelPropertyType::String;
+        //}
     }
 }

@@ -9,7 +9,7 @@
   <Identity
     Name="bbfbf490-4351-4a62-929c-c8198c303114"
     Publisher="CN=jeclarke"
-    Version="1.0.8.0" />
+    Version="1.0.10.0" />
 
   <mp:PhoneIdentity PhoneProductId="bbfbf490-4351-4a62-929c-c8198c303114" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 

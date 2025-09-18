@@ -5,6 +5,7 @@
 #include "rive/file.hpp"
 #include "rive/viewmodel/viewmodel.hpp"
 #include "rive/viewmodel/viewmodel_property_string.hpp"
+#include "rive/viewmodel/viewmodel_property_list.hpp"
 #endif
 
 namespace winrt::WinRive::implementation
@@ -43,7 +44,7 @@ namespace winrt::WinRive::implementation
         mutable bool m_propertiesCached{ false };
 
         void CacheProperties() const;
-        WinRive::ViewModelPropertyType MapNativePropertyType(int nativeType) const;
+        WinRive::ViewModelPropertyType MapNativePropertyType(winrt::hstring nativeType) const;
     };
 }
 

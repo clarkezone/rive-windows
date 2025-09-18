@@ -29,7 +29,8 @@ namespace WinRive
         Boolean,
         Color,
         Enum,
-        Trigger
+        Trigger,
+        List
     };
 
     struct ViewModelPropertyInfo

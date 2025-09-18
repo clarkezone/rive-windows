@@ -14,6 +14,12 @@ namespace CSXamlHost.Services
         {
             new RiveFileSource
             {
+                DisplayName = "Dynamic Spotloght",
+                FilePath = "dynamicspotlight.riv",
+                SourceType = RiveFileSourceType.Package
+            },
+            new RiveFileSource
+            {
                 DisplayName = "Interactive Bento Grid",
                 FilePath = "interactive_bento_grid.riv",
                 SourceType = RiveFileSourceType.Package
@@ -22,6 +28,12 @@ namespace CSXamlHost.Services
             {
                 DisplayName = "Dress up",
                 FilePath = "dress_up.riv",
+                SourceType = RiveFileSourceType.Package
+            },
+            new RiveFileSource
+            {
+                DisplayName = "Amanda Spotlight",
+                FilePath = "amandaspotlight.riv",
                 SourceType = RiveFileSourceType.Package
             },
             new RiveFileSource
