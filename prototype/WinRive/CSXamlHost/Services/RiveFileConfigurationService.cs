@@ -26,6 +26,12 @@ namespace CSXamlHost.Services
             },
             new RiveFileSource
             {
+                DisplayName = "Weather App Concept",
+                FilePath = "weather_app_concept.riv",
+                SourceType = RiveFileSourceType.Package
+            },
+            new RiveFileSource
+            {
                 DisplayName = "Layout Test",
                 FilePath = "layouttest.riv",
                 SourceType = RiveFileSourceType.Package

@@ -671,7 +671,7 @@ namespace CSXamlHost.Controls
             {
                 // Get DPI scale factor for physical dimensions
                 var displayInfo = DisplayInformation.GetForCurrentView();
-                double dpiScale = displayInfo.RawPixelsPerViewPixel;
+                double dpiScale = 1.0;
                 
                 // Convert to physical pixels
                 int physicalWidth = (int)(e.NewSize.Width * dpiScale);
