@@ -99,6 +99,7 @@ Status: DONE ✅
 #### Outcomes:
 - Update GitHub readme.md with high level status and video
 - Cleanup XAML control wrapper (strip garbage, simplify)
+- Fix statemachine input issue
 - Fix ViewModel WinRT mapping (not hardcoded)
 - Plan to add all remaining ViewModel types in WinRiveCore
 - Fix Statemachine controls
