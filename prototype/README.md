@@ -98,6 +98,7 @@ Status: DONE ✅
 ### 0.7 PostHackathon cleanup
 #### Outcomes:
 - Update GitHub readme.md with high level status and video
+- Ensure project can build clean on clean machine (no missing files etc.)
 - Cleanup XAML control wrapper (strip garbage, simplify)
 - Fix statemachine input issue
 - Fix ViewModel WinRT mapping (not hardcoded)
